@@ -13,11 +13,11 @@ H_EQ = H_0 * (omega_R * a_EQ ** (-4) + omega_M * a_EQ ** (-3)) ** (1 / 2)
 H_EQ_WB = H_0 * (2 * omega_M * a_EQ ** (-3)) ** 0.5
 k_EQ = a_EQ * H_EQ
 Q = np.sqrt(2) * k_GW / k_EQ
-print(Q)
+print("k used: ", k_GW)
 fv0 = 0.40523
 u0 = 0.01
 u_max = 1000
-N = 1000
+N = 100
 x = np.linspace(u0, u_max, N)
 chi = 0
 chi_prime = np.zeros(N)
@@ -95,35 +95,13 @@ for idx in range(N):
     u += du
 
 
-def u_to_y(u):
-    return (u / (2 * Q) + 1) ** 2 - 1
-
-
 # The input for the homogeneous version of the equation, just chi''(u) + 2/u chi'(u) + chi(u) = 0
 def M_derivs_homo(M, u):
-    return [M[1], -2 / u * M[1] - M[0]]
-
-
-# My attempt to try to use the method of breaking a 2nd order diffeq into 2 first order diffeq.
-def M_derivs_inhomo(M, u):
-    integral = scipy.integrate.cumtrapz(M[1] * func(u), x, initial=0)
-    integral = scipy.integrate.simps(M[1] * func(u))
-    return [M[1], -4 / u * M[1] - M[0] - 24 * fv0 / u**2 * integral]
-
-
-# What Weinberg said the solution approaches for u >> 1, equation (24) in paper
-def Weinberg(A, delta, u):
-    return A * np.sin(u + delta) / u
+    return [M[1], -M[1] * (2 / u + 1 / (2 * (1 + u))) - Q**2 * M[0] / (1 + u)]
 
 
 # Get the homogeneous solution using scipy.integrate.odeint
-Chi, chi_prime = odeint(M_derivs_homo, [u_to_y(1), u_to_y(0)], x).T
-print(u_to_y(1), u_to_y(0))
-
-# This method didn't work because I need the entire history of chi' up to the u
-# I'm at, but it only gives me the single value of chi' for the current u, so I
-# can't integrate it in the integral.
-# chiIH, chi_primeIH = odeint(M_derivs_inhomo, [1, 0], x).T
+Chi, chi_prime = odeint(M_derivs_homo, [0, 0], x).T
 
 # Plot the solutions
 fig, (ax1) = plt.subplots(1)
@@ -138,7 +116,7 @@ ax1.plot(x, chi_array, label="General soln using RK4", color="black")
 r_H = 314  # Mpc
 a_GW_Reenter = (r_H * H_0 * np.sqrt(omega_M)) ** (1 / 2)
 y_GW_Reenter = a_GW_Reenter / a_EQ
-print(y_GW_Reenter, a_GW_Reenter)
+print("y at reentry: ", y_GW_Reenter, ",a at reentry: ", a_GW_Reenter)
 ax1.vlines(
     [y_GW_Reenter],
     0,
