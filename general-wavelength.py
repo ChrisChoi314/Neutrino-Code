@@ -15,13 +15,15 @@ k_EQ = a_EQ * H_EQ
 Q = np.sqrt(2) * k_GW / k_EQ
 print("k used: ", k_GW)
 fv0 = 0.40523
-u0 = 0.01
-u_max = 1000
-N = 100
+u0 = 0.00001
+u_max = 800
+N = 1000
+chi_init = 1
+chi_prime_init = 0
 x = np.linspace(u0, u_max, N)
-chi = 0
+chi = chi_init
 chi_prime = np.zeros(N)
-chi_p_val = 0
+chi_p_val = chi_prime_init
 chi_prime[0] = chi_p_val
 u = u0
 du = (u_max - u0) / N
@@ -29,7 +31,7 @@ du = (u_max - u0) / N
 # Define the equation. The equation looks like this:
 # chi''(u) + 2/u chi'(u) + chi(u) = -24f_v(0)/u^2 integral from 0 to u of
 #                                    ( -sin(u-U)/(u-U)^3 - 3cos(u-U)/(u-U)^4 + 3sin(u-U)/(u-U)^5 )chi'(U) dU
-
+print(2/ u)
 
 def f1(chi, chi_prime, u, idx):
     dchidu = chi_prime[idx]
@@ -92,6 +94,7 @@ for idx in range(N):
     chi_prime[idx] = chi_p_val
     chi += (k11 + 2 * k12 + 2 * k13 + k14) / 6
     chi_p_val += (k21 + 2 * k22 + 2 * k23 + k24) / 6
+    #print ((k11 + 2 * k12 + 2 * k13 + k14) / 6, (k21 + 2 * k22 + 2 * k23 + k24) / 6)
     u += du
 
 
@@ -101,13 +104,13 @@ def M_derivs_homo(M, u):
 
 
 # Get the homogeneous solution using scipy.integrate.odeint
-Chi, chi_prime = odeint(M_derivs_homo, [0, 0], x).T
+Chi, chi_prime = odeint(M_derivs_homo, [chi_init, chi_prime_init], x).T
 
 # Plot the solutions
 fig, (ax1) = plt.subplots(1)
 ax1.set_xlabel("y")
 ax1.plot(
-    x, Chi, label="Homogeneous soln for small wavelength: chi = sin(y)/y", color="blue"
+    x, Chi, label="Homogeneous soln for small wavelength", color="blue"
 )
 ax1.set_ylabel("chi(y)")
 # ax1.plot(x, chiIH, label = "inhomo", color = "red")
@@ -117,6 +120,7 @@ r_H = 314  # Mpc
 a_GW_Reenter = (r_H * H_0 * np.sqrt(omega_M)) ** (1 / 2)
 y_GW_Reenter = a_GW_Reenter / a_EQ
 print("y at reentry: ", y_GW_Reenter, ",a at reentry: ", a_GW_Reenter)
+
 ax1.vlines(
     [y_GW_Reenter],
     0,
@@ -125,6 +129,7 @@ ax1.vlines(
     label="y when Primordial GW Reenter Horizon",
     colors="red",
 )
+
 # ax1.plot(x, Weinberg(0.8026, 0.001, x), label="Weinberg's u>>1 soln", color="red")
 plt.title("Solns. to the Diff eq of Chi(y) for k = k_primordial_GW")
 plt.legend()
