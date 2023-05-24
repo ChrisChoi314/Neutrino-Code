@@ -119,5 +119,9 @@ ax1.plot(x, chi_array, label="General soln using RK4", color="black")
 ax1.plot(x, Weinberg(0.8026, 0.001, x), label="Weinberg's u>>1 soln", color="red")
 plt.title("Solns. to the Diff eq of Chi in Short Wavelength Regime")
 plt.legend()
-plt.savefig("Solutions_of_Diffeq.pdf")
+
+ratio = chi_array/Chi
+print(ratio)
+
+#plt.savefig("Solutions_of_Diffeq.pdf")
 plt.show()

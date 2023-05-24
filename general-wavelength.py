@@ -13,11 +13,12 @@ H_EQ = H_0 * (omega_R * a_EQ ** (-4) + omega_M * a_EQ ** (-3)) ** (1 / 2)
 H_EQ_WB = H_0 * (2 * omega_M * a_EQ ** (-3)) ** 0.5
 k_EQ = a_EQ * H_EQ
 Q = np.sqrt(2) * k_GW / k_EQ
+Q = 1
 print("k used: ", k_GW)
 fv0 = 0.40523
 u0 = 0.00001
 u_max = 800
-N = 1000
+N = 1000    
 chi_init = 1
 chi_prime_init = 0
 x = np.linspace(u0, u_max, N)
@@ -104,13 +105,13 @@ def M_derivs_homo(M, u):
 
 
 # Get the homogeneous solution using scipy.integrate.odeint
-Chi, chi_prime = odeint(M_derivs_homo, [chi_init, chi_prime_init], x).T
+Chi, Chi_prime = odeint(M_derivs_homo, [chi_init, chi_prime_init], x).T
 
 # Plot the solutions
 fig, (ax1) = plt.subplots(1)
 ax1.set_xlabel("y")
 ax1.plot(
-    x, Chi, label="Homogeneous soln for small wavelength", color="blue"
+    x, Chi, label="Homogeneous soln", color="blue"
 )
 ax1.set_ylabel("chi(y)")
 # ax1.plot(x, chiIH, label = "inhomo", color = "red")
@@ -121,17 +122,22 @@ a_GW_Reenter = (r_H * H_0 * np.sqrt(omega_M)) ** (1 / 2)
 y_GW_Reenter = a_GW_Reenter / a_EQ
 print("y at reentry: ", y_GW_Reenter, ",a at reentry: ", a_GW_Reenter)
 
+ax1.plot(x, chi_array / Chi, label="Ratio", color="red")
+ax1.plot(x, chi_prime / Chi_prime, label="Ratio of deriv", color="orange")
+print(chi_array/Chi )
+'''
 ax1.vlines(
     [y_GW_Reenter],
-    0,
-    1,
+    -.6,
+    1.2,
     linestyles="dashed",
     label="y when Primordial GW Reenter Horizon",
-    colors="red",
+    colors="green",
 )
+'''
 
 # ax1.plot(x, Weinberg(0.8026, 0.001, x), label="Weinberg's u>>1 soln", color="red")
 plt.title("Solns. to the Diff eq of Chi(y) for k = k_primordial_GW")
 plt.legend()
-plt.savefig("Primoridal Reenter.pdf")
+plt.savefig("With_vertical_far.pdf")
 plt.show()
