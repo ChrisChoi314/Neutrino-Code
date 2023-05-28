@@ -20,17 +20,21 @@ def scale_fac(conf_time):
         return -1/(H_inf*conf_time)
     else:
         return a_r * conf_time / tau_r
+
+
 def d_scale_fac_dz(conf_time):
     if conf_time < tau_r:
         return -2/(H_inf*conf_time**3)
     else:
         return 0
 
+
 def mu(conf_time):
     if conf_time < tau_m:
         return m
     else:
         return 0
+
 
 N = 1000
 
@@ -41,7 +45,7 @@ def M_derivs_homo(M, u):
 
 
 # Get the homogeneous solution using scipy.integrate.odeint
-v, v_prime = odeint(M_derivs_homo, [1,0], tau).T
+v, v_prime = odeint(M_derivs_homo, [1, 0], tau).T
 
 
 # Plot the solutions
@@ -50,6 +54,18 @@ ax1.set_xlabel(r"$\tau$ (conformal time)")
 ax1.plot(
     tau, v_prime, label=r"Mode function $v_k(\tau)$", color="black"
 )
+tau_up_to_r = np.empty([0])
+for val in tau:
+    if val < tau_r:
+        tau_up_to_r = np.append(tau_up_to_r, val)
+print(tau_up_to_r)
+print(np.sqrt(9/4 - m**2 / H_inf**2))
+ax1.plot(
+    tau_up_to_r, np.sqrt(np.pi*tau_up_to_r) / 2 * scipy.special.hankel1(np.sqrt(9/4 - m**2 / H_inf**2), tau_up_to_r), label=r"Analytical Sol for mode func, in reg 1", color="orange"
+)
+
+#np.sqrt(np.pi*tau_up_to_r) / 2
+
 ax1.set_ylabel(r"$v_k(\tau)$")
 
 plt.axvline(x=tau_r, color='red', linestyle='dashed',
@@ -59,5 +75,5 @@ plt.axvline(x=tau_m, color='blue', linestyle='dashed',
 
 plt.title(r"Solns. to the Diff eq of $v_k(\tau)$")
 plt.legend()
-plt.savefig("mode_function_blue_tilt.pdf")
+# plt.savefig("mode_function_blue_tilt.pdf")
 plt.show()
