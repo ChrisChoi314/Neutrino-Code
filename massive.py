@@ -12,8 +12,8 @@ tau_m = 2*tau_r  # tau_m will be before matter-rad equality, but after inflation
 # 1e-30 # from Claude de Rham paper https://arxiv.org/pdf/1401.4173.pdf
 m = 1*np.sqrt(2) - .1
 m = 1*np.sqrt(2) + .00001
-nu = np.sqrt(9/4 - m**2 / H_inf**2)
-
+m = .8
+nu = np.sqrt(9/4 - m**2 / H_inf**2) 
 N = 10000
 tau_init = -2000*tau_r
 # tau = np.linspace(tau_init, tau_m + tau_r, N)
@@ -64,7 +64,7 @@ print("vprime 0: " + str(v_prime_0))
 
 v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau).T
 
-'''
+#'''
 # Plot the solutions
 fig, (ax1) = plt.subplots(1)
 
@@ -84,10 +84,11 @@ xx = (np.sqrt(-np.pi*xxx) / 2 * scipy.special.hankel1(nu, -k*xxx))[:2]
 xx = xx[1] - xx[0]
 xx /= xxx[1] - xxx[0]
 #print(xx)
+tau_up_to_r = np.linspace(tau_init,0, N)
+ax1.plot(
+    tau_up_to_r, np.sqrt(-np.pi*tau_up_to_r) / 2 * scipy.special.hankel1(nu, -k*tau_up_to_r), label=r"Analytical Sol for mode func, in reg 1", color="orange"
+)
 
-#ax1.plot(
-#    tau_up_to_r, np.sqrt(-np.pi*tau_up_to_r) / 2 * scipy.special.hankel1(nu, -k*tau_up_to_r), label=r"Analytical Sol for mode func, in reg 1", color="orange"
-#)
 
 ax1.set_xlim(-100, 0)
  
@@ -103,12 +104,12 @@ ax1.set_ylabel(r"$v_k(\tau)$")
 
 plt.title(r"Solns. to the Diff eq of $v_k(\tau)$")
 plt.legend()
-'''
+
 fig, (ax2) = plt.subplots(1)
 time_start = -1e9
 time = np.linspace(time_start, time_start+10, N)
 
-time = np.linspace(-1, -.0000000001, N, dtype=np.complex_)
+time = np.linspace(-1, -.0001, N, dtype=np.complex_)
 ax2.plot(
     time, 1/np.sqrt(2*k)*np.exp(-1j*k*time), label="Bunch-Davies Result", color='red'
 )
@@ -117,13 +118,15 @@ ax2.plot(
     time, np.sqrt(-np.pi*time) / 2 * scipy.special.hankel1(nu, -k*time), label="Hankel func", color='blue'
 )
 
+# print(time**(1/2 - nu)*k**(-nu))
 ax2.plot(
     time, time**(1/2 - nu)*k**(-nu), label="Superhorizon lim", color='green'
 )
 
-print((time**(1/2 - nu)*k**(-nu))[N-10:N-1])
-print(time[N-10:N-1])
+# print((time**(1/2 - nu)*k**(-nu))[N-10:N-1])
+# print(time[N-10:N-1])
 plt.title(r"Bunch-Davies Condition")
+
 plt.legend()
 # plt.savefig("mode_function_inflation_reg.pdf")
 plt.show()
