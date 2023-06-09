@@ -46,7 +46,7 @@ def M_derivs_homo(M, u):
     return [M[1], -(k**2 + (scale_fac(u)*m)**2 - d_scale_fac_dz(u) / scale_fac(u)) * M[0]]
 
 
-fig, (ax1) = plt.subplots(1, figsize=(22,14))
+fig, (ax1) = plt.subplots(1, figsize=(22, 14))
 
 tau_up_to_r = np.empty([0])
 for val in tau:
@@ -65,8 +65,8 @@ tau_up_to_r = np.linspace(tau_init, -tau_r, N)
 
 # Get the homogeneous solution using scipy.integrate.odeint
 v_0 = np.sqrt(-np.pi*tau_up_to_r[0]) / 2 * \
-    scipy.special.hankel1(nu, -k*tau_up_to_r[0])
-v_prime_0 = xx.real
+    scipy.special.hankel1(nu, -k*tau_up_to_r[0]).imag
+v_prime_0 = xx.imag
 
 v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau).T
 
@@ -77,7 +77,7 @@ xxxxx = np.array([tau_up_to_r[N-1] - 0.0000001, tau_up_to_r[N-1] + 0.0000001])
 xxxx = (np.sqrt(-np.pi*xxxxx) / 2 * scipy.special.hankel1(nu, -k*xxxxx))[:2]
 xxxx = xxxx[1] - xxxx[0]
 xxxx /= xxxxx[1] - xxxxx[0]
-v_prime_0_rest = xxxx.real
+v_prime_0_rest = xxxx
 print(xxxx)
 v_rest, v_prime_rest = odeint(
     M_derivs_homo, [v_0_rest, v_prime_0_rest], tau_rest).T
@@ -92,7 +92,7 @@ ax1.plot(
 )
 
 ax1.plot(
-    tau_up_to_r, np.sqrt(-np.pi*tau_up_to_r) / 2 *
+    tau_up_to_r, -1j*np.sqrt(-np.pi*tau_up_to_r) / 2 *
     scipy.special.hankel1(nu, -k*tau_up_to_r), "--", color="orange",
     label=r"Analyt Soln: $\frac{\sqrt{-\pi \tau}}{2} H_\nu^{(1)} (-k\tau)$"
 )
@@ -101,13 +101,16 @@ tau_r_to_m = np.empty([0])
 for val in tau_rest:
     if val < tau_m:
         tau_r_to_m = np.append(tau_r_to_m, val)
-
-C_1 = 1#-1j*np.sqrt(np.pi) 
-C_2 = 1
+tau_r_to_m = tau_rest
+C_1 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /
+                                                                                  H_inf * scipy.special.jv(-3/4, m/(2*H_inf)) + (1-2*nu)*scipy.special.jv(1/4, m/(2*H_inf)))
+C_2 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /
+                                                                                  H_inf * scipy.special.jv(3/4, m/(2*H_inf)) - (1-2*nu)*scipy.special.jv(-1/4, m/(2*H_inf)))
 ax1.plot(
-    tau_r_to_m, 2/np.sqrt(np.pi*a_r * tau_r_to_m / tau_r*m)*(C_1*np.cos(tau_r_to_m) + C_2*np.sin(tau_r_to_m)), "--", color="cyan",
+    tau_r_to_m, 1j*2/np.sqrt(np.pi*a_r * tau_r_to_m / tau_r*m)*(C_1*np.cos(a_r * tau_r_to_m / tau_r*m*tau_r_to_m/2 - np.pi/8) + C_2*np.sin(a_r * tau_r_to_m / tau_r*m*tau_r_to_m/2 + np.pi/8)), "--", color="cyan",
     label=r"Analyt Solution: $\frac{2}{\sqrt{\pi am}}[C_1 \cos(\frac{am\tau}{2} - \frac{\pi}{8}) + C_2 \sin(\frac{am\tau}{2} + \frac{\pi}{8})]$"
 )
+
 
 ax1.set_xlim(-tau_end, tau_end)
 ax1.set_ylabel(r"$v_k(\tau)$")
@@ -152,5 +155,5 @@ plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
 '''
 
 plt.legend()
-#plt.savefig("numerical-vs-analyt.pdf")
+plt.savefig("numerical-vs-analyt-imag.pdf")
 plt.show()
