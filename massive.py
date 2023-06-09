@@ -46,65 +46,70 @@ def M_derivs_homo(M, u):
     return [M[1], -(k**2 + (scale_fac(u)*m)**2 - d_scale_fac_dz(u) / scale_fac(u)) * M[0]]
 
 
-# Get the homogeneous solution using scipy.integrate.odeint
-v_0 = 1/np.sqrt(2*k)
-v_prime_0 = np.sqrt(k)/np.sqrt(2)
-
-v_0 = 0.585874854997904
-v_prime_0 = -0.3959175111164323
-
-v_0 = 1/np.sqrt(2*k)
-v_prime_0 = np.sqrt(k)/np.sqrt(2)
-
-v_0 = 1/np.sqrt(2*k)*np.cos(-k*tau_init)
-v_prime_0 = np.sqrt(k)/np.sqrt(2)*np.sin(-k*tau_init)
-
-print("v0: " + str(v_0))
-print("vprime 0: " + str(v_prime_0))
-
-v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau).T
-
-# '''
-# Plot the solutions
 fig, (ax1) = plt.subplots(1)
-
-ax1.set_xlabel(r"$\tau$ (conformal time)")
-ax1.plot(
-    tau, v, label=r"Mode function $v_k(\tau)$", color="black"
-)
 
 tau_up_to_r = np.empty([0])
 for val in tau:
     if val < tau_r:
         tau_up_to_r = np.append(tau_up_to_r, val)
 
+
 # horrors beyond my comprehension for the central difference method
 xxx = np.array([tau_up_to_r[0] - 0.0000001, tau_up_to_r[0] + 0.0000001])
 xx = (np.sqrt(-np.pi*xxx) / 2 * scipy.special.hankel1(nu, -k*xxx))[:2]
 xx = xx[1] - xx[0]
 xx /= xxx[1] - xxx[0]
-# print(xx)
-tau_up_to_r = np.linspace(tau_init, 0, N)
+print(xx)
+tau_up_to_r = np.linspace(tau_init, -tau_r, N)
+
+
+# Get the homogeneous solution using scipy.integrate.odeint
+v_0 = np.sqrt(-np.pi*tau_up_to_r[0]) / 2 * \
+    scipy.special.hankel1(nu, -k*tau_up_to_r[0])
+v_prime_0 = xx.real
+
+v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau).T
+
+tau_end = 10*tau_m
+tau_rest = np.linspace(tau_r, tau_end, N)
+v_0_rest = v[N-1]
+xxxxx = np.array([tau_rest[N-1] - 0.0000001, tau_rest[N-1] + 0.0000001])
+xxxx = (np.sqrt(-np.pi*xxxxx) / 2 * scipy.special.hankel1(nu, -k*xxxxx))[:2]
+xxxx = xxxx[1] - xxxx[0]
+xxxx /= xxxxx[1] - xxxxx[0]
+v_prime_0_rest = xxxx.real
+v_rest, v_prime_rest = odeint(
+    M_derivs_homo, [v_0_rest, v_prime_0_rest], tau_rest).T
+
+ax1.set_xlabel(r"$\tau$ (conformal time)")
 ax1.plot(
-    tau_up_to_r, np.sqrt(-np.pi*tau_up_to_r) / 2 * scipy.special.hankel1(nu, -k*tau_up_to_r), label=r"Analytical Sol for mode func, in reg 1", color="orange"
+    tau, v, label=r"Numerical solution", color="black"
 )
 
+ax1.plot(
+    tau_rest, v_rest, color="black"
+)
 
-ax1.set_xlim(-100, 0)
+ax1.plot(
+    tau_up_to_r, np.sqrt(-np.pi*tau_up_to_r) / 2 *
+    scipy.special.hankel1(nu, -k*tau_up_to_r), "--", color="orange",
+    label=r"Analytical Solution: $\frac{\sqrt{-\pi \tau}}{2} H_\nu^{(1)} (-k\tau)$"
+)
 
-# ax1.set_xlim(tau_init , tau_init + 1)
-# np.sqrt(np.pi*tau_up_to_r) / 2
-
+ax1.set_xlim(-tau_end, tau_end)
 ax1.set_ylabel(r"$v_k(\tau)$")
 
-# plt.axvline(x=tau_r, color='red', linestyle='dashed',
-#            linewidth=1, label='Tau_r')
-# plt.axvline(x=tau_m, color='blue', linestyle='dashed',
-#            linewidth=1, label='Tau_m')
+
+plt.axvline(x=-tau_r, color='red', linestyle='dashed',
+            linewidth=1, label=r'-$\tau_r$')
+plt.axvline(x=tau_r, color='red', linestyle='dashed',
+            linewidth=1, label=r'$\tau_r$')
+plt.axvline(x=tau_m, color='blue', linestyle='dashed',
+            linewidth=1, label=r'$\tau_m$')
 
 plt.title(r"Solns. to the Diff eq of $v_k(\tau)$")
-plt.legend()
 
+'''
 fig, (ax2) = plt.subplots(1)
 time_start = -1.e9
 time = np.linspace(time_start, time_start+50, N)
@@ -131,8 +136,8 @@ ax2.set_xlabel(r"$\tau$")
 # print((time**(1/2 - nu)*k**(-nu))[N-10:N-1])
 # print(time[N-10:N-1])
 plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
+'''
 
 plt.legend()
-plt.savefig("Bunch-Davies-lim-complex-PS-pi.pdf")
-ax1.remove()
+plt.savefig("numerical-vs-analyt.pdf")
 plt.show()
