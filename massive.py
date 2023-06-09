@@ -8,7 +8,7 @@ H_inf = 1  # 1e14  # in gev, according to https://cds.cern.ch/record/1420368/fil
 a_r = 1  # 1e-32 # preliminary value, will change later
 tau_r = 1/(a_r*H_inf)
 k = 1
-tau_m = 2*tau_r  # tau_m will be before matter-rad equality, but after inflation ends https://arxiv.org/pdf/1808.02381.pdf
+tau_m = 5*tau_r  # tau_m will be before matter-rad equality, but after inflation ends https://arxiv.org/pdf/1808.02381.pdf
 # 1e-30 # from Claude de Rham paper https://arxiv.org/pdf/1401.4173.pdf
 m = 1*np.sqrt(2) - .1
 m = 1*np.sqrt(2) + .00001
@@ -46,7 +46,7 @@ def M_derivs_homo(M, u):
     return [M[1], -(k**2 + (scale_fac(u)*m)**2 - d_scale_fac_dz(u) / scale_fac(u)) * M[0]]
 
 
-fig, (ax1) = plt.subplots(1)
+fig, (ax1) = plt.subplots(1, figsize=(22,14))
 
 tau_up_to_r = np.empty([0])
 for val in tau:
@@ -70,14 +70,15 @@ v_prime_0 = xx.real
 
 v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau).T
 
-tau_end = 10*tau_m
+tau_end = 6*tau_m
 tau_rest = np.linspace(tau_r, tau_end, N)
 v_0_rest = v[N-1]
-xxxxx = np.array([tau_rest[N-1] - 0.0000001, tau_rest[N-1] + 0.0000001])
+xxxxx = np.array([tau_up_to_r[N-1] - 0.0000001, tau_up_to_r[N-1] + 0.0000001])
 xxxx = (np.sqrt(-np.pi*xxxxx) / 2 * scipy.special.hankel1(nu, -k*xxxxx))[:2]
 xxxx = xxxx[1] - xxxx[0]
 xxxx /= xxxxx[1] - xxxxx[0]
 v_prime_0_rest = xxxx.real
+print(xxxx)
 v_rest, v_prime_rest = odeint(
     M_derivs_homo, [v_0_rest, v_prime_0_rest], tau_rest).T
 
@@ -93,7 +94,19 @@ ax1.plot(
 ax1.plot(
     tau_up_to_r, np.sqrt(-np.pi*tau_up_to_r) / 2 *
     scipy.special.hankel1(nu, -k*tau_up_to_r), "--", color="orange",
-    label=r"Analytical Solution: $\frac{\sqrt{-\pi \tau}}{2} H_\nu^{(1)} (-k\tau)$"
+    label=r"Analyt Soln: $\frac{\sqrt{-\pi \tau}}{2} H_\nu^{(1)} (-k\tau)$"
+)
+
+tau_r_to_m = np.empty([0])
+for val in tau_rest:
+    if val < tau_m:
+        tau_r_to_m = np.append(tau_r_to_m, val)
+
+C_1 = 1#-1j*np.sqrt(np.pi) 
+C_2 = 1
+ax1.plot(
+    tau_r_to_m, 2/np.sqrt(np.pi*a_r * tau_r_to_m / tau_r*m)*(C_1*np.cos(tau_r_to_m) + C_2*np.sin(tau_r_to_m)), "--", color="cyan",
+    label=r"Analyt Solution: $\frac{2}{\sqrt{\pi am}}[C_1 \cos(\frac{am\tau}{2} - \frac{\pi}{8}) + C_2 \sin(\frac{am\tau}{2} + \frac{\pi}{8})]$"
 )
 
 ax1.set_xlim(-tau_end, tau_end)
@@ -139,5 +152,5 @@ plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
 '''
 
 plt.legend()
-plt.savefig("numerical-vs-analyt.pdf")
+#plt.savefig("numerical-vs-analyt.pdf")
 plt.show()
