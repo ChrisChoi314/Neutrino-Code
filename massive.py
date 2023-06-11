@@ -7,11 +7,11 @@ from scipy.integrate import odeint
 H_inf = 1  # 1e14  # in gev, according to https://cds.cern.ch/record/1420368/files/207.pdf
 a_r = 1  # 1e-32 # preliminary value, will change later
 tau_r = 1/(a_r*H_inf)
-k = 1
-tau_m = 5*tau_r  # tau_m will be before matter-rad equality, but after inflation ends https://arxiv.org/pdf/1808.02381.pdf
+k = .1
+tau_m = 20*tau_r  # 5*tau_r tau_m will be before matter-rad equality, but after inflation ends https://arxiv.org/pdf/1808.02381.pdf
 # 1e-30 # from Claude de Rham paper https://arxiv.org/pdf/1401.4173.pdf
-m = 1*np.sqrt(2) - .1
-m = 1*np.sqrt(2) + .00001
+# m = 1*np.sqrt(2) - .1
+# m = 1*np.sqrt(2) + .00001
 m = .8
 nu = np.sqrt(9/4 - m**2 / H_inf**2)
 N = 10000
@@ -43,7 +43,11 @@ def mu(conf_time):
 
 # The input for the homogeneous version of the equation, just chi''(u) + 2/u chi'(u) + chi(u) = 0
 def M_derivs_homo(M, u):
-    return [M[1], -(k**2 + (scale_fac(u)*m)**2 - d_scale_fac_dz(u) / scale_fac(u)) * M[0]]
+    return [M[1], -(k**2 + (scale_fac(u)*mu(u))**2 - d_scale_fac_dz(u) / scale_fac(u)) * M[0]]
+
+
+def f_no_m(M, u):
+    return [M[1], -(k**2 - d_scale_fac_dz(u) / scale_fac(u)) * M[0]]
 
 
 fig, (ax1) = plt.subplots(1, figsize=(22, 14))
@@ -68,7 +72,21 @@ v_0 = np.sqrt(-np.pi*tau_up_to_r[0]) / 2 * \
     scipy.special.hankel1(nu, -k*tau_up_to_r[0]).imag
 v_prime_0 = xx.imag
 
+
 v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau).T
+
+
+ax1.plot(
+    tau, v, label=r"Numerical solution", color="black"
+)
+
+
+ax1.plot(
+    tau_up_to_r, -1j*np.sqrt(-np.pi*tau_up_to_r) / 2 *
+    scipy.special.hankel1(nu, -k*tau_up_to_r), "--", color="orange",
+    label=r"Analyt Soln: $\frac{\sqrt{-\pi \tau}}{2} H_\nu^{(1)} (-k\tau)$"
+)
+
 
 tau_end = 6*tau_m
 tau_rest = np.linspace(tau_r, tau_end, N)
@@ -82,44 +100,53 @@ print(xxxx)
 v_rest, v_prime_rest = odeint(
     M_derivs_homo, [v_0_rest, v_prime_0_rest], tau_rest).T
 
-ax1.set_xlabel(r"$\tau$ (conformal time)")
-ax1.plot(
-    tau, v, label=r"Numerical solution", color="black"
-)
 
 ax1.plot(
     tau_rest, v_rest, color="black"
 )
 
-ax1.plot(
-    tau_up_to_r, -1j*np.sqrt(-np.pi*tau_up_to_r) / 2 *
-    scipy.special.hankel1(nu, -k*tau_up_to_r), "--", color="orange",
-    label=r"Analyt Soln: $\frac{\sqrt{-\pi \tau}}{2} H_\nu^{(1)} (-k\tau)$"
-)
+ax1.set_xlabel(r"$\tau$ (conformal time)")
 
 tau_r_to_m = np.empty([0])
 for val in tau_rest:
     if val < tau_m:
         tau_r_to_m = np.append(tau_r_to_m, val)
-tau_r_to_m = tau_rest
+
 C_1 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /
                                                                                   H_inf * scipy.special.jv(-3/4, m/(2*H_inf)) + (1-2*nu)*scipy.special.jv(1/4, m/(2*H_inf)))
 C_2 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /
                                                                                   H_inf * scipy.special.jv(3/4, m/(2*H_inf)) - (1-2*nu)*scipy.special.jv(-1/4, m/(2*H_inf)))
+v_k_reg2 = -1j*2/np.sqrt(np.pi*a_r * tau_r_to_m / tau_r*m)*(C_1*np.cos(a_r * tau_r_to_m / tau_r*m*tau_r_to_m/2 - np.pi/8) + C_2*np.sin(a_r * tau_r_to_m / tau_r*m*tau_r_to_m/2 + np.pi/8))
 ax1.plot(
-    tau_r_to_m, 1j*2/np.sqrt(np.pi*a_r * tau_r_to_m / tau_r*m)*(C_1*np.cos(a_r * tau_r_to_m / tau_r*m*tau_r_to_m/2 - np.pi/8) + C_2*np.sin(a_r * tau_r_to_m / tau_r*m*tau_r_to_m/2 + np.pi/8)), "--", color="cyan",
+    tau_r_to_m, v_k_reg2 , "--", color="cyan",
     label=r"Analyt Solution: $\frac{2}{\sqrt{\pi am}}[C_1 \cos(\frac{am\tau}{2} - \frac{\pi}{8}) + C_2 \sin(\frac{am\tau}{2} + \frac{\pi}{8})]$"
 )
 
+tau_m_to_end = np.empty([0])
+for val in tau_rest:
+    if val >= tau_m:
+        tau_m_to_end = np.append(tau_m_to_end, val)
+lamb = m*tau_m**2 / (2*H_inf*tau_r**2)
+D_1 = -np.sin(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
+D_2 = np.cos(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
+v_k_reg3 = 2/k*np.sqrt(m*tau_m / (np.pi*H_inf*tau_r**2)) * \
+    (D_1*np.cos(k*tau_m_to_end) + D_2*np.sin(k*tau_m_to_end))
+ax1.plot(
+    tau_m_to_end, -1j*v_k_reg3, "--",
+    color="magenta",
+    label=r"Analyt Solution: $\frac{2}{k}\sqrt{\frac{m\tau_m}{\pi H_{inf} \tau_r^2}}[D_1 \cos(k\tau) + D_2 \sin(k\tau)]$"
+)
+print(lamb)
+print(k*tau_m)
 
 ax1.set_xlim(-tau_end, tau_end)
 ax1.set_ylabel(r"$v_k(\tau)$")
 
 
 plt.axvline(x=-tau_r, color='red', linestyle='dashed',
-            linewidth=1, label=r'-$\tau_r$')
+            linewidth=1)
 plt.axvline(x=tau_r, color='red', linestyle='dashed',
-            linewidth=1, label=r'$\tau_r$')
+            linewidth=1, label=r'$\pm \tau_r$')
 plt.axvline(x=tau_m, color='blue', linestyle='dashed',
             linewidth=1, label=r'$\tau_m$')
 
@@ -155,5 +182,5 @@ plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
 '''
 
 plt.legend()
-plt.savefig("numerical-vs-analyt-imag.pdf")
+plt.savefig("fixed-mode-func-small-k.pdf")
 plt.show()
