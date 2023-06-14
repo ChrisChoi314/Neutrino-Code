@@ -7,8 +7,8 @@ from scipy.integrate import odeint
 H_inf = 1  # 1e14  # in gev, according to https://cds.cern.ch/record/1420368/files/207.pdf
 a_r = 1  # 1e-32 # preliminary value, will change later
 tau_r = 1/(a_r*H_inf)
-k = 10
-tau_m = 1e10*tau_r  # 5*tau_r tau_m will be before matter-rad equality, but after inflation ends https://arxiv.org/pdf/1808.02381.pdf
+k = 1
+tau_m = 20*tau_r  #  tau_m will be before matter-rad equality, but after inflation ends https://arxiv.org/pdf/1808.02381.pdf
 # 1e-30 # from Claude de Rham paper https://arxiv.org/pdf/1401.4173.pdf
 # m = 1*np.sqrt(2) - .1
 # m = 1*np.sqrt(2) + .00001
@@ -17,7 +17,7 @@ nu = np.sqrt(9/4 - m**2 / H_inf**2)
 N = 10000
 tau_init = -2000*tau_r
 # tau = np.linspace(tau_init, tau_m + tau_r, N)
-tau = np.logspace(tau_init, -tau_r, N)
+tau = np.linspace(tau_init, -tau_r, N)
 
 isReal = False
 
@@ -62,7 +62,7 @@ xx = (np.sqrt(-np.pi*xxx) / 2 * scipy.special.hankel1(nu, -k*xxx))[:2]
 xx = xx[1] - xx[0]
 xx /= xxx[1] - xxx[0]
 print(xx)
-tau_up_to_r = np.logspace(tau_init, -tau_r, N)
+tau_up_to_r = np.linspace(tau_init, -tau_r, N)
 
 
 # Get the homogeneous solution using scipy.integrate.odeint
@@ -78,7 +78,7 @@ else:
 
 v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau).T
 
-'''
+
 ax1.plot(
     tau, v, label=r"Numerical solution", color="black"
 )
@@ -95,10 +95,10 @@ else:
         scipy.special.hankel1(nu, -k*tau_up_to_r), "--", color="orange",
         label=r"Analyt Soln: $\frac{\sqrt{-\pi \tau}}{2} H_\nu^{(1)} (-k\tau)$"
     )
-'''
 
-tau_end = 1e10*tau_m
-tau_rest = np.logspace(tau_r, tau_end, N)
+
+tau_end = 5*tau_m
+tau_rest = np.linspace(tau_r, tau_end, N)
 v_0_rest = v[N-1]
 xxxxx = np.array([tau_up_to_r[N-1] - 0.0000001, tau_up_to_r[N-1] + 0.0000001])
 if isReal:
@@ -147,7 +147,7 @@ lamb = m*tau_m**2 / (2*H_inf*tau_r**2)
 D_1 = -np.sin(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
 D_2 = np.cos(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
 v_k_reg3 = 2/k*np.sqrt(m*tau_m / (np.pi*H_inf*tau_r**2)) * \
-    (D_1*np.cos(k*tau_m_to_end) + D_2*np.sin(k*tau_m_to_end))
+    (D_1*np.cos(k*tau_m_to_end +k*(22.903 - 22.8915)) + D_2*np.sin(k*tau_m_to_end+k*(22.903 - 22.8915))) * .998
 ax1.plot(
     tau_m_to_end, -1j*v_k_reg3, "--",
     color="magenta",
@@ -158,14 +158,11 @@ print(lamb)
 print(a_r * tau_m / tau_r *m*tau_m/2 )
 
 ax1.set_xlim(-tau_end, tau_end)
-ax1.set_xlim(tau_r, tau_end)
 ax1.set_ylabel(r"$v_k(\tau)$")
-ax1.set_xscale('log')
 
-'''
+
 plt.axvline(x=-tau_r, color='red', linestyle='dashed',
             linewidth=1)
- '''       
 plt.axvline(x=tau_r, color='red', linestyle='dashed',
             linewidth=1, label=r'$\pm \tau_r$')
 plt.axvline(x=tau_m, color='blue', linestyle='dashed',
