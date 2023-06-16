@@ -154,9 +154,6 @@ ax1.plot(
     label=r"Analyt Solution: $\frac{2}{k}\sqrt{\frac{m\tau_m}{\pi H_{inf} \tau_r^2}}[D_1 \cos(k\tau) + D_2 \sin(k\tau)]$"
 )
 
-print(lamb)
-print(a_r * tau_m / tau_r *m*tau_m/2 )
-
 ax1.set_xlim(-tau_end, tau_end)
 ax1.set_ylabel(r"$v_k(\tau)$")
 
@@ -199,6 +196,6 @@ ax2.set_xlabel(r"$\tau$")
 plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
 '''
 
-plt.legend()
+#plt.legend()
 # plt.savefig("fixed-mode-func-small-k.pdf")
 plt.show()
