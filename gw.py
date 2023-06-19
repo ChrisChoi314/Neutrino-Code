@@ -49,7 +49,7 @@ def S(omega):
     M_GW_0 = m
     k_ = a_0*np.sqrt(omega**2 - M_GW_0**2)
     kprime = a_0*omega
-    a_GR = 
+    a_GR = 0
 
 def scale_fac(conf_time):
     if conf_time < tau_r:
