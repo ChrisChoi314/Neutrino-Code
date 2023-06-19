@@ -19,7 +19,7 @@ omega_L = .7
 eta_rm = .1
 eta_ml = 12.5
 a_0 = 1
-
+K = 0
 
 def a_rd(eta):
     return H_0*np.sqrt(omega_R)*eta
@@ -36,22 +36,43 @@ def a_rd_p(eta):
 def a_md_p(eta):
     return 2*eta*H_0**2*.25*omega_M
 
+def scale_fac(conf_time):
+    if conf_time < eta_rm:
+        return H_0*np.sqrt(omega_R)*conf_time
+    else:
+        return H_0**2*.25*omega_M*conf_time**2
 
-k = [1e-5, 1e-3, 1e-1, 1e1, 1e3, 1e5]
 
-k = 1
+def d_scale_fac_dz(conf_time):
+    if conf_time < eta_rm:
+        return 0
+    else:
+        return 2*H_0**2*.25*omega_M
+
+def M_derivs_homo(M, u):
+    r = [M[1], -((c_g*k)**2 + (scale_fac(u)*M_GW)**2 - d_scale_fac_dz(u) / scale_fac(u) + 2*K*c_g**2) * M[0]]
+    # print(r)
+    return r
+
+
+k = k_c
 N = 1000
-eta = np.logspace(-10, 1, N)
+eta = np.logspace(-5, 1, N)
 
-fig, (ax1) = plt.subplots(1)
 gamma_k = 4*H_0*a_0*eta_rm**(3/2) / (9*M_pl*k**(3/2)) * eta**2
 C = 4*H_0*a_0*eta_rm**(3/2) / (9*M_pl*k**(3/2))
 gamma_k = C*3/k**2*(-np.cos(k*eta)+np.sin(k*eta)/(k*eta))
 # ax1.plot(eta, gamma_k)
-k = 1e1
 gamma_k2 = 3*C/k**(3/2)*np.cos(k*eta)
-ax1.plot(eta, gamma_k2)
 
+v_0 = H_0/ (M_pl*k**(3/2))
+v_0 = gamma_k2[0]
+v_prime_0 = 0
+v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], eta).T
+
+fig, (ax1) = plt.subplots(1)
+ax1.plot(eta, v)
+#ax1.plot(eta, gamma_k2)
 
 ax1.set_xscale('log')
 plt.show()
