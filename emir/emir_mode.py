@@ -10,7 +10,7 @@ k_arr = [1e2, 1e3, 1e4, 1e5]
 m_arr = [1e-5, 1e-6, 1e-7, 1e-8]
 fig, (ax1, ax2, ax3) = plt.subplots(3, figsize=(22, 14))
 
-eta = np.logspace(-10, 1, N)
+eta = np.logspace(-7, 1, N)
 # eta = np.logspace(-3, -1, N)
 a = np.vectorize(scale_fac)(eta)
 a = normalize_0(a)
@@ -92,3 +92,5 @@ ax3.set_xlabel(r"$\eta(Gpc)$")
 ax3.set_xscale("log")
 ax3.legend(loc="best")
 
+# plt.savefig("emir/fig5.pdf")
+plt.show()

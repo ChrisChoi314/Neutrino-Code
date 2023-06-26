@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy
 from scipy.integrate import odeint
 
-
+k = 1234 
 c_g = 1  # speed of graviton
 hbar = 6.582119569e-25  # GeV / Hz
 c = 3e8 / 3.086e25  # m * Hz * (1Gpc / 3.086e25m) = Gpc * Hz
@@ -84,6 +84,10 @@ def Hubble(conf_t):
 
 def ang_freq(conf_t):
     return np.sqrt(k**2/scale_fac(conf_t)**2 + M_GW**2)
+
+
+def ang_freq_GW(conf_t):
+    return np.sqrt(k**2/scale_fac(conf_t)**2 )
 
 
 def normalize(array):
