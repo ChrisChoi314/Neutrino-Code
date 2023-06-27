@@ -86,7 +86,7 @@ def ang_freq(conf_t):
     return np.sqrt(k**2/scale_fac(conf_t)**2 + M_GW**2)
 
 
-def ang_freq_GW(conf_t):
+def ang_freq_GR(conf_t):
     return np.sqrt(k**2/scale_fac(conf_t)**2 )
 
 

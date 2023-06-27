@@ -6,6 +6,7 @@ from emir_func import *
 
 N = 2000
 eta = np.logspace(-7,1,N)
+#k = np.logspace(-5,5, N)
 omega_0 = k_0/a_0
 k_prime = a_0*omega_0 # seems a bit circular, but that is how Mukohyama defined it in his paper
 eq_idx = 0
@@ -16,6 +17,11 @@ for i in range(0, len(eta)):
         eta_k = eta[i]
         eq_idx = i
         break
-k = a_0*np.sqrt(omega_0**2-M_GW**2)
+a_eq = scale_fac(eta_rm)
+H_eq = Hubble(eta_rm)
 
+k = a_0*np.sqrt(omega_0**2-M_GW**2)
+omega_k = ang_freq((k/a_0)**2 + M_GW**2)
+a_k = k / np.sqrt(omega_k**2 - M_GW**2)
+a_k_prime_GR = k_prime/ang_freq_GR(eta_rm)    
 S = k_prime* a_k / (k* a_k_prime_GR)*np.sqrt(omega_k*a_k/(omega_0*a_0))
