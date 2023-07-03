@@ -25,6 +25,8 @@ for i in range(0, len(eta)):
 
 time = scipy.integrate.cumtrapz(a, eta, initial=0)
 
+
+'''
 fig, (ax1) = plt.subplots(1)
 
 #ax1.plot(eta, a, label='a')
@@ -58,6 +60,38 @@ ax1.legend(loc='best')
 ax1.set_xscale('log')
 ax1.set_yscale('log')
 ax1.set_title('Scale Factor')
+
+'''
+
+fig, ax2 = plt.subplots(1, figsize=(10, 10))
+
+ax2.plot([0, 10], [0, 10], '--', color='gray')
+
+a = H_0**2*omega_M
+b = H_0**2*omega_R
+c = H_0**2*omega_L
+x = np.linspace(.1,10,10000)
+y = reg_N(a,b,c,x)
+y_min = y.min()
+ax2.plot(x,y, label="regular")
+
+inverse1 = inv_of_H(a,b,c,x, c1=1, c2=1)
+inverse1 = np.where(x >= y_min, inverse1, np.nan)
+ax2.plot(x,inverse1, label="inverse1")
+
+inverse2 = inv_of_H(a,b,c,x, c1=1, c2=-1)
+inverse2 = np.where(x >= y_min, inverse2, np.nan)
+ax2.plot(x,inverse2, label="inverse2")
+
+inverse3 = inv_approx(a,b,x, c1=1)
+inverse3 = np.where(x >= y_min, inverse3, np.nan)
+ax2.plot(x,inverse3, label="inverse3")
+
+inverse4 = inv_approx(a,b,x, c1=-1)
+inverse4 = np.where(x >= y_min, inverse4, np.nan)
+ax2.plot(x,inverse4, label="inverse4")
+
+ax2.legend(loc="best")
 
 # plt.savefig("emir/emir_calc_figs/scale_factor_evolution.pdf")
 plt.show()

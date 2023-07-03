@@ -6,6 +6,7 @@ from emir_func import *
 
 
 fig, (ax4) = plt.subplots(1, figsize=(22, 14))
+N=1000
 eta = np.logspace(-8, .25, N)
 a = np.vectorize(scale_fac)(eta)
 aH = a*np.vectorize(Hubble)(eta)

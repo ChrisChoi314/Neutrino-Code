@@ -31,6 +31,7 @@ print(omega_k**2 - M_GW**2)
 a_k = k / np.sqrt(omega_k**2 - M_GW**2)
 beta = H_eq**2*a_eq**4/(2)
 a_k_prime_GR = (beta+np.sqrt(beta)*np.sqrt(4*a_eq**2*k_prime**2+beta))/(2*a_eq*k_prime**2)
+# a_k_prime_GR = inv_of_H(beta, )
 S = k_prime* a_k / (k* a_k_prime_GR)*np.sqrt(omega_k*a_k/(omega_0*a_0))
 
 fig, (ax1) = plt.subplots(1)
