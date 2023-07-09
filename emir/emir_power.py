@@ -51,8 +51,8 @@ ax1.axvline(x=M_GW*np.sqrt(2), linestyle="dashed", linewidth=1, color = 'purple'
 ax1.axhline(y=1, linestyle="dashed", linewidth=1, label=r"1")
 
 ax1.legend(loc="best")
-#ax1.set_xscale("log")
+ax1.set_xscale("log")
 ax1.set_title("Transfer Function")
 
-# plt.savefig("emir/emir_power_figs/fig1.pdf")
+plt.savefig("emir/emir_power_figs/fig2.pdf")
 plt.show()

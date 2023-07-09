@@ -93,5 +93,5 @@ ax2.plot(x,inverse4, label="inverse4")
 
 ax2.legend(loc="best")
 
-# plt.savefig("emir/emir_calc_figs/scale_factor_evolution.pdf")
+plt.savefig("emir/emir_calc_figs/inverse_of_hubble.pdf")
 plt.show()
