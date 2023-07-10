@@ -37,6 +37,16 @@ a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta))
 # a_k_prime_GR = inv_of_H(beta, )
 S = np.where(omega_0 <= M_GW, 0, k_prime * a_k / (k * a_k_prime_GR) * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
 
+def A(x):
+    return H_
+
+def P_prim(x):
+    return 2*k**3/np.pi**2*A(k)**2
+
+P_prime(k)
+
+S_1 = np.sqrt(P(omega_0)*P_prim(k_prime)/(P_GR(omega_0)*P_prim(k)))
+
 fig, (ax1) = plt.subplots(1)
 ax1.plot(omega_0, S, label=r"$S(\omega_0)$")
 
@@ -54,5 +64,5 @@ ax1.legend(loc="best")
 ax1.set_xscale("log")
 ax1.set_title("Transfer Function")
 
-plt.savefig("emir/emir_power_figs/fig2.pdf")
+#plt.savefig("emir/emir_power_figs/fig2.pdf")
 plt.show()
