@@ -42,6 +42,7 @@ k_c = 1e4*H_0
 eta_rm = .1
 a_c = k_c / M_GW
 a_0 = k_0 / M_GW
+eta_0 = 1.763699706
 eta_rm = 4*np.sqrt(omega_R)/omega_M/H_0
 
 
