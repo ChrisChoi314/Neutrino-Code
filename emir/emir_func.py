@@ -34,15 +34,17 @@ def gpc2hz(gpc): return gpc*(1/m2Gpc)*L/T
 
 
 M_pl = hz2gpc(M_pl)
-M_GW = hz2gpc(MGW)
+M_GW = MGW# hz2gpc(MGW) # in Gpc
 H_0 = 1/2997.9*.7*1000  # Gpc^-1
 H_0 = M_GW/1e10
-k_0 = 1e10*H_0
+k_0 = 1e10*H_0 # in Gpc
 k_c = 1e4*H_0
 eta_rm = .1
 a_c = k_c / M_GW
 a_0 = k_0 / M_GW
 eta_0 = 1.763699706
+
+eta_0 = 1.826e17
 eta_rm = 4*np.sqrt(omega_R)/omega_M/H_0
 
 

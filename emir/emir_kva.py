@@ -34,5 +34,5 @@ ax4.set_yscale('log')
 ax4.legend(loc='best')
 
 
-# plt.savefig("emir/fig5.pdf")
+plt.savefig("emir/emir_kva_figs/fig1.pdf")
 plt.show()
