@@ -50,7 +50,6 @@ y_k_GR_0 = v_GR[k_idx]
 ax1.axvline(x=M_GW, label='k - GR', color='orange')
 y_k_0 = v_MG[k_idx]
 
-S()
 
 P = np.where(omega_0 <= M_GW, 0, omega_0**2 /
              (omega_0**2-M_GW**2)*(2*k**3/np.pi**2))

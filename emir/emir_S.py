@@ -5,13 +5,13 @@ import math
 from scipy.integrate import odeint
 from emir_func import *
 
-N = 2000
+N = 1000
 eta = np.logspace(-7, 1, N)
 # k = np.logspace(-5,5, N)
 omega_0 = k_0 / a_0
-omega_0 = np.logspace(math.log(M_GW, 10) - .04, math.log(M_GW, 10) + .2, N)
 omega_0 = np.linspace(M_GW/2, 2*M_GW, N)
-omega_0 = np.logspace(math.log(M_GW, 10) + .04, math.log(M_GW, 10) + 6, N)
+omega_0 = np.logspace(math.log(M_GW, 10) , math.log(M_GW, 10) + 6, N)
+omega_0 = np.logspace(math.log(M_GW, 10) - .04, math.log(M_GW, 10) + .2, N)
 # omega_0 = np.linspace(M_GW - 10**.04, M_GW + 1.2, N)
 k_prime = (
     a_0 * omega_0
@@ -19,7 +19,7 @@ k_prime = (
 eq_idx = 0
 a = np.vectorize(scale_fac)(eta) 
 # k = np.array([np.inf if o0 <= M_GW else a_0 * np.sqrt(o0**2 - M_GW**2) for o0 in omega_0])
-k = a_0 * np.sqrt(omega_0**2 - M_GW**2)
+k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
 H_square = np.vectorize(Hubble)(eta) ** 2
 ang_freq_square = np.vectorize(ang_freq)(eta,k) ** 2
 for i in range(0, len(eta)):
@@ -28,13 +28,16 @@ for i in range(0, len(eta)):
         eq_idx = i
         break
 
-a_k = scale_fac(eta_k)
-a_k = 6.5e-14
 a_k = solve(k)
 # a_k = np.vectorize(solve_one)(k)
 a_eq = scale_fac(eta_rm)
-a_eq = 1/(3400)
-H_eq = Hubble(eta_rm)
+print(a_eq)
+
+print( 1/(1+3400))
+print(omega_R/omega_M)
+a_eq = .000901
+a_eq = omega_R/omega_M
+H_eq = Hubble_a(a_eq)
 
 k_eq = a_eq*H_eq
 omega_c = np.sqrt((k_c/a_c)**2 +M_GW**2)
@@ -86,7 +89,7 @@ S = np.where(omega_0 <= M_GW, 0, k_prime * a_k / (k * a_k_prime_GR)
              * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
 
 fig, (ax1) = plt.subplots(1)
-ax1.plot(omega_0, S, label=r"$S(\omega_0)$")
+ax1.plot(omega_0, S, label=r"$S(\omega_0)$ completely analytical")
 ax1.plot(omega_0, S_approx, label=r"$S(\omega_0)$ semi analytical")
 
 #ax1.axvline(x=np.sqrt(k_0**2/a_0**2 + M_GW**2), linestyle="dashed", linewidth=1,
@@ -98,8 +101,11 @@ ax1.plot(omega_0, S_approx, label=r"$S(\omega_0)$ semi analytical")
 #print(omega_0[int(N/2):] - k[int(N/2):]/a_0)
 #print(k_prime[int(N/2):] / k[int(N/2):])
 #print((omega_0[int(N/2):] - np.sqrt(omega_0[int(N/2):]**2 - M_GW**2))*a_0)
-# print(a_k / a_k_prime_GR[int(N/2):])
-#print(a_k_prime_GR[int(N/2):] ,  a_k_prime_GR_approx[int(N/2)])
+#print(a_k[int(N/2):] / a_k_prime_GR[int(N/2):])
+
+#print((omega_k[int(N/2):]*a_k[int(N/2):]) / (omega_0[int(N/2):]*a_0))
+#print(a_k_prime_GR[int(N/2):]/   a_k_prime_GR_approx[int(N/2):])
+print(a_k[int(N/2):]/   a_k_prime_GR[int(N/2):])
 ax1.axvline(x=M_GW, linestyle="dashed", linewidth=1,
             color='green', label=r"$M_{GW,0}$")
 ax1.axvline(x=omega_c, linestyle="dashed", linewidth=1,
@@ -109,11 +115,11 @@ ax1.axvline(x=M_GW*np.sqrt(2), linestyle="dashed", linewidth=1,
 ax1.axhline(y=1, linestyle="dashed", linewidth=1, label=r"1")
 
 ax1.legend(loc="best")
-#ax1.set_ylim(0, 20)
+ax1.set_ylim(0, 20)
 ax1.set_xscale("log")
 ax1.set_title("Transfer Function")
 ax1.set_xlabel(r'$\omega_0$ [Hz]')
 ax1.set_ylabel(r'$S(\omega_0)$')
 
-#plt.savefig("emir/emir_S_figs/fig3.pdf")
-# plt.show()
+plt.savefig("emir/emir_S_figs/fig5.pdf")
+plt.show()

@@ -228,24 +228,7 @@ def sympy4(y):
 def solve(k):
     n_threads = 16
     with Pool(n_threads) as p:
-        return np.array(p.map(solve_one, k))
-
-'''
-    import threading
-    threads = []
-    for i in range(n_threads):
-        t = threading.Thread(target=solve_one_thread, args=(k, results, i, n_threads))
-        t.start()
-        threads.append(t)
-    for t in threads:
-        t.join()
-
-    return results
-
-def solve_one_thread(k, results, i, n_threads):
-    for j in range(i, len(k), n_threads):
-        results[i] = solve_one(k[j])
-'''
+        return np.where(k >= 0, p.map(solve_one, k), 0)
 
 def solve_one(k):
     from sympy import nroots, symbols, re, im
