@@ -16,10 +16,6 @@ k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
 a_k = solve(k)  # uses multithreading to run faster
 # a_k = np.vectorize(solve_one)(k)
 
-a_eq = omega_R/omega_M
-H_eq = Hubble_a(a_eq)
-k_eq = a_eq*H_eq
-
 omega_c = np.sqrt((k_c/a_c)**2 + M_GW**2)
 
 # uses the power law approximations from Emir's paper, section 3E

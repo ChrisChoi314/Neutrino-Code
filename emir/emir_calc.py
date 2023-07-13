@@ -30,7 +30,7 @@ time = scipy.integrate.cumtrapz(a, eta, initial=0)
 
 
 
-fig, (ax1) = plt.subplots(1)
+#fig, (ax1) = plt.subplots(1)
 
 #ax1.plot(eta, a, label='a')
 #ax1.axhline(y=(k/M_GW)**2, linestyle="dashed",
@@ -44,6 +44,8 @@ fig, (ax1) = plt.subplots(1)
 #    lambda x: scipy.integrate.quad(scale_fac, 0, x)[0] - 1, 1)
 # print('Roots: ', roots[0])
 
+
+'''
 
 eta = np.logspace(-20, 20, N*1000)
 a_k_1 = omega_M*H_0**2+H_0*np.sqrt(4*omega_R*k**2+(H_0*omega_M)**2)/(2*k**2)
@@ -86,9 +88,9 @@ for k in k_arr:
             #print(a_k)
             eq_idx = i
             break
-    if k == 1e-1:
-        ax1.plot(a, H_square, label = 'H')
-        ax1.plot(a, ang_freq_square, label = 'omega')
+    #if k == 1e-1:
+        #ax1.plot(a, H_square, label = 'H')
+        #ax1.plot(a, ang_freq_square, label = 'omega')
     #print('k = ', k)
     #print('a_k = ', a_k)
     #print('a_k using wolpha= ', inverse_H_omega(k))
@@ -112,11 +114,12 @@ a = np.linspace(.01, lim ,N)
 #print(sympy1(a))
 #print(inverse_H_omega2(a*np.sqrt(H_0**2*(omega_M/a**3 + omega_R/a**4 + omega_L) - M_GW**2)) - a)
 
-ax1.legend(loc='best')
-ax1.set_xscale('log')
-ax1.set_yscale('log')
-ax1.set_title('Scale Factor')
+#ax1.legend(loc='best')
+#ax1.set_xscale('log')
+#ax1.set_yscale('log')
+#ax1.set_title('Scale Factor')
 
+''' 
 
 '''
 ax2.plot([0, 10], [0, 10], '--', color='gray')
@@ -148,5 +151,42 @@ ax2.plot(x,inverse4, label="inverse4")
 ax2.legend(loc="best")
 
 '''
+N = 5000
+
+omega_arr = np.array([5e-7])
+omega_arr = np.array([5e-7, 5e-6, 5e-5, 5e-4, 5e-3, 5e-1])
+k_arr = a_0*np.sqrt(omega_arr**2 - M_GW**2)
+fig, (ax1, ax2) = plt.subplots(2, figsize=(22, 14))
+
+eta = np.logspace(1, 18, N)
+# eta = np.logspace(-3, -1, N)
+a = np.logspace(-25,1, N)
+# a = normalize_0(a)
+v_0 = 1
+v_prime_0 = 0
+eta_0_idx = 0 
+for i in range(len(eta)):
+    if eta[i] >= eta_0:
+        eta_0_idx = i
+        break
+
+for k in k_arr:
+    v, v_prime = odeint(diffeqGR, [v_0, v_prime_0], eta, args=(k,)).T
+    # print(v[eta_0_idx]/a[eta_0_idx])
+    print()
+    ax1.plot(eta, v, label=f"{k}" + r" $Hz$")
+    v, v_prime = odeint(diffeqMG, [v_0, v_prime_0], eta, args=(k,)).T
+    # print(v[eta_0_idx]/a[eta_0_idx])
+    ax2.plot(eta, v, label=f"{k}" + r" $Hz$")
+    a_k = solve_one(k)
+    ax1.axvline(x=give_eta(a_k), label='eta_k', color='orange')
+    ax2.axvline(x=give_eta(a_k), label='eta_k', color='orange')
+
+ax1.legend(loc='best')
+ax1.set_xscale("log")
+
+ax2.legend(loc='best')
+ax2.set_xscale("log")
+
 #plt.savefig("emir/emir_calc_figs/inverse_of_hubble.pdf")
 plt.show()
