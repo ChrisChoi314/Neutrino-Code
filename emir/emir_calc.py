@@ -22,7 +22,9 @@ for i in range(0, len(eta)):
         k_idx = i
         break
 
-#print("Current eta_0 = "+f'{eta[k_idx]}')
+
+print("Current eta_0 = "+f'{eta[k_idx]}')
+print(f'eta_0 analytical = {np.sqrt(4/(H_0**2*omega_M))}')
 
 time = scipy.integrate.cumtrapz(a, eta, initial=0)
 
@@ -87,14 +89,9 @@ for k in k_arr:
     if k == 1e-1:
         ax1.plot(a, H_square, label = 'H')
         ax1.plot(a, ang_freq_square, label = 'omega')
-    print('k = ', k)
-    print('a_k = ', a_k)
-    print('a_k using solve= ', solve(k))
-    print('a_k using sympy1= ', sympy1(k))
-    print('a_k using sympy2= ', sympy2(k))
-    print('a_k using sympy3= ', sympy3(k))
-    print('a_k using sympy4= ', sympy4(k))
-    print('a_k using wolpha= ', inverse_H_omega(k))
+    #print('k = ', k)
+    #print('a_k = ', a_k)
+    #print('a_k using wolpha= ', inverse_H_omega(k))
 
 #print('eta_k = ', eta_k)
 a = np.vectorize(scale_fac)(eta)
@@ -119,6 +116,7 @@ ax1.legend(loc='best')
 ax1.set_xscale('log')
 ax1.set_yscale('log')
 ax1.set_title('Scale Factor')
+
 
 '''
 ax2.plot([0, 10], [0, 10], '--', color='gray')
