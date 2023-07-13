@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from multiprocessing import Pool
 import scipy
 from scipy.integrate import odeint
 
@@ -223,3 +224,34 @@ def sympy4(y):
     sqrt = my_sqrt
     output = (2041241.45231932*sqrt(-y**2 - 9.6e-27*(8.5e-25 - 5.20833333333334e+25*y**4)/(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) + .5*(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3)) + 2886751.34594813*sqrt(-y**2 + 4.8e-27*(8.5e-25 - 5.20833333333334e+25*y**4)/(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) - 0.25*(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) + 4.40908153700972e-41/sqrt(-y**2 - 9.6e-27*(8.5e-25 - 5.20833333333334e+25*y**4)/(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) + .5*(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3))))
     return output.real
+
+def solve(k):
+    n_threads = 16
+    with Pool(n_threads) as p:
+        return np.array(p.map(solve_one, k))
+
+'''
+    import threading
+    threads = []
+    for i in range(n_threads):
+        t = threading.Thread(target=solve_one_thread, args=(k, results, i, n_threads))
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
+
+    return results
+
+def solve_one_thread(k, results, i, n_threads):
+    for j in range(i, len(k), n_threads):
+        results[i] = solve_one(k[j])
+'''
+
+def solve_one(k):
+    from sympy import nroots, symbols, re, im
+    x, y = symbols('x y')
+    sols = list(nroots((y**2*x**2 + x**4*M_GW**2 - H_0**2* (omega_M * x + omega_R + x**4*omega_L)).subs({y: k}), n=100, maxsteps=10000))
+    for sol in sols:
+        if abs(im(sol)) < 1e-20 and re(sol) >= 0:
+            return float(re(sol))
+    raise RuntimeError("no solution")

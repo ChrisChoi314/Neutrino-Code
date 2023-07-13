@@ -89,7 +89,11 @@ for k in k_arr:
         ax1.plot(a, ang_freq_square, label = 'omega')
     print('k = ', k)
     print('a_k = ', a_k)
-    print('a_k using sympy= ', sympy4(k))
+    print('a_k using solve= ', solve(k))
+    print('a_k using sympy1= ', sympy1(k))
+    print('a_k using sympy2= ', sympy2(k))
+    print('a_k using sympy3= ', sympy3(k))
+    print('a_k using sympy4= ', sympy4(k))
     print('a_k using wolpha= ', inverse_H_omega(k))
 
 #print('eta_k = ', eta_k)

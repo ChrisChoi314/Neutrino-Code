@@ -11,15 +11,17 @@ eta = np.logspace(-7, 1, N)
 omega_0 = k_0 / a_0
 omega_0 = np.logspace(math.log(M_GW, 10) - .04, math.log(M_GW, 10) + .2, N)
 omega_0 = np.linspace(M_GW/2, 2*M_GW, N)
-omega_0 = np.logspace(math.log(M_GW, 10) - .04, math.log(M_GW, 10) + 6, N)
+omega_0 = np.logspace(math.log(M_GW, 10) + .04, math.log(M_GW, 10) + 6, N)
 # omega_0 = np.linspace(M_GW - 10**.04, M_GW + 1.2, N)
 k_prime = (
     a_0 * omega_0
 )
 eq_idx = 0
 a = np.vectorize(scale_fac)(eta) 
+# k = np.array([np.inf if o0 <= M_GW else a_0 * np.sqrt(o0**2 - M_GW**2) for o0 in omega_0])
+k = a_0 * np.sqrt(omega_0**2 - M_GW**2)
 H_square = np.vectorize(Hubble)(eta) ** 2
-ang_freq_square = np.vectorize(ang_freq)(eta) ** 2
+ang_freq_square = np.vectorize(ang_freq)(eta,k) ** 2
 for i in range(0, len(eta)):
     if H_square[i] <= ang_freq_square[i]:
         eta_k = eta[i]
@@ -28,6 +30,8 @@ for i in range(0, len(eta)):
 
 a_k = scale_fac(eta_k)
 a_k = 6.5e-14
+a_k = solve(k)
+# a_k = np.vectorize(solve_one)(k)
 a_eq = scale_fac(eta_rm)
 a_eq = 1/(3400)
 H_eq = Hubble(eta_rm)
@@ -65,7 +69,6 @@ def enhance_approx(x):
 
 
 S_approx = np.vectorize(enhance_approx)(omega_0)
-k = a_0 * np.sqrt(omega_0**2 - M_GW**2)
 # a_k = k / np.sqrt(omega_k**2 - M_GW**2)
 omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
 beta = H_eq**2 * a_eq**4 / (2)
@@ -95,7 +98,7 @@ ax1.plot(omega_0, S_approx, label=r"$S(\omega_0)$ semi analytical")
 #print(omega_0[int(N/2):] - k[int(N/2):]/a_0)
 #print(k_prime[int(N/2):] / k[int(N/2):])
 #print((omega_0[int(N/2):] - np.sqrt(omega_0[int(N/2):]**2 - M_GW**2))*a_0)
-print(a_k / a_k_prime_GR[int(N/2):])
+# print(a_k / a_k_prime_GR[int(N/2):])
 #print(a_k_prime_GR[int(N/2):] ,  a_k_prime_GR_approx[int(N/2)])
 ax1.axvline(x=M_GW, linestyle="dashed", linewidth=1,
             color='green', label=r"$M_{GW,0}$")
@@ -113,4 +116,4 @@ ax1.set_xlabel(r'$\omega_0$ [Hz]')
 ax1.set_ylabel(r'$S(\omega_0)$')
 
 #plt.savefig("emir/emir_S_figs/fig3.pdf")
-plt.show()
+# plt.show()
