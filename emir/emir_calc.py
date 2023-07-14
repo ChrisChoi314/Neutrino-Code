@@ -151,8 +151,9 @@ ax2.plot(x,inverse4, label="inverse4")
 ax2.legend(loc="best")
 
 '''
-N = 5000
+N = 100
 
+'''
 omega_arr = np.array([5e-7])
 omega_arr = np.array([5e-7, 5e-6, 5e-5, 5e-4, 5e-3, 5e-1])
 k_arr = a_0*np.sqrt(omega_arr**2 - M_GW**2)
@@ -187,6 +188,48 @@ ax1.set_xscale("log")
 
 ax2.legend(loc='best')
 ax2.set_xscale("log")
+'''
+fig, (ax1) = plt.subplots(1)
+
+# range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
+f_elisa = np.logspace(math.log(1e-5, 10), 0, N)
+# eq (1), in m^2 s^-4 Hz^-1
+S_x_acc = 2.13e-29*(1+(1e-4)/f_elisa)
+S_x_acc = 1.37e-32*(1+(1e-4)/f_elisa)/f_elisa**4
+# eq (3), in m^2 Hz^-1
+S_x_sn = 5.25e-23
+# eq (4), in m^2 Hz^-1
+S_x_omn = 6.28e-23
+# from caption of figure 1, in m
+L = 1e9
+eLisa_sensitivity = np.sqrt((20/3)*(4*S_x_acc+S_x_sn + S_x_omn)/L**2*(1+(f_elisa/(0.41*(c/(2*L))))**2))
+#print(eLisa_sensitivity)
+
+f_ska = np.logspace(-5,0,N)
+eLisa_sensitivity = ska_sensitivity = ((((-17+24)/(math.log(1e-5,10)-math.log(1e-0,10))*(17 + math.log(1e-5,10)))) * np.log(f_ska)**((-17+24)/(math.log(1e-5,10)-math.log(1e-0,10))))
+print(eLisa_sensitivity)
+print((-17+24)/(math.log(1e-5,10)-math.log(1e-0,10)))
+#ax1.plot(f_elisa,eLisa_sensitivity, color='lime')
+ax1.text(1e-4, 1e-20, r"eLISA", fontsize=15)
+
+x = np.linspace(1e-5, 1e0, 100)
+y = 1e-17*x**(1.4)
+
+ax1.loglog(x, y, '-')
+ax1.plot([x[0], x[-1]], [y[0], y[-1]], '--', label='with plot')
+ax1.legend()
+
+
+ax1.set_xlabel(r'f [Hz]')
+ax1.set_ylabel(r'$[P(f)]^{1/2}$')
+
+ax1.set_xlim(1e-5, 1e0)
+ax1.set_ylim(1e-24, 1e-17)
+plt.title('Gravitational Power Spectra')
+
+ax1.legend(loc='best')
+ax1.set_xscale("log")
+ax1.set_yscale("log")
 
 #plt.savefig("emir/emir_calc_figs/inverse_of_hubble.pdf")
 plt.show()

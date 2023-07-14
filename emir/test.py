@@ -175,3 +175,26 @@ def sympy4(y):
     sqrt = my_sqrt
     output = (2041241.45231932*sqrt(-y**2 - 9.6e-27*(8.5e-25 - 5.20833333333334e+25*y**4)/(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) + .5*(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3)) + 2886751.34594813*sqrt(-y**2 + 4.8e-27*(8.5e-25 - 5.20833333333334e+25*y**4)/(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) - 0.25*(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) + 4.40908153700972e-41/sqrt(-y**2 - 9.6e-27*(8.5e-25 - 5.20833333333334e+25*y**4)/(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3) + .5*(1.0*y**6 + 4.896e-50*y**2 + sqrt((1.632e-50 - y**4)**3 + 1.0*(-y**6 - 4.896e-50*y**2 - 7.776e-81)**2) + 7.776e-81)**(1/3))))
     return output.real
+
+
+# from emir_P.py 
+eta = np.logspace(1, 18, N)
+# eta = np.logspace(-3, -1, N)
+a = np.vectorize(scale_fac)(eta)
+# a = normalize_0(a)
+v_0 = 1
+v_prime_0 = 0
+eta_0_idx = 0
+for i in range(len(eta)):
+    if eta[i] >= eta_0:
+        eta_0_idx = i
+        break
+for k in k_arr:
+    v, v_prime = odeint(diffeqGR, [v_0, v_prime_0], eta, args=(k,)).T
+    # print(v[eta_0_idx]/a[eta_0_idx])
+    # ax1.plot(eta, v/a, label=f"{k}" + r" $Hz$")
+    v, v_prime = odeint(diffeqMG, [v_0, v_prime_0], eta, args=(k,)).T
+    # print(v[eta_0_idx]/a[eta_0_idx])
+    # ax2.plot(eta, v/a, label=f"{k}" + r" $Hz$")
+eta = np.logspace(-7, 1, N)
+# k = np.logspace(-5,5, N)

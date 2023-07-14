@@ -16,11 +16,11 @@ k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
 a_k = solve(k)  # uses multithreading to run faster
 # a_k = np.vectorize(solve_one)(k)
 
-omega_c = np.sqrt((k_c/a_c)**2 + M_GW**2)
 
 # uses the power law approximations from Emir's paper, section 3E
 
 
+omega_c = np.sqrt((k_c/a_c)**2 + M_GW**2)
 def enhance_approx(x):
     if x < M_GW:
         return 0.

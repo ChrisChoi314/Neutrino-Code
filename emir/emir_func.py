@@ -6,37 +6,11 @@ from scipy.integrate import odeint
 
 c_g = 1  # speed of graviton
 hbar = 6.582119569e-25  # GeV / Hz
-c = 3e8 / 3.086e25  # m * Hz * (1Gpc / 3.086e25m) = Gpc * Hz
-M_GW = 2e-7*hbar  # Hz * GeV / Hz = GeV
-H_0 = M_GW/1e10  # my val, from page 13 in Emir paper
+c = 3e8  # m * Hz * (1Gpc / 3.086e25m) = Gpc * Hz
 M_pl = 1.22089e19  # GeV
-H_0 = 1/2997.9*.7*1000 * c*hbar  # GeV, Jacob's val
-k_0 = 1e10*H_0
-k_c = 1e4*H_0  # both k_c and k_0 defined in same place in Emir paper
 omega_M = .3
 omega_R = 8.5e-5
 omega_L = .7
-eta_rm = .1
-
-eta_ml = 12.5
-K = 0
-M_pl /= hbar
-
-T = 6.58e-25
-L = 1.97e-16
-m2Gpc = 3.1e25
-
-MGW = 2e-7
-
-
-def hz2gpc(hz): return hz*(T/L)*m2Gpc
-def gpc2hz(gpc): return gpc*(1/m2Gpc)*L/T
-
-
-M_pl = hz2gpc(M_pl)
-M_GW = MGW  # hz2gpc(MGW) # in Gpc
-H_0 = 1/2997.9*.7*1000  # Gpc^-1
-H_0 = M_GW/1e10
 H_0 = 2.27e-18 # in Hz according to astronomy stack exchange
 M_GW = H_0*1e10
 k_0 = 1e10*H_0  # in Gpc
@@ -44,8 +18,10 @@ k_c = 1e4*H_0
 eta_rm = .1
 a_c = k_c / M_GW
 a_0 = k_0 / M_GW
-eta_0 = np.sqrt(4/(H_0**2*omega_M)) # about 
+eta_0 = np.sqrt(4/(H_0**2*omega_M))
 eta_rm = 4*np.sqrt(omega_R)/omega_M/H_0
+eta_ml = 12.5
+K = 0
 
 
 def scale_fac(conf_time):
