@@ -5,7 +5,7 @@ import math
 from scipy.integrate import odeint
 from emir_func import *
 
-N = 1000
+N = 500
 P_prim_k = 2.43e-10
 fig, (ax1) = plt.subplots(1)  # , figsize=(22, 14))
 
@@ -95,8 +95,13 @@ plt.title('Power Spectrum vs k')
 
 # Figure 6 from Emir Paper
 # use omega_0 = np.logspace(math.log(M_GW, 10), -2, N)
-M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
-linestyle_arr = ['dotted', 'dashed', 'solid']
+
+from math import log10 , floor
+def round_it(x, sig):
+    return round(x, sig-int(floor(log10(abs(x))))-1) 
+
+M_arr = [2*np.pi*1e-8, 2*np.pi*3*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
+linestyle_arr = ['dotted', 'dashdot',  'dashed', 'solid']
 idx = 0
 for M_GW in M_arr:
     # a_c = k_c / M_GW
@@ -123,7 +128,7 @@ for M_GW in M_arr:
                  * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
     f = omega_0/(2*np.pi)
     ax1.plot(f, np.sqrt(P_GR*S**2),
-             linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}/2\pi=1e$' + f'{idx-8} Hz')
+             linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}/2\pi=$' + f'{round_it(M_GW/(2*np.pi), 1)} Hz')
     idx += 1
 
 # range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
@@ -148,6 +153,7 @@ stoc_sig = h_0*(f_ss/f_0)**(-2/3)*(1+f_ss/f_0)**gamma
 #ax1.plot(f_ss,stoc_sig, color='red')
 #ax1.text(1e-4, 1e-20, r"Predicted Stochastic Signal", fontsize=15)
 
+# fig 2 of https://arxiv.org/pdf/1001.3161.pdf 
 f_ska = np.logspace(math.log(2.9e-9),-5,N)
 G = 6.67e-11
 M_sun = 1.989e30 
@@ -168,11 +174,41 @@ ska_sen_2 = 10**((-12.5+16)/(math.log(1e-5,10)-math.log(3.1e-9,10))*(-math.log(2
 print(((-12.5+16)/(math.log(1e-5,10)-math.log(3.1e-9,10))*(-math.log(2.9e-9,10)) - 12.5))
 ax1.loglog(f_ska_2, ska_sen_2, color='red')
 # ax1.plot(f_ska,ska_sensitivity, color='red')
+ax1.text(3e-9, 1e-19, r"SKA", fontsize=15)
+
+f_nanoGrav = np.logspace(math.log(2e-10,10), math.log(2e-7,10), N)
+P_R = (f_nanoGrav**(((8.8-6.2)/(8.26-9.3)))*2)
+nanoGrav_sen = np.pi*f_nanoGrav**(3/2)*np.sqrt(12*P_R)
+#ax1.plot(f_nanoGrav,nanoGrav_sen*4.5e-13, color='dodgerblue')
+#print(nanoGrav_sen)
+
+# from figure 8c of this paper https://iopscience.iop.org/article/10.3847/2041-8213/acda88/pdf
+
+point1 = [2e-10, 3e-13]
+point2 = [2e-9, 1.5e-14]
+point3 = [1e-8, 1e-14]
+point4 = [2e-7, 3e-13]
+
+plt.vlines(3e-8, 2.7e-14, 2e-12,colors='dodgerblue')
+
+f_ng_1 = np.linspace(point1[0], point2[0], N)
+ng_sen_1 = 10**((math.log(point2[1],10) - math.log(point1[1],10))/(math.log(point2[0],10)-math.log(point1[0],10))*(-math.log(point1[0],10)) + math.log(point1[1],10))*f_ng_1**((math.log(point2[1],10) - math.log(point1[1],10))/(math.log(point2[0],10)-math.log(point1[0],10)))
+ax1.loglog(f_ng_1, ng_sen_1, color='dodgerblue')
+
+f_ng_2 = np.linspace(point2[0], point3[0], N)
+ng_sen_2 = 10**((math.log(point2[1],10) - math.log(point3[1],10))/(math.log(point2[0],10)-math.log(point3[0],10))*(-math.log(point3[0],10)) + math.log(point3[1],10))*f_ng_2**((math.log(point2[1],10) - math.log(point3[1],10))/(math.log(point2[0],10)-math.log(point3[0],10)))
+ax1.loglog(f_ng_2, ng_sen_2, color='dodgerblue')
+
+f_ng_3 = np.linspace(point3[0], point4[0], N)
+ng_sen_3 = 10**((math.log(point4[1],10) - math.log(point3[1],10))/(math.log(point4[0],10)-math.log(point3[0],10))*(-math.log(point3[0],10)) + math.log(point3[1],10))*f_ng_3**((math.log(point4[1],10) - math.log(point3[1],10))/(math.log(point4[0],10)-math.log(point3[0],10)))
+ax1.loglog(f_ng_3, ng_sen_3, color='dodgerblue')
+
+ax1.text(2e-10, 5e-13, r"NanoGrav", fontsize=15)
 
 ax1.set_xlabel(r'f [Hz]')
-ax1.set_ylabel(r'$[P(f)]^{1/2}$')
+ax1.set_ylabel(r'Characteristic Strain: $h_c$ or $[P(f)]^{1/2}$')#(r'$[P(f)]^{1/2}$')
 
-ax1.set_xlim(1e-9, 1e-1)
+ax1.set_xlim(1e-10, 1e-1)
 ax1.set_ylim(1e-25, 1e-2)
 plt.title('Gravitational Power Spectra')
 
@@ -180,5 +216,5 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("emir/emir_P_figs/fig5.pdf")
+plt.savefig("emir/emir_P_figs/fig6.pdf")
 plt.show()

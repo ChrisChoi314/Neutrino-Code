@@ -4,6 +4,7 @@ import scipy
 import math
 from scipy.integrate import odeint
 from emir_func import *
+from sympy import *
 
 N = 1000
 omega_0 = np.logspace(math.log(M_GW, 10), math.log(M_GW, 10) + 6, N)
