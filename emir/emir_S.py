@@ -3,20 +3,19 @@ import matplotlib.pyplot as plt
 import scipy
 import math
 from scipy.integrate import odeint
-from emir_func import *
 from sympy import *
+
+from emir_func import *
 
 N = 1000
 omega_0 = np.logspace(math.log(M_GW, 10), math.log(M_GW, 10) + 6, N)
-omega_0 = np.logspace(math.log(M_GW, 10) - .04, math.log(M_GW, 10) + .2, N)
+omega_0 = np.logspace(math.log(M_GW, 10) - .1, math.log(M_GW, 10) + .4, N)
 # omega_0 = np.linspace(M_GW - 10**.04, M_GW + 1.2, N)
 k_prime = (
     a_0 * omega_0
 )
 k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
-a_k = solve(k)  # uses multithreading to run faster
-# a_k = np.vectorize(solve_one)(k)
-
+a_k = ak(k)  # uses multithreading to run faster
 
 # uses the power law approximations from Emir's paper, section 3E
 
@@ -48,7 +47,6 @@ def enhance_approx(x):
         output = a_c/a_k_0_GR*np.sqrt(k_c/k_0)*(x**2 / M_GW**2 - 1)**(-1/2)
         return output
 
-
 S_approx = np.vectorize(enhance_approx)(omega_0)
 
 omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
@@ -71,19 +69,27 @@ ax1.plot(omega_0, S, label=r"$S(\omega_0)$ completely analytical")
 ax1.plot(omega_0, S_approx, label=r"$S(\omega_0)$ semi analytical")
 
 ax1.axvline(x=M_GW, linestyle="dashed", linewidth=1,
-            color='green', label=r"$M_{GW,0}$")
-ax1.axvline(x=omega_c, linestyle="dashed", linewidth=1,
-            color='cyan', label=r"$\omega_c$")
-ax1.axvline(x=M_GW*np.sqrt(2), linestyle="dashed", linewidth=1,
-            color='purple', label=r"$\sqrt{2} M_{GW,0}$")
-ax1.axhline(y=1, linestyle="dashed", linewidth=1, label=r"1")
+            color='green')
+# ax1.axvline(x=omega_c, linestyle="dashed", linewidth=1,
+            # color='cyan', label=r"$\omega_c$")
+# ax1.axvline(x=M_GW*np.sqrt(2), linestyle="dashed", linewidth=1,)
+ax1.axhline(y=1, linestyle="dashed", linewidth=1,color='black')
+ax1.vlines(M_GW*np.sqrt(2),0, 1.8,linewidth=1,linestyle="dashed",color='black')
+ax1.text(2.2e-8, -1.5, r'$M_{GW,0}$', fontsize=11,color='black')
+ax1.text(1.64e-8, .65, r'1', fontsize=10,color='black')
+ax1.text(3.15e-8, -1.5, r'$\sqrt{2}M_{GW,0}$', fontsize=11,color='black')
+ax1.text(5.5e-8, -1.5, r'$\omega_0$', fontsize=10,color='black')
 
 ax1.legend(loc="best")
 ax1.set_ylim(0, 20)
-# ax1.set_xscale("log")
-ax1.set_title("Enhancement Factor")
-ax1.set_xlabel(r'$\omega_0$ [Hz]')
+ax1.set_xscale("log")
+# ax1.set_yscale("log")
+ax1.set_title(r'Enhancement Factor')
 ax1.set_ylabel(r'$S(\omega_0)$')
 
-# plt.savefig("emir/emir_S_figs/fig5.pdf")
+ax1.get_xaxis().set_visible(False)
+ax1.set_xlabel(r'$\omega_0$ [Hz]')
+plt.yticks([]) 
+
+plt.savefig("emir/emir_S_figs/fig7.pdf")
 plt.show()

@@ -51,6 +51,13 @@ def conf_time(a):
         return (2*np.sqrt(omega_M*a + omega_R)/(H_0*omega_M)) - 2*np.sqrt(omega_R)/(H_0*omega_M)
 
 
+def integrand(a):
+    return 1 / (a**2*H_0*np.sqrt(omega_M/a**3 + omega_R/a**4 + omega_L))
+
+def conf_time_anal(a):
+    return scipy.integrate.quad(integrand, 0, a)[0]
+
+
 def d_scale_fac_dz(conf_time):
     if conf_time < 1e10:
         return H_0*np.sqrt(omega_R)
@@ -120,10 +127,10 @@ def normalize_0(array):
     return array
 
 
-def solve(k):
+def ak(k):
     n_threads = 16
     with Pool(n_threads) as p:
-        return np.where(k >= 0, p.map(solve_one, k), 1)
+        return np.where(k >= 0, p.map(solve_one, k), 1.)
 
 
 def solve_one(k):

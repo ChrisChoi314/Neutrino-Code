@@ -5,7 +5,11 @@ from scipy.integrate import odeint
 from emir_func import *
 import math
 
-N = 1000
+print(f'Mass in kg: {M_GW*hbar/c**2}')
+print(eta_0)
+print(conf_time(a_0))
+print(conf_time_anal(a_0))
+N = 10
 omega_0 = k_0/a_0
 k = a_0*np.sqrt(omega_0**2-M_GW**2)
 k = 1e-5
@@ -22,9 +26,15 @@ for i in range(0, len(eta)):
         k_idx = i
         break
 
+omega_0 = np.logspace(math.log(M_GW, 10), -2, N)
+omega_0 = np.logspace(math.log(M_GW, 10) - .04, math.log(M_GW, 10) + .2, N)
+k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
+print(k)
+a_k = ak(k)
+print(a_k)
 
-print("Current eta_0 = "+f'{eta[k_idx]}')
-print(f'eta_0 analytical = {np.sqrt(4/(H_0**2*omega_M))}')
+# print("Current eta_0 = "+f'{eta[k_idx]}')
+# print(f'eta_0 analytical = {np.sqrt(4/(H_0**2*omega_M))}')
 
 time = scipy.integrate.cumtrapz(a, eta, initial=0)
 
@@ -254,9 +264,9 @@ def integral(x):
 def conf_time3(a):
     return (2*np.sqrt(omega_M*a + omega_R)/(H_0*omega_M))- 2*np.sqrt(omega_R)/(H_0*omega_M) 
 #ax1.plot(a, np.vectorize(conf_time)(a),"-.", label='approximation method')
-ax1.plot(a, np.vectorize(conf_time)(a),"-.", label='approximation method 2' )
-ax1.plot(a, np.vectorize(conf_time3)(a),"-.", label='approximation method 3' )
-# ax1.plot(a, np.vectorize(integral)(a)[0], label='integral meth 1' )
+ax1.plot(a, np.vectorize(conf_time)(a),"-.", label='approximation method 1' )
+ax1.plot(a, np.vectorize(conf_time3)(a),"-.", label='approximation method 2' )
+ax1.plot(a, np.vectorize(integral)(a)[0], label='integral meth' )
 
 # ax1.plot(eta, np.vectorize(scale_fac)(eta),"-.", label='old')
 # ax1.plot(eta, np.vectorize(scale_fac2)(eta),"-.", label='new')
@@ -269,5 +279,5 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-# plt.savefig("emir/emir_calc_figs/inverse_of_hubble.pdf")
+plt.savefig("emir/emir_calc_figs/fig2.pdf")
 plt.show()
