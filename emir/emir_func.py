@@ -22,7 +22,7 @@ def gpc2hz(gpc): return gpc*(1/m2Gpc)*L/T
 
 
 H_0 = 2.27e-18  # in Hz according to astronomy stack exchange https://astronomy.stackexchange.com/questions/49248/interpretation-of-hubble-constant-in-si-units
-H_0 = hz2gpc(H_0)
+# H_0 = hz2gpc(H_0)
 M_GW = H_0*1e10
 k_0 = 1e10*H_0  # in Gpc
 k_c = 1e4*H_0
@@ -53,9 +53,9 @@ def conf_time(a):
 
 def d_scale_fac_dz(conf_time):
     if conf_time < 1e10:
-        return 0.
+        return H_0*np.sqrt(omega_R)
     else:
-        return 2*H_0**2*.25*omega_M*conf_time
+        #   return 2*H_0**2*.25*omega_M*conf_time
         return 2*H_0**2*.25*omega_M * (conf_time + 2*np.sqrt(omega_R)/(H_0*omega_M))
 
 
