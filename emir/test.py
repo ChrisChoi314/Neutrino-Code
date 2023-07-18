@@ -45,6 +45,13 @@ def sqrt(x):
     return np.sqrt(x + 0.j)
 '''
 
+def scale_fac(conf_time):
+    if conf_time < eta_rm:
+        return H_0*np.sqrt(omega_R)*conf_time
+    else:
+        # return H_0**2*.25*omega_M*conf_time**2
+        return (H_0**2*.25*omega_M) * (((a_eq/(H_0**2*.25*omega_M))**(1/2) - a_eq/(H_0*np.sqrt(omega_R))) + conf_time)**2
+
 def odd_root(x, r):
     # return np.sign(x) * np.abs(x) ** (1 / r)
     return x**(1/r)

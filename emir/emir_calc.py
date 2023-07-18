@@ -207,29 +207,67 @@ eLisa_sensitivity = np.sqrt((20/3)*(4*S_x_acc+S_x_sn + S_x_omn)/L**2*(1+(f_elisa
 
 f_ska = np.logspace(-5,0,N)
 eLisa_sensitivity = ska_sensitivity = ((((-17+24)/(math.log(1e-5,10)-math.log(1e-0,10))*(17 + math.log(1e-5,10)))) * np.log(f_ska)**((-17+24)/(math.log(1e-5,10)-math.log(1e-0,10))))
-print(eLisa_sensitivity)
-print((-17+24)/(math.log(1e-5,10)-math.log(1e-0,10)))
-#ax1.plot(f_elisa,eLisa_sensitivity, color='lime')
-ax1.text(1e-4, 1e-20, r"eLISA", fontsize=15)
+# print(eLisa_sensitivity)
+# print((-17+24)/(math.log(1e-5,10)-math.log(1e-0,10)))
+# ax1.plot(f_elisa,eLisa_sensitivity, color='lime')
+# ax1.text(1e-4, 1e-20, r"eLISA", fontsize=15)
 
 x = np.linspace(1e-5, 1e0, 100)
 y = 1e-17*x**(1.4)
 
-ax1.loglog(x, y, '-')
-ax1.plot([x[0], x[-1]], [y[0], y[-1]], '--', label='with plot')
+# ax1.loglog(x, y, '-')
+# ax1.plot([x[0], x[-1]], [y[0], y[-1]], '--', label='with plot')
 ax1.legend()
 
 
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$[P(f)]^{1/2}$')
 
-ax1.set_xlim(1e-5, 1e0)
-ax1.set_ylim(1e-24, 1e-17)
+# ax1.set_xlim(1e-5, 1e0)
+# ax1.set_ylim(1e-24, 1e-17)
 plt.title('Gravitational Power Spectra')
 
+N = 100
+a = np.logspace(-24,0, N)
+eta = np.logspace(-20,18, N)
+# a = np.linspace(1e-30, 1, N)
+def conf_time(a):
+    if a < scale_fac(eta_rm):
+        return a/(H_0*np.sqrt(omega_R))
+    else:
+        return (a/(H_0**2*.25*omega_M))**(1/2)
+def conf_time2(a):
+    a_lm = 1.465
+    if a < a_eq:
+        return a/(H_0*np.sqrt(omega_R))
+    elif a < a_lm:
+        return (a/(H_0**2*.25*omega_M))**(1/2) - ((a_eq/(H_0**2*.25*omega_M))**(1/2) - a_eq/(H_0*np.sqrt(omega_R)))
+    else:       
+        #return np.arcsinh((1 / ((1/omega_L - 1)**(1/3)))**(-3/2))*2 /(3 * H_0 * np.sqrt(omega_L))
+        #return 1/(a*H_0*np.sqrt(omega_L))
+        return 1.9323e18
+        return (a_lm/(H_0**2*.25*omega_M))**(1/2) - ((a_eq/(H_0**2*.25*omega_M))**(1/2) - a_eq/(H_0*np.sqrt(omega_R)))
+def integrand(a):
+    return 1 / (a**2*H_0*np.sqrt(omega_M/a**3 + omega_R/a**4 + omega_L))
+def integral(x):
+    return scipy.integrate.quad(integrand, 0, x)
+def conf_time3(a):
+    return (2*np.sqrt(omega_M*a + omega_R)/(H_0*omega_M))- 2*np.sqrt(omega_R)/(H_0*omega_M) 
+#ax1.plot(a, np.vectorize(conf_time)(a),"-.", label='approximation method')
+ax1.plot(a, np.vectorize(conf_time)(a),"-.", label='approximation method 2' )
+ax1.plot(a, np.vectorize(conf_time3)(a),"-.", label='approximation method 3' )
+# ax1.plot(a, np.vectorize(integral)(a)[0], label='integral meth 1' )
+
+# ax1.plot(eta, np.vectorize(scale_fac)(eta),"-.", label='old')
+# ax1.plot(eta, np.vectorize(scale_fac2)(eta),"-.", label='new')
+
+# ax1.plot(a, scipy.integrate.cumtrapz(1 / (a**2*H_0*np.sqrt(omega_M/a**3 + omega_R/a**4 + omega_L)), initial=0), "--", label = 'integration method 2' )
+
+# print( np.vectorize(scale_fac)(eta))
+# print( np.vectorize(scale_fac2)(eta))
 ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-#plt.savefig("emir/emir_calc_figs/inverse_of_hubble.pdf")
+# plt.savefig("emir/emir_calc_figs/inverse_of_hubble.pdf")
 plt.show()
