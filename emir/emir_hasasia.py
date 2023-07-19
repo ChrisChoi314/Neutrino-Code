@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import glob
 import pickle
 import json
+import sys
 
 import hasasia.sensitivity as hsen
 import hasasia.sim as hsim
@@ -43,9 +44,12 @@ with open('emir/emir_hasasia/noise_narrowband.json', 'r') as f:
     noise = json.load(f)
 print('cp 0')
 
+'''
+
 ePsrs = []
 print(len(pars), len(tims))
 i = 0
+
 for par, tim in zip(pars, tims):
     if i in range(60, 80):
         ePsr = ePulsar(par, tim,  ephem='DE436')
@@ -53,9 +57,27 @@ for par, tim in zip(pars, tims):
         print('\rPSR {0} complete, idx = {1}'.format(ePsr.name, i), end='', flush=True)
     i+=1
 
+
+
 np.savez("emir/emir_hasasia/ePulsars60_75.npz", data60_75=ePsrs)
 print(ePsrs)
-raise SystemExit
+sys.exit()
+
+'''
+
+outfile1 = np.load('emir/emir_hasasia/ePulsars0_19.npz',allow_pickle=True)
+outfile2 = np.load('emir/emir_hasasia/ePulsars20_39.npz',allow_pickle=True)
+outfile3 = np.load('emir/emir_hasasia/ePulsars40_59.npz',allow_pickle=True)
+outfile4 = np.load('emir/emir_hasasia/ePulsars60_75.npz',allow_pickle=True)
+
+
+ePsrs = list(np.concatenate([outfile1['data0_19'], outfile2['data20_39'], outfile3['data40_59'], outfile4['data60_75']]))
+# ePsrs = list(outfile4['data60_75'])
+
+del outfile1
+del outfile2
+del outfile3
+del outfile4
 
 
 def make_corr(psr):
@@ -81,7 +103,6 @@ def make_corr(psr):
 
     J = sl.block_diag(*j)
     corr = np.diag(sigma_sqr) + J
-    print('this is make_corr')
     return corr
 
 
@@ -98,19 +119,25 @@ rn_psrs = {'B1855+09': [10**-13.7707, 3.6081],
            'J2145-0750': [10**-12.6893, 1.32307],
            }
 
-print('cp 2')
 Tspan = hsen.get_Tspan(ePsrs)
-
-print('cp 3')
 
 fyr = 1/(365.25*24*3600)
 freqs = np.logspace(np.log10(1/(5*Tspan)), np.log10(2e-7), 600)
 
-psrs = []
+# psrs = []
 thin = 10
+i = 60
 
-print('cp 4')
+#for ePsr in ePsrs:
+#    print(ePsr.toaerrs.size, f'this is index {i}')
+#    i +=1
+#sys.exit(0)
+
+'''
 for ePsr in ePsrs:
+    #if i < 56:
+    #    i+=1
+    #    continue
     corr = make_corr(ePsr)[::thin, ::thin]
     plaw = hsen.red_noise_powerlaw(A=9e-16, gamma=13/3., freqs=freqs)
     if ePsr.name in rn_psrs.keys():
@@ -118,28 +145,38 @@ for ePsr in ePsrs:
         plaw += hsen.red_noise_powerlaw(A=Amp, gamma=gam, freqs=freqs)
 
     corr += hsen.corr_from_psd(freqs=freqs, psd=plaw,
-                               toas=ePsr.toas[::thin])
+                            toas=ePsr.toas[::thin])
     psr = hsen.Pulsar(toas=ePsr.toas[::thin],
-                      toaerrs=ePsr.toaerrs[::thin],
-                      phi=ePsr.phi, theta=ePsr.theta,
-                      N=corr, designmatrix=ePsr.Mmat[::thin, :])
+                    toaerrs=ePsr.toaerrs[::thin],
+                    phi=ePsr.phi, theta=ePsr.theta,
+                    N=corr, designmatrix=ePsr.Mmat[::thin, :])
     psr.name = ePsr.name
-    psrs.append(psr)
+    np.savez(f'emir/emir_hasasia/psrs_files/psr{i}.npz', data=[psr])
     del ePsr
-    print('this is the later for loop')
-    print('\rPSR {0} complete'.format(psr.name), end='', flush=True)
-print('cp 5')
+    #print('\rPSR {0} complete, idx {1}'.format(psr.name, i), end='', flush=True)
+    print('PSR {0} complete, idx {1}'.format(psr.name, i))
+
+    i+=1
+
+sys.exit(0)
+'''
 specs = []
-for p in psrs:
+for i in range(0,76):
+# for p in psrs:
+    if i == 37:
+        i += 1
+        continue
+    outfile = np.load(f'emir/emir_hasasia/psrs_files/psr{i}.npz',allow_pickle=True)
+    p = outfile['data'][0]
+    del outfile
     sp = hsen.Spectrum(p, freqs=freqs)
     _ = sp.NcalInv
     specs.append(sp)
-    print('this is the last for loop')
-    print('\rPSR {0} complete'.format(p.name), end='', flush=True)
-print('cp 6')
+    # print('\rPSR {0} complete'.format(p.name), end='', flush=True)
+    print('PSR {0} complete: idx {1}'.format(p.name, i))
 ng11yr_sc = hsen.GWBSensitivityCurve(specs)
 
-# np.savez("emir/emir_hasasia/nanograv_sens.npz", freqs = ng11yr_sc.freqs, sens = ng11yr_sc.h_c)
+np.savez("emir/emir_hasasia/nanograv_sens_full.npz", freqs = ng11yr_sc.freqs, sens = ng11yr_sc.h_c)
 
 plt.loglog(ng11yr_sc.freqs, ng11yr_sc.h_c)
 plt.xlabel('Frequency [Hz]')
@@ -147,5 +184,5 @@ plt.ylabel('Characteristic Strain, $h_c$')
 plt.title('NANOGrav 15-year Data Set Sensitivity Curve')
 plt.grid(which='both')
 # plt.ylim(1e-15,9e-12)
-plt.savefig('emir/emir_hasasia/fig3.pdf')
+plt.savefig('emir/emir_hasasia/fig2.pdf')
 plt.show()
