@@ -109,7 +109,7 @@ for M_GW in M_arr:
 
     omega_0 = np.logspace(math.log(M_GW, 10), math.log(.1*2*np.pi, 10), N)
     k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
-    a_k = solve(k)  # uses multithreading to run faster
+    a_k = ak(k)  # uses multithreading to run faster
     omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
     k_prime = (
         a_0 * omega_0
@@ -176,6 +176,8 @@ ax1.loglog(f_ska_2, ska_sen_2, color='red')
 # ax1.plot(f_ska,ska_sensitivity, color='red')
 ax1.text(3e-9, 1e-19, r"SKA", fontsize=15)
 
+'''
+
 f_nanoGrav = np.logspace(math.log(2e-10,10), math.log(2e-7,10), N)
 P_R = (f_nanoGrav**(((8.8-6.2)/(8.26-9.3)))*2)
 nanoGrav_sen = np.pi*f_nanoGrav**(3/2)*np.sqrt(12*P_R)
@@ -203,10 +205,16 @@ f_ng_3 = np.linspace(point3[0], point4[0], N)
 ng_sen_3 = 10**((math.log(point4[1],10) - math.log(point3[1],10))/(math.log(point4[0],10)-math.log(point3[0],10))*(-math.log(point3[0],10)) + math.log(point3[1],10))*f_ng_3**((math.log(point4[1],10) - math.log(point3[1],10))/(math.log(point4[0],10)-math.log(point3[0],10)))
 ax1.loglog(f_ng_3, ng_sen_3, color='dodgerblue')
 
-ax1.text(2e-10, 5e-13, r"NanoGrav", fontsize=15)
+'''
+outfile = np.load('emir/emir_hasasia/nanograv_sens.npz')
 
+f_nanoGrav = outfile['freqs']
+nanoGrav_sens = outfile['sens']
+ax1.plot(f_nanoGrav,nanoGrav_sens,color='dodgerblue')
+
+ax1.text(2e-10, 5e-13, r"NanoGrav", fontsize=15)
 ax1.set_xlabel(r'f [Hz]')
-ax1.set_ylabel(r'Characteristic Strain: $h_c$ or $[P(f)]^{1/2}$')#(r'$[P(f)]^{1/2}$')
+ax1.set_ylabel(r'Characteristic Strain: $[P(f)]^{1/2}$')#(r'$[P(f)]^{1/2}$')
 
 ax1.set_xlim(1e-10, 1e-1)
 ax1.set_ylim(1e-25, 1e-2)
@@ -216,5 +224,5 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("emir/emir_P_figs/fig6.pdf")
+# plt.savefig("emir/emir_P_figs/fig8.pdf")
 plt.show()
