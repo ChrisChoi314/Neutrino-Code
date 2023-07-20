@@ -6,7 +6,7 @@ import math
 from scipy.integrate import odeint
 from emir_func import *
 
-N = 500
+N = 1000
 P_prim_k = 2.43e-10
 fig, (ax1) = plt.subplots(1)  # , figsize=(22, 14))
 
@@ -102,10 +102,15 @@ def round_it(x, sig):
     return round(x, sig-int(floor(log10(abs(x))))-1)
 
 
-M_arr = [2*np.pi*1e-8, 2*np.pi*3*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
+# M_arr = [2*np.pi*1e-8, 2*np.pi*3*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
 linestyle_arr = ['dotted', 'dashdot',  'dashed', 'solid']
 M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
+M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9]
+M_arr = [k / hbar for k in M_arr]
+M_arr += [2*np.pi*2e-10]
+print(M_arr)
 linestyle_arr = ['dotted', 'dashed', 'solid']
+text = ['Upper bound 2023 NANOGrav','Upper bound 2016 LIGO', 'Non peaked observation']
 idx = 0
 for M_GW in M_arr:
     # a_c = k_c / M_GW
@@ -131,8 +136,10 @@ for M_GW in M_arr:
     S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
                  * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
     f = omega_0/(2*np.pi)
+    # ax1.plot(f, np.sqrt(P_GR*S**2),
+             # linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}/2\pi=$' + f'{round_it(M_GW/(2*np.pi), 1)} Hz')
     ax1.plot(f, np.sqrt(P_GR*S**2),
-             linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}/2\pi=$' + f'{round_it(M_GW/(2*np.pi), 1)} Hz')
+             linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$'+ ' ('+text[idx] +')')
     idx += 1
 
 # range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
@@ -177,8 +184,6 @@ plt.vlines(3.1e-9, 1e-16, 1e-8, colors='red')
 f_ska_2 = np.linspace(3.1e-9, 1e-5, N)
 ska_sen_2 = 10**((-12.5+16)/(math.log(1e-5, 10)-math.log(3.1e-9, 10))*(-math.log(
     2.9e-9, 10)) - 16)*f_ska_2**((-12.5+16)/(math.log(1e-5, 10)-math.log(3.1e-9, 10)))
-print(((-12.5+16)/(math.log(1e-5, 10)-math.log(3.1e-9, 10))
-      * (-math.log(2.9e-9, 10)) - 12.5))
 ax1.loglog(f_ska_2, ska_sen_2, color='red')
 # ax1.plot(f_ska,ska_sensitivity, color='red')
 ax1.text(6e-6, 1e-12, r"SKA", fontsize=15)
@@ -233,5 +238,7 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("emir/emir_P_figs/fig8.pdf")
+ax1.grid(which='both')
+
+# plt.savefig("emir/emir_P_figs/fig9.pdf")
 plt.show()

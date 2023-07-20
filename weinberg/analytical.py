@@ -54,7 +54,8 @@ def f2(chi, chi_prime, u, idx):
 
 
 def func(ran):
-    '''arr = np.zeros(N)
+    '''
+    arr = np.zeros(N)
     max_idx_arr = np.where(x >= u)
     if len(max_idx_arr[0]) == 0:
         max_idx = np.int64(N - 1)
@@ -151,5 +152,5 @@ ran = np.linspace(-100, 100, 1000)
 # ax1.plot(x, Weinberg(0.8026, 0.001, x), label="Weinberg's u>>1 soln", color="red")
 plt.title("Solns. to the Diff eq of Chi(y) for k = k_primordial_GW")
 plt.legend()
-plt.savefig("flat_region.pdf")
+# plt.savefig("flat_region.pdf")
 plt.show()

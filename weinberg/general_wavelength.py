@@ -17,10 +17,13 @@ Q = 1
 print("k used: ", k_GW)
 fv0 = 0.40523
 u0 = 0.00001
-u_max = 800
 N = 1000    
 chi_init = 1
 chi_prime_init = 0
+
+
+u_max = 800
+
 x = np.linspace(u0, u_max, N)
 chi = chi_init
 chi_prime = np.zeros(N)
@@ -72,6 +75,11 @@ def func(u):
             )
     # print(arr)
     return arr
+
+
+
+
+
 
 
 # Runge Kutta 4 for solving the diff eq
@@ -139,5 +147,5 @@ ax1.vlines(
 # ax1.plot(x, Weinberg(0.8026, 0.001, x), label="Weinberg's u>>1 soln", color="red")
 plt.title("Solns. to the Diff eq of Chi(y) for k = k_primordial_GW")
 plt.legend()
-plt.savefig("With_vertical_far.pdf")
+# plt.savefig("With_vertical_far.pdf")
 plt.show()

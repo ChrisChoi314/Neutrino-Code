@@ -13,14 +13,17 @@ tau_m = 20*tau_r  # tau_m will be before matter-rad equality, but after inflatio
 # m = 1*np.sqrt(2) - .1
 # m = 1*np.sqrt(2) + .00001
 tau_end = 5*tau_m
+m = 1*np.sqrt(2) - .1
+m = 1*np.sqrt(2) + .00001
 m = .8
 nu = np.sqrt(9/4 - m**2 / H_inf**2)
 N = 50000
 tau_init = -200*tau_r
 # tau = np.linspace(tau_init, tau_m + tau_r, N)
+# tau = np.linspace(tau_init, -tau_r, N)
 tau = np.linspace(tau_init, tau_end, N)
 N_neg_r = 0
-N_pos_r = 0 
+N_pos_r = 0
 N_m = 0
 for val in tau:
     if val <= -tau_r:
@@ -129,7 +132,7 @@ C_1 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)
 C_2 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /
                                                                                   H_inf * scipy.special.jv(3/4, m/(2*H_inf)) - (1-2*nu)*scipy.special.jv(-1/4, m/(2*H_inf)))
 v_k_reg2 = 2/np.sqrt(np.pi*a_r * tau[N_pos_r:N_m] / tau_r*m)*(C_1*np.cos(a_r * tau[N_pos_r:N_m] / tau_r *
-                                                                   m*tau[N_pos_r:N_m]/2 - np.pi/8) + C_2*np.sin(a_r * tau[N_pos_r:N_m] / tau_r*m*tau[N_pos_r:N_m]/2 + np.pi/8))
+                                                                         m*tau[N_pos_r:N_m]/2 - np.pi/8) + C_2*np.sin(a_r * tau[N_pos_r:N_m] / tau_r*m*tau[N_pos_r:N_m]/2 + np.pi/8))
 
 
 ax1.plot(
@@ -141,7 +144,7 @@ lamb = m*tau_m**2 / (2*H_inf*tau_r**2)
 D_1 = -np.sin(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
 D_2 = np.cos(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
 v_k_reg3 = 2/k*np.sqrt(m*tau_m / (np.pi*H_inf*tau_r**2)) * \
-    (D_1*np.cos(k*tau[N_m:]+ k*(22.903 - 22.8915)) +
+    (D_1*np.cos(k*tau[N_m:] + k*(22.903 - 22.8915)) +
      D_2*np.sin(k*tau[N_m:]+k*(22.903 - 22.8915))) * .998
 ax1.plot(
     tau[N_m:], -1j*v_k_reg3, "--",
@@ -192,15 +195,15 @@ plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
 '''
 
 #   fig, (ax2) = plt.subplots(1)
-#plt.plot(
-#    tau[:N_neg_r], np.vectorize(d_scale_fac_dz)(tau[:N_neg_r]) / np.vectorize(scale_fac)(tau[:N_neg_r]),    
+# plt.plot(
+#    tau[:N_neg_r], np.vectorize(d_scale_fac_dz)(tau[:N_neg_r]) / np.vectorize(scale_fac)(tau[:N_neg_r]),
 #        color="aquamarine"
-#)
-#plt.plot(
-#    tau[N_pos_r:], np.vectorize(d_scale_fac_dz)(tau[N_pos_r:]) / np.vectorize(scale_fac)(tau[N_pos_r:]),    
+# )
+# plt.plot(
+#    tau[N_pos_r:], np.vectorize(d_scale_fac_dz)(tau[N_pos_r:]) / np.vectorize(scale_fac)(tau[N_pos_r:]),
 #        color="aquamarine"
-#)
+# )
 
 plt.legend()
-plt.savefig("fixed-mode-func-k0-1.pdf")
+# plt.savefig("fixed-mode-func-k0-1.pdf")
 plt.show()
