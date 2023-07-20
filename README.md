@@ -5,11 +5,7 @@ Also includes the research done on massive gravity, if gravitons were actually m
 
 DIRECTORY Layout
 ----------------------------
-.
-├── weinberg      # Files and folders related to Weinberg's paper 'Damping of Tensor Modes in Cosmology', https://arxiv.org/pdf/astro-ph/0306304.pdf 
-├── blue          # Files and folders related to Mukohyama's paper 'Blue-tilted primordial gravitational waves from massive gravity', https://arxiv.org/pdf/1808.02381.pdf 
-├── emir          # Files and folders related Emir Gumrukcuoglu's paper 'Gravitational wave signal from massive gravity', https://arxiv.org/pdf/1208.5975.pdf  
-
+```
 .
 ├── blue                            # Files and folders related to Mukohyama's paper 'Blue-tilted primordial gravitational waves from massive gravity', https://arxiv.org/pdf/1808.02381.pdf 
 │   ├── Massive-Calculation.nb      # Mathematica notebook for calculations related to the blue tilted paper
@@ -59,17 +55,18 @@ DIRECTORY Layout
     ├── short_wavelength_figs
     │   └── ...
     └── short_wavelength.py
-
+```
 
 How to run the emir/emir_hasasia.py program:
 
 Download the 15-year NANOGrav data from the website https://zenodo.org/record/7967585 and have the directory structure as follows:
+```
 .
 ├── ...
 ├── Neutrino-Code           # This repository
-│   └──  ...                 # 
+│   └──  ...                 
 └── NANOGrav_15yr_v1.0.1    # The extracted folder for the NANOGrav data
-
+```
 Unless you have a computer that has over 30 GB, you're going to want to download the data in chunks. 
 
 First, run ../../emir -- TBC
