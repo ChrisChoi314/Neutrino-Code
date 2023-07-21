@@ -279,5 +279,7 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
+print(H_0)
+
 plt.savefig("emir/emir_calc_figs/fig2.pdf")
 plt.show()

@@ -22,7 +22,7 @@ def gpc2hz(gpc): return gpc*(1/m2Gpc)*L/T
 
 
 H_0 = 2.27e-18  # in Hz according to astronomy stack exchange https://astronomy.stackexchange.com/questions/49248/interpretation-of-hubble-constant-in-si-units
-# H_0 = hz2gpc(H_0)
+h = H_0/(100 / 3.085678e+19)
 M_GW = H_0*1e10
 k_0 = 1e10*H_0  # in Gpc
 k_c = 1e4*H_0
@@ -149,3 +149,4 @@ def give_eta(a):
         return np.sqrt(4*a / (H_0**2 * omega_M))
     else:
         return a/(H_0*np.sqrt(omega_R))
+
