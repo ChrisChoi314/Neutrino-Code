@@ -91,5 +91,5 @@ ax1.get_xaxis().set_visible(False)
 ax1.set_xlabel(r'$\omega_0$ [Hz]')
 plt.yticks([]) 
 
-plt.savefig("emir/emir_S_figs/fig7.pdf")
+# plt.savefig("emir/emir_S_figs/fig7.pdf")
 plt.show()

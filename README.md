@@ -59,6 +59,12 @@ DIRECTORY Layout
 
 How to run the emir/emir_hasasia.py program:
 
+You can just run emir/emir_P.py to generate the plot; I saved an .npz file that contains the NANOGrav frequencies and sensitivity in np arrays. But if you want to generate the sensitivity curve data yourself, you will need to run both emir/emir_hasasia.py and emir/emir_hasasia_gen_dict.py, perhaps multiple times. 
+
+Firstly, note that some packages necessary for running emir/emir_hasasia.py (specifically enterprise-pulsar) can't be easily downloaded on android or the M1/M2 architecture for Macbooks using pip or conda. 
+
+Otherwise, you may proceed with a Windows, Linux, or intel era Apple device. 
+
 Download the 15-year NANOGrav data from the website https://zenodo.org/record/7967585 and have the directory structure as follows:
 ```
 .
@@ -66,7 +72,10 @@ Download the 15-year NANOGrav data from the website https://zenodo.org/record/79
 ├── Neutrino-Code           # This repository
 │   └──  ...                 
 └── NANOGrav_15yr_v1.0.1    # The extracted folder for the NANOGrav data
+
 ```
+You may download it anywhere else, but make sure to change lines 23, 24, 25 in emir/emir_hasasia.py accordingly. 
+
 Unless you have a computer that has over 30 GB, you're going to want to download the data in chunks. 
 
 First, run ../../emir -- TBC
