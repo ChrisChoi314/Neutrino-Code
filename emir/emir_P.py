@@ -97,26 +97,24 @@ plt.title('Power Spectrum vs k')
 # Figure 6 from Emir Paper
 # use omega_0 = np.logspace(math.log(M_GW, 10), -2, N)
 
-
-def round_it(x, sig):
-    return round(x, sig-int(floor(log10(abs(x))))-1)
-
-
 # M_arr = [2*np.pi*1e-8, 2*np.pi*3*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
 linestyle_arr = ['dotted', 'dashdot',  'dashed', 'solid']
 M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9]
+M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
 M_arr = [k / hbar for k in M_arr]
-M_arr += [2*np.pi*2e-10]
+# M_arr += [2*np.pi*2e-10]
 print(M_arr)
 linestyle_arr = ['dotted', 'dashed', 'solid']
-text = ['Upper bound 2023 NANOGrav','Upper bound 2016 LIGO', 'Non peaked observation']
+text = ['Upper bound 2023 NANOGrav','Upper bound 2016 LIGO', 'GR']
 idx = 0
 for M_GW in M_arr:
     # a_c = k_c / M_GW
     # a_0 = k_0 / M_GW
 
-    omega_0 = np.logspace(math.log(M_GW, 10), math.log(.1*2*np.pi, 10), N)
+    if M_GW == 0: 
+        omega_0 = np.logspace(-10, -1)
+    else: omega_0 = np.logspace(math.log(M_GW, 10), math.log(.1*2*np.pi, 10), N)
     k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
     a_k = ak(k)  # uses multithreading to run faster
     omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
@@ -240,5 +238,5 @@ ax1.set_yscale("log")
 
 ax1.grid(which='both')
 
-# plt.savefig("emir/emir_P_figs/fig9.pdf")
+plt.savefig("emir/emir_P_figs/fig10.pdf")
 plt.show()

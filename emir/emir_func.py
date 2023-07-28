@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from multiprocessing import Pool
 import scipy
 from scipy.integrate import odeint
+from math import log10, floor
 
 c_g = 1  # speed of graviton
 hbar = 6.582119569e-25  # GeV / Hz
@@ -149,4 +150,9 @@ def give_eta(a):
         return np.sqrt(4*a / (H_0**2 * omega_M))
     else:
         return a/(H_0*np.sqrt(omega_R))
+    
 
+def round_it(x, sig):
+    if x == 0:
+        return 0
+    return round(x, sig-int(floor(log10(abs(x))))-1)

@@ -97,47 +97,21 @@ plt.title('Power Spectrum vs k')
 # Figure 6 from Emir Paper
 # use omega_0 = np.logspace(math.log(M_GW, 10), -2, N)
 
-
-def round_it(x, sig):
-    return round(x, sig-int(floor(log10(abs(x))))-1)
-
-
 # M_arr = [2*np.pi*1e-8, 2*np.pi*3*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
-linestyle_arr = ['dotted', 'dashdot',  'dashed', 'solid']
-M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
-M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9]
-M_arr = [k / hbar for k in M_arr]
-# M_arr += [2*np.pi*2e-10]
-linestyle_arr = ['dotted', 'dashed', 'solid']
-text = ['Upper bound 2023 NANOGrav','Upper bound 2016 LIGO']
-idx = 0
-for M_GW in M_arr:
-    omega_0 = np.logspace(math.log(M_GW, 10), math.log(.1*2*np.pi, 10), N)
-    k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
-    a_k = ak(k)  # uses multithreading to run faster
-    omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
-    k_prime = (
-        a_0 * omega_0
-    )
-    a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
-        2 * a_eq * k_prime**2
-    )
 
-    gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
-    P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
-                 (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
-    P = omega_0**2/(omega_0**2-M_GW**2)*(2*k**3/np.pi**2)  # *y_k_0**2
-    gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
-    P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
-    S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
-                 * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
-    f = omega_0/(2*np.pi)
-    # ax1.plot(f, np.sqrt(P_GR*S**2),
-             # linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}/2\pi=$' + f'{round_it(M_GW/(2*np.pi), 1)} Hz')
-   # ax1.plot(f, np.sqrt(P_GR*S**2),
-    #         linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$'+ ' ('+text[idx] +')')
-    ax1.plot(k, 3/128*omega_R*h**2*P*(1/2*(k_eq / k)**2 + 16/9), linestyle=linestyle_arr[idx],color = 'black', label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$'+ ' ('+text[idx] +')' )
-    idx += 1
+
+# this uses https://arxiv.org/pdf/2004.11396.pdf eq (2.1) 
+def h2Omega_GW(P, k):
+    return 3/128*omega_R*h**2*P*(1/2*(k_eq / k)**2 + 16/9)
+
+# this uses https://arxiv.org/pdf/2009.13432.pdf eq (7) and https://www.sciencedirect.com/science/article/pii/S0370157399001027?via%3Dihub eq (11)
+def h2Omega_GW(P, f): 
+    h_c = np.sqrt(2*f*P)
+    return 2*np.pi**2/(3*H_0**2)*f**2*h_c**2
+
+# from Dr. K's paper https://arxiv.org/pdf/2102.12428.pdf eq (7)
+
+
 
 '''
 
@@ -221,7 +195,7 @@ ng_sen_3 = 10**((math.log(point4[1],10) - math.log(point3[1],10))/(math.log(poin
 ax1.loglog(f_ng_3, ng_sen_3, color='dodgerblue')
 
 '''
-'''
+
 
 outfile = np.load('emir/emir_hasasia/nanograv_sens_full.npz')
 
@@ -233,14 +207,45 @@ ax1.text(2e-10, 1e-14, "Nano\nGrav", fontsize=15)
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$[P(f)]^{1/2}$')  # (r'$[P(f)]^{1/2}$')
 
-ax1.set_xlim(1e-10, 1e-1)
-ax1.set_ylim(1e-25, 1e-2)
+linestyle_arr = ['dotted', 'dashdot',  'dashed', 'solid']
+M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
+M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
+M_arr = [k / hbar for k in M_arr]
+linestyle_arr = ['dotted', 'dashed', 'solid']
+text = ['Upper bound 2023 NANOGrav','Upper bound 2016 LIGO', 'GR']
+idx = 0
 
+
+f = f_nanoGrav
+for M_GW in M_arr:
+    # f = np.logspace(-9, -7, N)
+    omega_0 = f*2*np.pi
+    k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
+    a_k = ak(k)  # uses multithreading to run faster
+    omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
+    k_prime = (
+        a_0 * omega_0
+    )
+    a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
+        2 * a_eq * k_prime**2
+    )
+
+    gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
+    P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
+                 (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
+    P = omega_0**2/(omega_0**2-M_GW**2)*(2*k**3/np.pi**2)  # *y_k_0**2
+    gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
+    P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
+    S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
+                 * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
+    ax1.plot(f, h2Omega_GW(P, f), linestyle=linestyle_arr[idx],color = 'black', label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$'+ ' ('+text[idx] +')' )
+    idx += 1
+
+# ax1.set_xlim(1e-10, 1e-1)
+# ax1.set_ylim(1e-25, 1e-2)
+ax1.set_xlim(1e-10,1e-6)
 ax1.grid(which='both')
-
-'''
-
-ax1.set_xlabel(r'k [Hz]')
+ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$\Omega_{GW} h^2$')  
 plt.title('Primordial Gravitational Energy Density')
 
@@ -248,5 +253,5 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("emir/emir_h2omega_figs/fig1.pdf")
+plt.savefig("emir/emir_h2omega_figs/fig5.pdf")
 plt.show()
