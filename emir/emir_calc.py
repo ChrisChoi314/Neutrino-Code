@@ -6,6 +6,7 @@ from emir_func import *
 import math
 
 print(f'Mass in kg: {M_GW*hbar/c**2}')
+print(f'Mass bound in emir in GeV: {1e-5*hbar}')
 print(eta_0)
 print(conf_time(a_0))
 print(conf_time_anal(a_0))

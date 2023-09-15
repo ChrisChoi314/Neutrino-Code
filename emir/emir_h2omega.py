@@ -100,17 +100,24 @@ plt.title('Power Spectrum vs k')
 # M_arr = [2*np.pi*1e-8, 2*np.pi*3*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
 
 
-# this uses https://arxiv.org/pdf/2004.11396.pdf eq (2.1) 
+# this uses https://arxiv.org/pdf/2004.11396.pdf eq (2.1)
 def h2Omega_GW(P, k):
     return 3/128*omega_R*h**2*P*(1/2*(k_eq / k)**2 + 16/9)
 
 # this uses https://arxiv.org/pdf/2009.13432.pdf eq (7) and https://www.sciencedirect.com/science/article/pii/S0370157399001027?via%3Dihub eq (11)
-def h2Omega_GW(P, f): 
+
+
+def h2Omega_GW(P, f):
     h_c = np.sqrt(2*f*P)
-    return 2*np.pi**2/(3*H_0**2)*f**2*h_c**2
+    return h**2*2*np.pi**2/(3*H_0**2)*f**2*h_c**2
 
 # from Dr. K's paper https://arxiv.org/pdf/2102.12428.pdf eq (7)
 
+# from Maggiore vol 2, eq 19.288
+
+
+def h2Omega_GW(P, f):
+    return h**2*np.pi**2/(3*H_0**2)*f**2*P
 
 
 '''
@@ -212,7 +219,7 @@ M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
 M_arr = [k / hbar for k in M_arr]
 linestyle_arr = ['dotted', 'dashed', 'solid']
-text = ['Upper bound 2023 NANOGrav','Upper bound 2016 LIGO', 'GR']
+text = ['Upper bound 2023 NANOGrav', 'Upper bound 2016 LIGO', 'GR']
 idx = 0
 
 
@@ -238,20 +245,21 @@ for M_GW in M_arr:
     P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
     S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
                  * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
-    ax1.plot(f, h2Omega_GW(P, f), linestyle=linestyle_arr[idx],color = 'black', label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$'+ ' ('+text[idx] +')' )
+    ax1.plot(f, h2Omega_GW(P, f), linestyle=linestyle_arr[idx], color='black',
+             label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
     idx += 1
 
 # ax1.set_xlim(1e-10, 1e-1)
 # ax1.set_ylim(1e-25, 1e-2)
-ax1.set_xlim(1e-10,1e-6)
+ax1.set_xlim(1e-10, 1e-6)
 ax1.grid(which='both')
 ax1.set_xlabel(r'f [Hz]')
-ax1.set_ylabel(r'$\Omega_{GW} h^2$')  
+ax1.set_ylabel(r'$\Omega_{GW} h^2$')
 plt.title('Primordial Gravitational Energy Density')
 
 ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("emir/emir_h2omega_figs/fig5.pdf")
+plt.savefig("emir/emir_h2omega_figs/fig6.pdf")
 plt.show()
