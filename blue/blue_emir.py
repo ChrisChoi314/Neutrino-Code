@@ -18,7 +18,8 @@ H_14 = H_inf/1e14
 
 def omega_GW(f, m):
     f_8 = f/(2e8)
-    return 1e-15 * tau_m/tau_r * H_14**(v+1/2)*f_8**(3-2*v)
+    nu = (9/4 - m**2 / H_inf**2)**.5
+    return 1e-15 * tau_m/tau_r * H_14**(nu+1/2)*f_8**(3-2*nu)
 
 
 # range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
@@ -82,16 +83,17 @@ linestyle_arr = ['solid', 'dashed']
 text = ['m = 0.5$H_{inf}$', 'm = 0.8$H_{inf}$']
 idx = 0
 
-f = f_nanoGrav
+f = np.logspace(-18, 5, N)
 for M_GW in M_arr:
-    f = np.logspace(-18, 5, N)
-    v = (9/4-M_GW**2/H_inf**2)**.5
-    ax1.plot(f, omega_GW(f, M_GW), linestyle=linestyle_arr[idx], color='gold',
+    ax1.plot(f, omega_GW(f, M_GW), linestyle=linestyle_arr[idx], color='white',
              label=text[idx])
     idx+=1
 
+tau_m = tau_r
+ax1.plot(f, omega_GW(f, 0), color='purple', label='m = 0')
+
 ax1.set_xlim(1e-18, 1e9)
-ax1.set_ylim(1e-22, 1e1)
+#ax1.set_ylim(1e-22, 1e1)
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$\Omega_{GW}$')
 plt.title('Gravitational Energy Density')
@@ -100,5 +102,5 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("nano/blue_emir_figs/fig0.pdf")
+plt.savefig("blue/blue_emir_figs/fig0.pdf")
 plt.show()
