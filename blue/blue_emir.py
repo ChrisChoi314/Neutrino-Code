@@ -15,12 +15,53 @@ H_inf = 1e8
 tau_r = 1
 tau_m = 1e10
 H_14 = H_inf/1e14
+a_r = 1/(tau_r*H_inf)
 
-def omega_GW(f, m):
+def scale_fac(conf_time):
+    if conf_time < tau_r:
+        return -1/(H_inf*conf_time)
+    else:
+        return a_r * conf_time / tau_r
+def omega_GW_approx(f, m):
     f_8 = f/(2e8)
     nu = (9/4 - m**2 / H_inf**2)**.5
     return 1e-15 * tau_m/tau_r * H_14**(nu+1/2)*f_8**(3-2*nu)
 
+def P_massless(f,m,tau):
+    k = f*2*np.pi
+    nu = (9/4 - m**2 / H_inf**2)**.5
+    C_1 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /H_inf * scipy.special.jv(-3/4, m/(2*H_inf)) + (1-2*nu)*scipy.special.jv(1/4, m/(2*H_inf)))
+    C_2 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /H_inf * scipy.special.jv(3/4, m/(2*H_inf)) - (1-2*nu)*scipy.special.jv(-1/4, m/(2*H_inf)))
+    lamb = m*tau_m**2 / (2*H_inf*tau_r**2)
+    D_1 = -np.sin(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
+    D_2 = np.cos(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
+    v_k_reg3 = 2/k*np.sqrt(m*tau_m / (np.pi*H_inf*tau_r**2)) * (D_1*np.cos(k*tau) + D_2*np.sin(k*tau))
+
+    return 4*k**3*np.abs(v_k_reg3)**2/(np.pi**2*M_pl**2*(tau/(tau_r**2*H_inf))**2)
+
+
+def omega_GW_massless(f, m, tau):
+    k = f*2*np.pi
+    nu = (9/4 - m**2 / H_inf**2)**.5
+    return np.pi**2/(3*H_0**2)*f**2*P_massless(f,m,tau)
+
+def omega_GW_massive(f,m,tau):
+    k = f*2*np.pi
+    nu = (9/4 - m**2 / H_inf**2)**.5
+    return tau_m/tau_r*(k*tau_r)**(3-2*nu)*omega_GW_massless1(f,m,tau)
+
+def P_T(f, tau):
+    k = f*2*np.pi
+    return k**2/(2*np.pi*scale_fac(tau)**2*M_pl**2)*(-k*tau)*np.abs(scipy.special.hankel1(3/2, tau))
+
+def omega_GW_massless1(f,m,tau):
+    k = f*2*np.pi
+    return np.pi**2/(3*H_0**2)*f**2*P_T(f, tau)
+
+def omega_GW_massive1(f,m,tau):
+    k = f*2*np.pi
+    nu = (9/4 - m**2 / H_inf**2)**.5
+    return tau_m/tau_r*(k*tau_r)**(3-2*nu)*omega_GW_massless1(f,m,tau)
 
 # range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
 f_elisa = np.logspace(math.log(3e-5, 10), -1, N)
@@ -85,15 +126,15 @@ idx = 0
 
 f = np.logspace(-18, 5, N)
 for M_GW in M_arr:
-    ax1.plot(f, omega_GW(f, M_GW), linestyle=linestyle_arr[idx], color='white',
-             label=text[idx])
+    ax1.plot(f, omega_GW_approx(f, M_GW ), linestyle=linestyle_arr[idx], color='white',
+             label=text[idx]+ ', approximation')
+    
+    ax1.plot(f, omega_GW_massless(f, M_GW,tau_m*1e10), linestyle=linestyle_arr[idx], color='cyan',
+             label=text[idx] + ', exact expression')
     idx+=1
 
-tau_m = tau_r
-ax1.plot(f, omega_GW(f, 0), color='purple', label='m = 0')
-
 ax1.set_xlim(1e-18, 1e9)
-#ax1.set_ylim(1e-22, 1e1)
+ax1.set_ylim(1e-22, 1e1)
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$\Omega_{GW}$')
 plt.title('Gravitational Energy Density')
@@ -102,5 +143,5 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("blue/blue_emir_figs/fig0.pdf")
+plt.savefig("blue/blue_emir_figs/fig3.pdf")
 plt.show()
