@@ -9,13 +9,15 @@ from blue_func import *
 N = 1000
 
 plt.style.use('dark_background')
-fig, (ax1) = plt.subplots(1)  # , figsize=(22, 14))
+fig, (ax1) = plt.subplots(1, figsize=(22, 14))
 
 H_inf = 1e8
 tau_r = 1
 tau_m = 1e10
 H_14 = H_inf/1e14
 a_r = 1/(tau_r*H_inf)
+print(1e-15*H_14**2)
+print(3/16/np.pi**3/M_pl**2*H_inf**2)
 
 def scale_fac(conf_time):
     if conf_time < tau_r:
@@ -25,6 +27,8 @@ def scale_fac(conf_time):
 def omega_GW_approx(f, m):
     f_8 = f/(2e8)
     nu = (9/4 - m**2 / H_inf**2)**.5
+    k = f*2*np.pi
+    return tau_m/tau_r*(k*tau_r)**(3-2*nu)*1e-15 *H_14**2
     return 1e-15 * tau_m/tau_r * H_14**(nu+1/2)*f_8**(3-2*nu)
 
 def P_massless(f,m,tau):
@@ -52,16 +56,32 @@ def omega_GW_massive(f,m,tau):
 
 def P_T(f, tau):
     k = f*2*np.pi
-    return k**2/(2*np.pi*scale_fac(tau)**2*M_pl**2)*(-k*tau)*np.abs(scipy.special.hankel1(3/2, tau))
+    # print(scipy.special.hankel1(3/2, tau))
+    return k**2/(2*np.pi*scale_fac(tau)**2*(M_pl/1e14)**2)*(k*tau)*np.abs(scipy.special.hankel1(3/2, tau))**2
 
 def omega_GW_massless1(f,m,tau):
     k = f*2*np.pi
-    return np.pi**2/(3*H_0**2)*f**2*P_T(f, tau)
+    return np.pi**2/(3*(H_0*1e14)**2)*f**2*P_massless(f, m, tau)
 
 def omega_GW_massive1(f,m,tau):
     k = f*2*np.pi
     nu = (9/4 - m**2 / H_inf**2)**.5
     return tau_m/tau_r*(k*tau_r)**(3-2*nu)*omega_GW_massless1(f,m,tau)
+
+def omega_GW_massless2(f,tau):
+    k = f*2*np.pi
+    return (np.pi**2/(3*(H_0/1e14)**2)*f**2*P_T(f,tau))
+
+def omega_GW_massless3(f,tau):
+    k = f*2*np.pi
+    H_k = k/scale_fac(tau)
+    return (np.pi**2/(3*(H_0)**2)*(f)**2*8*(H_k**2)/(M_pl**2 * (2*np.pi)**2))
+
+
+def omega_GW_massive2(f,m,tau):
+    k = f*2*np.pi
+    nu = (9/4 - m**2 / H_inf**2)**.5
+    return tau_m/tau_r*(k*tau_r)**(3-2*nu)*(np.pi**2/(3*H_0**2)*f**2*P_T(f,tau_r ))
 
 # range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
 f_elisa = np.logspace(math.log(3e-5, 10), -1, N)
@@ -114,7 +134,7 @@ ax1.text(2e-10, 1e-14, "Nano\nGrav", fontsize=15)
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$[P(f)]^{1/2}$')  # (r'$[P(f)]^{1/2}$')
 
-linestyle_arr = ['dotted', 'dashdot',  'dashed', 'solid']
+linestyle_arr = ['dotted', 'dashdot', 'dashed', 'solid']
 M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
 M_arr = [k / hbar for k in M_arr]
@@ -129,12 +149,21 @@ for M_GW in M_arr:
     ax1.plot(f, omega_GW_approx(f, M_GW ), linestyle=linestyle_arr[idx], color='white',
              label=text[idx]+ ', approximation')
     
-    ax1.plot(f, omega_GW_massless(f, M_GW,tau_m*1e10), linestyle=linestyle_arr[idx], color='cyan',
-             label=text[idx] + ', exact expression')
+    ax1.plot(f, omega_GW_massive2(f, M_GW,tau_r), linestyle=linestyle_arr[idx], color='cyan',
+             label=text[idx] + ', exact expression v2')
+    ax1.plot(f, omega_GW_massive1(f*2e8, M_GW,tau_r), linestyle=linestyle_arr[idx], color='green',
+             label=text[idx] + ', exact expression v1')
     idx+=1
-
+num = 1e-8*tau_r/tau_m
+ax1.plot(f, omega_GW_massless2(f, num*tau_m), color='red',
+             label='massless')
+ax1.plot(f, omega_GW_massless3(f, tau_m), color='magenta',
+             label='massless v3')
+#print(omega_GW_massless2(f, num*tau_m))
+ax1.plot(f, f*0+1e-15*H_14**2, color='yellow',
+             label=r'$\Omega_{GW,0}^{massless}$')
 ax1.set_xlim(1e-18, 1e9)
-ax1.set_ylim(1e-22, 1e1)
+#ax1.set_ylim(1e-22, 1e1)
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$\Omega_{GW}$')
 plt.title('Gravitational Energy Density')
@@ -143,5 +172,5 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("blue/blue_emir_figs/fig3.pdf")
+plt.savefig("blue/blue_emir_figs/fig1.pdf")
 plt.show()

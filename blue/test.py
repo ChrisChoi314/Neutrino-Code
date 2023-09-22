@@ -6,6 +6,8 @@ import math
 from scipy.integrate import odeint
 from blue_func import *
 
+print('Value of tau_present/tau_radiation = ' + str(eta_0 / eta_rm))
+
 N = 5000
 
 plt.style.use('dark_background')
