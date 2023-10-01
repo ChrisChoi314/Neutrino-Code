@@ -18,7 +18,7 @@ eta = np.logspace(10,17, N)
 a = np.vectorize(scale_fac)(eta)
 v_0 = 1
 v_prime_0 = 0
-i = 0   
+i = 0
 for k in k_arr:
     v, v_prime = odeint(diffeqGR, [v_0, v_prime_0], eta, args=(k,)).T
     # ax1.plot(eta, v/a, label=f"{k}" + " Hz")

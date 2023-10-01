@@ -6,10 +6,10 @@ import math
 from scipy.integrate import odeint
 from blue_func import *
 
-N = 1000
+N = 300
 
 plt.style.use('dark_background')
-fig, (ax1) = plt.subplots(1, figsize=(22, 14))
+fig, (ax1) = plt.subplots(1, figsize=(10, 8))
 
 H_inf = 1e8
 tau_r = 1
@@ -28,7 +28,7 @@ def omega_GW_approx(f, m):
     f_8 = f/(2e8)
     nu = (9/4 - m**2 / H_inf**2)**.5
     k = f*2*np.pi
-    return tau_m/tau_r*(k*tau_r)**(3-2*nu)*1e-15 *H_14**2
+    #return tau_m/tau_r*(k*tau_r)**(3-2*nu)*1e-15 *H_14**2
     return 1e-15 * tau_m/tau_r * H_14**(nu+1/2)*f_8**(3-2*nu)
 
 def P_massless(f,m,tau):
@@ -82,6 +82,15 @@ def omega_GW_massive2(f,m,tau):
     k = f*2*np.pi
     nu = (9/4 - m**2 / H_inf**2)**.5
     return tau_m/tau_r*(k*tau_r)**(3-2*nu)*(np.pi**2/(3*H_0**2)*f**2*P_T(f,tau_r ))
+
+v_0 = 1
+v_prime_0 = 0
+eta = np.logspace(1,math.log(conf_time(a_0), 10), N*10)
+
+def emir_omega(f):
+    k = f*2*np.pi
+    v, v_prime = odeint(diffeqMode, [v_0, v_prime_0], eta, args=(k,0)).T
+    return k**3 / (12*np.pi*Hubble(eta_0)**2)*(v_prime[-1]**2 + (k**2/a_0**2 + M_GW**2)*v[-1]**2)
 
 # range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
 f_elisa = np.logspace(math.log(3e-5, 10), -1, N)
@@ -140,37 +149,52 @@ M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
 M_arr = [k / hbar for k in M_arr]
 
 M_arr = [.5*H_inf, .8*H_inf]
+tau_m_r_ratio = [1e10, 1e15, 1e21]
+colors = ['white', 'cyan', 'yellow']
 linestyle_arr = ['solid', 'dashed']
 text = ['m = 0.5$H_{inf}$', 'm = 0.8$H_{inf}$']
+text2 =  ['1e10', '1e15', '1e21']
 idx = 0
+idx2 = 0
+f = np.logspace(-17, 5, N)
+for ratio in tau_m_r_ratio: 
+    for M_GW in M_arr:
+        tau_m = tau_m_r_ratio[idx2]
+        ax1.plot(f, omega_GW_approx(f, M_GW ), linestyle=linestyle_arr[idx], color=colors[idx2],label=text[idx]+ r', $\frac{\tau_m}{\tau_r} = $'+text2[idx2])
+        #ax1.plot(f, omega_GW_massive2(f, M_GW,tau_r), linestyle=linestyle_arr[idx], color='cyan',
+        #        label=text[idx] + ', exact expression v2')
+        #ax1.plot(f, omega_GW_massive1(f*2e8, M_GW,tau_r), linestyle=linestyle_arr[idx], color='green',
+        #        label=text[idx] + ', exact expression v1')
+        idx+=1
+    idx =0
+    idx2+=1
 
-f = np.logspace(-18, 5, N)
-for M_GW in M_arr:
-    ax1.plot(f, omega_GW_approx(f, M_GW ), linestyle=linestyle_arr[idx], color='white',
-             label=text[idx]+ ', approximation')
-    
-    ax1.plot(f, omega_GW_massive2(f, M_GW,tau_r), linestyle=linestyle_arr[idx], color='cyan',
-             label=text[idx] + ', exact expression v2')
-    ax1.plot(f, omega_GW_massive1(f*2e8, M_GW,tau_r), linestyle=linestyle_arr[idx], color='green',
-             label=text[idx] + ', exact expression v1')
-    idx+=1
+ax1.plot(f, np.vectorize(emir_omega)(f), color = 'orange',label="Emir's MG model")
 num = 1e-8*tau_r/tau_m
-ax1.plot(f, omega_GW_massless2(f, num*tau_m), color='red',
-             label='massless')
-ax1.plot(f, omega_GW_massless3(f, tau_m), color='magenta',
-             label='massless v3')
+#ax1.plot(f, omega_GW_massless2(f, num*tau_m), color='red',
+#             label='massless')
+#ax1.plot(f, omega_GW_massless3(f, tau_m), color='magenta',
+#             label='massless v3')
 #print(omega_GW_massless2(f, num*tau_m))
-ax1.plot(f, f*0+1e-15*H_14**2, color='yellow',
-             label=r'$\Omega_{GW,0}^{massless}$')
-ax1.set_xlim(1e-18, 1e9)
-#ax1.set_ylim(1e-22, 1e1)
+#ax1.plot(f, f*0+1e-15*H_14**2, color='yellow',
+#             label=r'$\Omega_{GW,0}^{massless}$')
+BBN_f = np.logspace(-10, 9)
+ax1.fill_between(BBN_f, BBN_f*0+1e-5, BBN_f *0 + 1e1, alpha=0.5, color='orchid')
+ax1.text(1e-12, 1e-5, r"BBN", fontsize=15)
+
+CMB_f = np.logspace(-17, -16)
+ax1.fill_between(CMB_f, CMB_f*0+1e-15, CMB_f *0 + 1e1, alpha=0.5, color='blue')
+ax1.text(5e-16, 1e-13, r"CMB", fontsize=15)
+
+ax1.set_xlim(1e-17, 1e9)
+ax1.set_ylim(1e-22, 1e1)
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$\Omega_{GW}$')
 plt.title('Gravitational Energy Density')
 
-ax1.legend(loc='best')
+ax1.legend(loc='upper right')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("blue/blue_emir_figs/fig1.pdf")
+plt.savefig("blue/blue_emir_figs/fig3.pdf")
 plt.show()
