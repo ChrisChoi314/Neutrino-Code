@@ -44,7 +44,6 @@ def scale_fac(conf_time):
     else:
         return (((H_0*omega_M)/2 * (conf_time + 2*np.sqrt(omega_R)/(H_0*omega_M)))**2 - omega_R) / omega_M
 
-
 def conf_time(a):
     if a < 1e-8:
         return a/(H_0*np.sqrt(omega_R))

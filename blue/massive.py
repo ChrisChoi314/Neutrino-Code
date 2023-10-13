@@ -205,5 +205,5 @@ plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
 # )
 
 plt.legend()
-# plt.savefig("fixed-mode-func-k0-1.pdf")
+plt.savefig("fig1.pdf")
 plt.show()
