@@ -3,10 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 import math
+import mpmath
 from scipy.integrate import odeint
 from blue_func import *
 
-N = 100000
+N = 10
 
 # plt.style.use('dark_background')
 
@@ -56,9 +57,7 @@ def omega_GW_massless(f, m, tau):
     return np.pi**2/(3*H_0**2)*f**3*P_massless(f, m, tau)
 
 def P_T(f, tau):
-    k = f*2*np.pi
-    # print(scipy.special.hankel1(3/2, tau))
-    return k**2/(2*np.pi*scale_fac(tau)**2*(M_pl)**2)*(k*tau)*np.abs(scipy.special.hankel1(3/2, tau))**2
+    return (f*2*np.pi)**2/(2*np.pi*scale_fac(tau)**2*(M_pl)**2)*(f*2*np.pi*tau)*np.abs(scipy.special.hankel1(3/2, tau))**2
 
 
 
@@ -73,18 +72,25 @@ tau_end = 5*tau_m
 m = .8*H_inf
 nu = np.sqrt(9/4 - m**2 / H_inf**2)
 tau_init = -200*tau_r
-tau = np.linspace(tau_init, tau_end, N)
-
+tau = np.logspace(1,19, N)
 
 fig, (ax1) = plt.subplots(1)  # , figsize=(22, 14))
-   
+
+print(tau)
+print(np.vectorize(mpmath.hankel1)(3/2, tau))
+#print(np.abs(scipy.special.hankel1(3/2, tau))**2)
+
+ax1.plot(tau, np.abs(scipy.special.hankel1(3/2, tau))**2)
+
 tau_arr = [tau_m*5*(eta_0/eta_rm), eta_0, eta_0/1e5]
+# print(tau_arr)
 for t in tau_arr:
     '''ax1.plot(
         f, P_massless(f,m,t), "--",
         label=f'blue: tau = {t}',alpha=.7
     )'''
-    print(P_T(f,t))
+    # print(np.abs(scipy.special.hankel1(3/2, t))**2)
+    # print((f*2*np.pi)**2/(2*np.pi*scale_fac(t)**2*(M_pl)**2)*(f*2*np.pi*t))
     ax1.plot(
         f, P_T(f,t) , label=f'nick: tau = {t}', alpha=.7
     )
