@@ -6,7 +6,7 @@ import math
 from scipy.integrate import odeint
 from blue_func import *
 
-N = 300
+N = 20000    
 
 plt.style.use('dark_background')
 fig, (ax1) = plt.subplots(1, figsize=(10, 8))
@@ -156,10 +156,23 @@ text = ['m = 0.5$H_{inf}$', 'm = 0.8$H_{inf}$']
 text2 =  ['1e10', '1e15', '1e21']
 idx = 0
 idx2 = 0
-f = np.logspace(-17, 5, N)
+f = np.logspace(-19, 5, N)
+
+def average(arr):
+    outpt = []
+    i= 2
+    for i in range(len(arr)-1):
+        outpt += [(arr[i-2]+arr[i-1]+ arr[i])/3]
+    outpt += [arr[len(arr) -1]]
+    return outpt
+
+
 for ratio in tau_m_r_ratio: 
     for M_GW in M_arr:
         tau_m = tau_m_r_ratio[idx2]
+        ax1.plot(f, average(average(average(omega_GW_massless(f, M_arr[0], eta_0*5e0 )))), label='averaged', alpha = 1)
+        ax1.plot(f, average(average(average(omega_GW_massless(f, M_arr[1], eta_0*2e1 )))), label='averaged',linestyle='dashed', alpha = 1)
+
         ax1.plot(f, omega_GW_approx(f, M_GW ), linestyle=linestyle_arr[idx], color=colors[idx2],label=text[idx]+ r', $\frac{\tau_m}{\tau_r} = $'+text2[idx2])
         #ax1.plot(f, omega_GW_massive2(f, M_GW,tau_r), linestyle=linestyle_arr[idx], color='cyan',
         #        label=text[idx] + ', exact expression v2')
@@ -169,7 +182,7 @@ for ratio in tau_m_r_ratio:
     idx =0
     idx2+=1
 
-ax1.plot(f, np.vectorize(emir_omega)(f), color = 'orange',label="Emir's MG model")
+# ax1.plot(f, np.vectorize(emir_omega)(f), color = 'orange',label="Emir's MG model")
 num = 1e-8*tau_r/tau_m
 #ax1.plot(f, omega_GW_massless2(f, num*tau_m), color='red',
 #             label='massless')
@@ -186,7 +199,7 @@ CMB_f = np.logspace(-17, -16)
 ax1.fill_between(CMB_f, CMB_f*0+1e-15, CMB_f *0 + 1e1, alpha=0.5, color='blue')
 ax1.text(5e-16, 1e-13, r"CMB", fontsize=15)
 
-ax1.set_xlim(1e-17, 1e9)
+ax1.set_xlim(1e-19, 1e9)
 ax1.set_ylim(1e-22, 1e1)
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$\Omega_{GW}$')
@@ -196,5 +209,5 @@ ax1.legend(loc='upper right')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("blue/blue_emir_figs/fig3.pdf")
+# plt.savefig("blue/blue_emir_figs/fig3.pdf")
 plt.show()

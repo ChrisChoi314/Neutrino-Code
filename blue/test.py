@@ -7,7 +7,7 @@ import mpmath
 from scipy.integrate import odeint
 from blue_func import *
 
-N = 10
+N = 1000
 
 # plt.style.use('dark_background')
 
@@ -22,6 +22,13 @@ k_arr = [1e-18, 1e-3, 1e9]
 colors = ['red', 'green', 'blue']
 k_arr = [1e-18]
 idx = 0
+
+def abs_sq_h1(n, t):
+    return float(mpmath.fabs(mpmath.hankel1(n, t))**2)
+
+
+def jv(n, t):
+    return float(mpmath.jv(n, t))
 
 
 def v_k_3(f, m, tau):
@@ -39,9 +46,10 @@ def v_k_3(f, m, tau):
 def P_massless(f, m, tau):
     k = f*2*np.pi
     nu = (9/4 - m**2 / H_inf**2)**.5
+    print(scipy.special.gamma(nu), scipy.special.jv(-3/4,m/(2*H_inf)),scipy.special.jv(1/4, m/(2*H_inf)) )
     C_1 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m / H_inf * scipy.special.jv(-3/4, m/(2*H_inf)) + (1-2*nu)*scipy.special.jv(1/4, m/(2*H_inf)))
     C_2 = -1j*np.sqrt(np.pi)*2**(-7/2 + nu)*(k*tau_r)**(-nu)*scipy.special.gamma(nu)*(2*m /H_inf * scipy.special.jv(3/4, m/(2*H_inf)) - (1-2*nu)*scipy.special.jv(-1/4, m/(2*H_inf)))
-    lamb = m*tau_m**2 / (2*H_inf*tau_r**2)
+    lamb = m*tau_m**2 / (2*H_inf*tau_r**2)  
     D_1 = -np.sin(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) -
                             C_1*np.sin(lamb-np.pi/8))
     D_2 = np.cos(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
@@ -56,15 +64,13 @@ def omega_GW_massless(f, m, tau):
     nu = (9/4 - m**2 / H_inf**2)**.5
     return np.pi**2/(3*H_0**2)*f**3*P_massless(f, m, tau)
 
-def P_T(f, tau):
-    return (f*2*np.pi)**2/(2*np.pi*scale_fac(tau)**2*(M_pl)**2)*(f*2*np.pi*tau)*np.abs(scipy.special.hankel1(3/2, tau))**2
 
+def P_T(f, tau):
+    return (f*2*np.pi)**2/(2*np.pi*scale_fac(tau)**2*(M_pl)**2)*(f*2*np.pi*tau)*abs_sq_h1(3/2,tau)
 
 
 m_arr = [.5*H_inf, .8*H_inf]
 f = np.logspace(-18, 5, N)
-
-
 
 a_r = 1/(tau_r*H_inf)
 k = 1
@@ -76,24 +82,36 @@ tau = np.logspace(1,19, N)
 
 fig, (ax1) = plt.subplots(1)  # , figsize=(22, 14))
 
-print(tau)
-print(np.vectorize(mpmath.hankel1)(3/2, tau))
-#print(np.abs(scipy.special.hankel1(3/2, tau))**2)
-
-ax1.plot(tau, np.abs(scipy.special.hankel1(3/2, tau))**2)
-
 tau_arr = [tau_m*5*(eta_0/eta_rm), eta_0, eta_0/1e5]
-# print(tau_arr)
 for t in tau_arr:
     '''ax1.plot(
         f, P_massless(f,m,t), "--",
         label=f'blue: tau = {t}',alpha=.7
-    )'''
-    # print(np.abs(scipy.special.hankel1(3/2, t))**2)
-    # print((f*2*np.pi)**2/(2*np.pi*scale_fac(t)**2*(M_pl)**2)*(f*2*np.pi*t))
-    ax1.plot(
-        f, P_T(f,t) , label=f'nick: tau = {t}', alpha=.7
     )
+    ax1.plot(
+        f, P_T(f,t) , label=f'nick: tau = {t}'
+    )
+
+    ax1.plot(
+        f, P_massless(f, m ,t) , label=f'blue: tau = {t}', linestyle = 'dashed' 
+    )
+
+    ax1.plot(
+        f, omega_GW_massless(f, m ,t) , label=f'omega: tau = {t}', linestyle = '-.' 
+    )
+    '''
+ax1.plot(f, omega_GW_massless(f, m, tau_m*5*(eta_0/eta_rm)), label=f'omega', alpha = .6)
+
+def average(arr):
+    outpt = []
+    i= 2
+    for i in range(len(arr)-1):
+        outpt += [(arr[i-2]+arr[i-1]+ arr[i])/3]
+    outpt += [arr[len(arr) -1]]
+    return outpt
+
+
+ax1.plot(f, average(average(omega_GW_massless(f, m, tau_m*5*(eta_0/eta_rm)))), label='averaged', alpha = 1)
 
 
 ax1.set_xscale("log")
