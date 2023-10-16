@@ -22,7 +22,7 @@ def hz2gpc(hz): return hz*(T/L)*m2Gpc
 def gpc2hz(gpc): return gpc*(1/m2Gpc)*L/T
 
 
-H_0 = 2.27e-18  # in Hz according to astronomy stack exchange https://astronomy.stackexchange.com/questions/49248/interpretation-of-hubble-constant-in-si-units
+H_0 = 2.18e-18  # in Hz according to astronomy stack exchange https://astronomy.stackexchange.com/questions/49248/interpretation-of-hubble-constant-in-si-units
 h = H_0/(100 / 3.085678e+19)
 M_GW = H_0*1e10
 k_0 = 1e10*H_0  # in Gpc
