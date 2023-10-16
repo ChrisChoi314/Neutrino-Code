@@ -135,9 +135,22 @@ ax1.text(6e-6, 1e-12, r"SKA", fontsize=15)
 
 outfile = np.load('emir/emir_hasasia/nanograv_sens_full.npz')
 
+freq_NG = []
+omega_GW_NG = []
+idx = 0
+with open('blue/data/sensitivity_curves_NG15yr_fullPTA.txt', 'r') as file:
+    for line in file:
+        if idx != 0:
+            elems = line.strip("\r\n").split(",")
+            freq_NG.append(float(elems[0]))
+            omega_GW_NG.append(float(elems[3]))
+        idx +=1
+
+
 f_nanoGrav = outfile['freqs']
 nanoGrav_sens = outfile['sens']
 ax1.plot(f_nanoGrav, nanoGrav_sens, color='dodgerblue')
+ax1.plot(freq_NG, omega_GW_NG, color='blue')
 
 ax1.text(2e-10, 1e-14, "Nano\nGrav", fontsize=15)
 ax1.set_xlabel(r'f [Hz]')
