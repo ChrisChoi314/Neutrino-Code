@@ -42,8 +42,10 @@ PL_30freq = powerlaw(freqs_30, log10_A=chain_DE438_30f_vary[:,1][DE438_vary_30cR
 PL_30freq_num = int(chain_DE438_30f_vary[:,0].shape[0] / 5.)
 PL_30freq_array = np.zeros((PL_30freq_num,30))
 gamma_arr = np.zeros((PL_30freq_num,30))
+A_arr = np.zeros((PL_30freq_num,30))
 for ii in range(PL_30freq_num):
     PL_30freq_array[ii] = np.log10(powerlaw(freqs_30,log10_A=chain_DE438_30f_vary[ii*5,1], gamma=chain_DE438_30f_vary[ii*5,0]))
+    A_arr[ii] = chain_DE438_30f_vary[ii*5,1]
     gamma_arr[ii] = chain_DE438_30f_vary[ii*5,0]
 
 
@@ -92,37 +94,39 @@ for pc in vpt['bodies']:
 # plt.scatter(log10_f, log10_A, color='orange')
 N = 1000
 f = np.linspace(-9, math.log(3e-7,10),N)
+f= np.logspace(-8.6, -7,30)
+freqs_30 = f
 #A = np.vectorize(powerlaw_vec)(f,f[0], np.linspace(-18,-11,N ), np.ones(N)*gamma_12p5)
 
 # plt.plot(f, A, color='orange')
+def omega_GW(f,A_cp,gamma):
+    return 2*np.pi**2*(10**A_cp)**2*f_yr**2/(3*H_0**2)*(f/f_yr)**(5-gamma)
 
-def omega_GW(f,A_cp):
-    return 2*np.pi**2*(10**(A_cp))**2*f_yr**2/(3*H_0**2)*(f/f_yr)**(5-gamma_arr.mean(axis=0))
-print(gamma_arr.mean(axis=0))
-f_test = freqs_30[0]
-A_test = PL_30freq_array.mean(axis=0)[0] - PL_30freq_array.std(axis=0)[0]
-print(f_test, A_test)
-print(omega_GW(f_test, A_test))
+OMG_30freq_array = np.zeros((PL_30freq_num,30))
+for ii in range(PL_30freq_num):
+    OMG_30freq_array[ii] = np.log10(h**2*omega_GW(freqs_30,A_arr[ii],gamma_arr[ii]))
+
 
 #trying to reproduce Emma's fig 1 in https://arxiv.org/pdf/2102.12428.pdf
-plt.fill_between(freqs_30, h**2*omega_GW(freqs_30,PL_30freq_array.mean(axis=0) - PL_30freq_array.std(axis=0)), h**2*omega_GW(freqs_30,PL_30freq_array.mean(axis=0) + PL_30freq_array.std(axis=0)), color='pink', alpha=0.75)
+plt.fill_between(np.log10(freqs_30), OMG_30freq_array.mean(axis=0) - 2*OMG_30freq_array.std(axis=0), OMG_30freq_array.mean(axis=0) + 2*OMG_30freq_array.std(axis=0), color='pink', alpha=0.75)
+# plt.fill_between(freqs_30, h**2*(omega_GW(freqs_30,PL_30freq_array.mean(axis=0), gamma_arr.mean(axis=0))-  omega_GW(freqs_30,PL_30freq_array.std(axis=0),gamma_arr.std(axis=0))), h**2*(omega_GW(freqs_30,PL_30freq_array.mean(axis=0),gamma_arr.mean(axis=0)) + omega_GW(freqs_30,PL_30freq_array.std(axis=0), gamma_arr.std(axis=0))), color='red', alpha=0.75)
 
 # plt.fill_between(freqs_30, PL_30freq_array.mean(axis=0) - PL_30freq_array.std(axis=0), PL_30freq_array.mean(axis=0) + PL_30freq_array.std(axis=0), color='pink', alpha=0.55)
 
 # Plot Labels
 plt.title('NANOGrav 12.5 2$\sigma$ contours, Emma fig 1')
-plt.xlabel(r'Frequency [Hz]')
+plt.xlabel(r'log$_{10}(f$ Hz)')
 
 # plt.ylabel(r'log$_{10}(A_{GWB})$') 
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$') 
 # plt.ylim(-9, -6)
 
-# plt.ylim(-13, -4)
-plt.xlim(10**-9,10**-7)
+plt.ylim(-13, -3)
+#plt.xlim(10**-9,10**-7)
 #plt.ylim(10**-12,10**-4)
 
-plt.xscale("log")
-plt.yscale("log")
+#plt.xscale("log")
+#plt.yscale("log")
 
 plt.savefig('blue/nanograv_masses_figs/fig1.pdf')
 plt.show()
