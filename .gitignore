@@ -1,5 +1,7 @@
 *.npz
 !emir/emir_hasasia/nanograv_sens_full.npz
 
+*.gz
+
 __pycache__
 
