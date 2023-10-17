@@ -5,5 +5,7 @@
 
 *.h5
 
+blue/data/12p5yr_DE438_model2a_cRN30freq_gammaVary_chain/*
+
 __pycache__
 
