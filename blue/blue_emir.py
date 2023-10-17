@@ -221,6 +221,6 @@ plt.title('Gravitational Energy Density')
 ax1.legend(loc='upper right')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
-
-# plt.savefig("blue/blue_emir_figs/fig3.pdf")
+ax1.legend().set_visible(False)
+plt.savefig("blue/blue_emir_figs/fig4.pdf")
 plt.show()

@@ -253,6 +253,6 @@ ax2.axvline(x=tau_m, color='blue', linestyle='dashed',
 
 
 '''
-# plt.savefig("blue/test_figs/fig1.pdf")
+plt.savefig("blue/test_figs/fig0.pdf")
 plt.legend()
 plt.show()
