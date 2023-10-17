@@ -188,8 +188,6 @@ ax1.text(6e-6, 1e-12, r"SKA", fontsize=15)
 
 # This commented-out portion was written to crudely get the sensitivity curve in the 15 year NANOGrav paper into my figure. It is 4 lines drawn on the log log plot that roughly align with the actual curve
 '''
-
-
 f_nanoGrav = np.logspace(math.log(2e-10,10), math.log(2e-7,10), N)
 P_R = (f_nanoGrav**(((8.8-6.2)/(8.26-9.3)))*2)
 nanoGrav_sen = np.pi*f_nanoGrav**(3/2)*np.sqrt(12*P_R)
