@@ -253,6 +253,17 @@ ax2.axvline(x=tau_m, color='blue', linestyle='dashed',
 
 
 '''
-plt.savefig("blue/test_figs/fig0.pdf")
+
+plt.clf() 
+f = np.logspace(-19, -11, N)
+M_GW = 1e-8
+plt.plot(f, ak(f))
+plt.xlabel('Frequency [Hz]')
+plt.ylabel(r'$a_k$')
+plt.title(r"$a_k(f)$ from Emir's paper")
+plt.xscale("log")
+plt.yscale("log") 
+
+plt.savefig("blue/test_figs/fig1.pdf")
 plt.legend()
 plt.show()
