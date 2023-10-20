@@ -4,7 +4,7 @@ import enterprise.constants as const
 import math
 import h5py
 import json
-from blue_func import *
+from nanograv_func import *
 
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 

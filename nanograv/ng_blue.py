@@ -140,18 +140,6 @@ num_freqs = 30
 freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
 with open('blue/data/v1p1_all_dict.json', 'r') as f:
     data = json.load(f)
-# This was a failed attempt to try to get the log10_A and gamma from the blue/data/v1p1_all_dict.json file
-'''
-A_arr,gamma_arr = []
-i = 0
-for key in data.keys():
-    if 'log10_A' in key:
-        A_arr.append(data[key])
-    if 'gamma' in key:
-        gamma_arr.append(data[key])
-A_arr = np.array(A_arr)
-gamma_arr = np.array(gamma_arr)
-'''
 
 # Finally realized the log10_A and gamma I needed were in https://zenodo.org/records/8067506 in the
 # NANOGrav15yr_CW-Analysis_v1.0.0/15yr_cw_analysis-main/data/15yr_quickCW_detection.h5 file.
@@ -192,124 +180,57 @@ def omega_GW_approx(f, m):
     return 1e-15 * tau_m/tau_r * H_14**(nu+1/2)*f_8**(3-2*nu)
 
 
-tau_m = 1e21*tau_r
 M_GW = .3*H_inf
+tau_m = 1e21*tau_r
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
+         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
+
+tau_m = 1e20*tau_r
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
+         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{20}$')
+tau_m = 1e19*tau_r
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
+         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{19}$')
+tau_m = 1e22*tau_r
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
+         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{22}$')
+         
+
+M_GW = H_inf
+
+tau_m = 1e21*tau_r
 plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
          label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
-M_GW = .6*H_inf
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
-         color='blue', label=r'MG - Blue-tilted, $m = 0.6H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
+
+tau_m = 1e20*tau_r
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
+         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{20}$')
+tau_m = 1e19*tau_r
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
+         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{19}$')
+tau_m = 1e22*tau_r
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
+         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{22}$')
+         
+#plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
+#         color='blue', label=r'MG - Blue-tilted, $m = 0.6H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
+
+
 
 M_GW = 0
 tau_m = 1
-print(np.log10(h**2*omega_GW_approx(freqs, M_GW)))
+print(h)
 plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
          color='green', label=r'GR - Blue-tilted')
 
-BBN_f = np.logspace(-10, 9)
-plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+1e-5),
+BBN_f = np.logspace(np.log10(f_BBN), 9)
+plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+h**2*1e-5),
                  np.log10(BBN_f * 0 + 1e1), alpha=0.5, color='orchid')
-plt.text(-8.5, -5.4, r"BBN", fontsize=15)
+plt.text(-8.5, -5.4, r"BBN Bound", fontsize=15)
 
 
-P_prim_k = 2.43e-10
-beta = H_eq**2 * a_eq**4 / (2)
-
-
-def A(k):
-    return np.where(k >= 0., np.sqrt(P_prim_k*np.pi**2/(2*k**3)), -1.)
-
-
-def enhance_approx(x):
-    if x < M_GW:
-        return 0.
-    val = a_0 * np.sqrt(x**2 - M_GW**2)
-    if k_0 < val:
-        return 1.
-    elif val <= k_0 and val >= k_c:
-        if val >= k_eq:
-            output = (x**2 / M_GW**2 - 1)**(-3/4)
-            return output
-        if val < k_eq and k_eq < k_0:
-            output = k_eq/(np.sqrt(2)*k_0)(x**2 / M_GW**2 - 1)**(-5/4)
-            return output
-        if k_eq > k_0:
-            output = (x**2 / M_GW**2 - 1)**(-5/4)
-            return output
-    elif val <= k_c:
-        beta = H_eq**2 * a_eq**4 / (2)
-        a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
-            2. * a_eq * k_0**2
-        )
-        if abs(x**2 / M_GW**2 - 1) < 1e-25:
-            return 0.
-        output = a_c/a_k_0_GR*np.sqrt(k_c/k_0)*(x**2 / M_GW**2 - 1)**(-1/2)
-        return output
-
-
-linestyle_arr = ['solid', 'dashed', 'solid']
-M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
-M_arr = [k / hbar for k in M_arr]
-linestyle_arr = ['solid', 'dashed', 'solid']
-color_arr = ['red', 'red', 'green']
-text = ['2023 NANOGrav', '2016 LIGO', 'GR']
-idx = 0
-N = 2000
-
-
-for M_GW in M_arr:
-    if M_GW == 0:
-        omega_0 = np.logspace(-10, -1, N)
-        omega_0 = np.logspace(-20, -1, N)
-    else:
-        omega_0 = np.logspace(math.log(M_GW, 10), math.log(.1*2*np.pi, 10), N)
-    k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
-    a_k = ak(k)  # uses multithreading to run faster
-    omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
-    k_prime = (
-        a_0 * omega_0
-    )
-    a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
-        2 * a_eq * k_prime**2
-    )
-
-    gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
-    P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
-                 (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
-    P = omega_0**2/(omega_0**2-M_GW**2)*(2*k**3/np.pi**2)  # *y_k_0**2
-    gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
-    P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
-    S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
-                 * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
-    f = omega_0/(2*np.pi)
-    
-    if idx < 2:
-        plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2 / (4*f))/(3*H_0**2)*(f)**(3)),
-                 linestyle=linestyle_arr[idx], color='red', label=r'MG - Emir Gum. - $M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
-    else:
-        plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
-                 * (f)**(3)), color='green', label=r'GR - Emir Gum.')
-    N_extra = math.log(10)
-    a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
-        2 * a_eq * k_0**2
-    )
-    S_peak_anal = a_c*np.sqrt(k_0*k_c)/(a_k_0_GR*a_0*H_0)*np.e**N_extra
-    S_peak_num = 0
-    var = False
-    for s in S:
-        # print(s)
-        if s != np.nan and var == False:
-            S_peak_num = s
-            var = True
-    print(f'M_GW (in Hz): {M_GW}, S_peak_anal: {S_peak_anal}, S_peak_num: {S_peak_num}')
-    T_obs = 15/f_yr
-    if M_GW == 0:
-        break
-        #print(f'amplif factor: {1e-4*(T_obs/H_0)**(-4)*(M_GW/H_0)**(-3) *math.log(np.e**N_extra*M_GW/H_0)}')
-    idx += 1
-    
 # Plot Labels
-plt.title(r'NANOGrav 15-year data and Mu')
+plt.title(r'NANOGrav 15-year data and Time Dependent model')
 # plt.xlabel('$\gamma_{cp}$')
 plt.xlabel(r'log$_{10}(f$ Hz)')
 
@@ -317,12 +238,14 @@ plt.xlabel(r'log$_{10}(f$ Hz)')
 # plt.ylabel('log$_{10}A_{cp}$')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 
-#plt.xlim(-9, -7)
-#plt.ylim(-24, -4)
+plt.xlim(-9, -7)
+plt.ylim(-24, -4)
 
 # plt.xscale("log")
 # plt.yscale("log")
 plt.legend(loc='lower left')
 
-plt.savefig('blue/nanograv_masses_figs/fig8.pdf')
+
+
+plt.savefig('nanograv/ng_blue_figs/fig0.pdf')
 plt.show()

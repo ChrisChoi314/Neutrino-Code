@@ -37,6 +37,8 @@ eta_ml = 12.5
 K = 0
 a_lm = .754
 
+f_BBN = 1.5e-11 # in Hz according to 22.290 of maggiore vol 2 
+
 
 def scale_fac(conf_time):
     if conf_time < 1e10:

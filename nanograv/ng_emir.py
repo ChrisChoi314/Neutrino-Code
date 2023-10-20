@@ -140,18 +140,7 @@ num_freqs = 30
 freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
 with open('blue/data/v1p1_all_dict.json', 'r') as f:
     data = json.load(f)
-# This was a failed attempt to try to get the log10_A and gamma from the blue/data/v1p1_all_dict.json file
-'''
-A_arr,gamma_arr = []
-i = 0
-for key in data.keys():
-    if 'log10_A' in key:
-        A_arr.append(data[key])
-    if 'gamma' in key:
-        gamma_arr.append(data[key])
-A_arr = np.array(A_arr)
-gamma_arr = np.array(gamma_arr)
-'''
+
 
 # Finally realized the log10_A and gamma I needed were in https://zenodo.org/records/8067506 in the
 # NANOGrav15yr_CW-Analysis_v1.0.0/15yr_cw_analysis-main/data/15yr_quickCW_detection.h5 file.
@@ -171,40 +160,6 @@ plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OM
 
 plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
          linestyle='dashed', color='black', label='SMBHB spectrum')
-# plt.fill_between(np.log10(freqs), PL.mean(axis=0) - 2*PL.std(axis=0), PL.mean(axis=0) + 2*PL.std(axis=0), color='orange', alpha=0.5)
-# plt.fill_between(log10_f, omega_15.mean(axis=0) - 2*omega_15.std(axis=0), omega_15.mean(axis=0) + 2*omega_15.std(axis=0), color='orange', alpha=0.75)
-
-# trying to reproduce Emma's fig 1 in https://arxiv.org/pdf/2102.12428.pdf
-# plt.fill_between(np.log10(freqs_30), OMG_30freq_array.mean(axis=0) - 2*OMG_30freq_array.std(axis=0), OMG_30freq_array.mean(axis=0) + 2*OMG_30freq_array.std(axis=0), color='pink', alpha=0.75)
-# plt.fill_between(freqs_30, PL_30freq_array.mean(axis=0) - PL_30freq_array.std(axis=0), PL_30freq_array.mean(axis=0) + PL_30freq_array.std(axis=0), color='pink', alpha=0.55)
-
-# This part plots the energy densities of massive gravitons from the Mukohyama Blue tilted paper https://arxiv.org/pdf/1808.02381.pdf
-H_inf = 1e8
-tau_r = 1
-tau_m = 1e10
-H_14 = H_inf/1e14
-a_r = 1/(tau_r*H_inf)
-
-
-def omega_GW_approx(f, m):
-    f_8 = f/(2e8)
-    nu = (9/4 - m**2 / H_inf**2)**.5
-    return 1e-15 * tau_m/tau_r * H_14**(nu+1/2)*f_8**(3-2*nu)
-
-
-tau_m = 1e21*tau_r
-M_GW = .3*H_inf
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
-M_GW = .6*H_inf
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
-         color='blue', label=r'MG - Blue-tilted, $m = 0.6H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
-
-M_GW = 0
-tau_m = 1
-print(np.log10(h**2*omega_GW_approx(freqs, M_GW)))
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
-         color='green', label=r'GR - Blue-tilted')
 
 BBN_f = np.logspace(-10, 9)
 plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+1e-5),
@@ -309,7 +264,7 @@ for M_GW in M_arr:
     idx += 1
     
 # Plot Labels
-plt.title(r'NANOGrav 15-year data and Mu')
+plt.title(r'NANOGrav 15-year data and Emir Model')
 # plt.xlabel('$\gamma_{cp}$')
 plt.xlabel(r'log$_{10}(f$ Hz)')
 
@@ -324,5 +279,5 @@ plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 # plt.yscale("log")
 plt.legend(loc='lower left')
 
-plt.savefig('blue/nanograv_masses_figs/fig8.pdf')
+plt.savefig('nanograv/ng_emir_figs/fig0.pdf')
 plt.show()
