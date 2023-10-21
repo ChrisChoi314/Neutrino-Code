@@ -5,12 +5,12 @@ Also includes the research done on massive gravity, if gravitons were actually m
 
 DIRECTORY Layout
 ----------------------------
-blue - Files and folders related to Mukohyama's paper 'Blue-tilted primordial gravitational waves from massive gravity', https://arxiv.org/pdf/1808.02381.pdf 
+blue - Files and folders related to Tomohiro Fujita et al.'s paper 'Blue-tilted primordial gravitational waves from massive gravity', https://arxiv.org/pdf/1808.02381.pdf 
 
-emir - Files and folders related Emir Gumrukcuoglu's paper 'Gravitational wave signal from massive gravity', https://arxiv.org/pdf/1208.5975.pdf  
+emir - Files and folders related Emir Gumrukcuoglu et al. 's paper 'Gravitational wave signal from massive gravity', https://arxiv.org/pdf/1208.5975.pdf  
 
 nanograv - Files and folders related to the NANOGrav 15 year data set and generation of plots for my paper (which will be out soon)
 
-weinberg - Files and folders related to Weinberg's paper 'Damping of Tensor Modes in Cosmology', https://arxiv.org/pdf/astro-ph/0306304.pdf 
+weinberg - Files and folders related to Steven Weinberg's paper 'Damping of Tensor Modes in Cosmology', https://arxiv.org/pdf/astro-ph/0306304.pdf 
 
 Go to each individual directory for more README's tailored to those directories. 
