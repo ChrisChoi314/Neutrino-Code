@@ -268,7 +268,7 @@ for M_GW in M_arr:
     
 
 plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
-         color='salmon', label=r'GR - Blue-tilted paper$')
+         color='salmon', label=r'GR - Blue-tilted paper')
 # Plot Labels
 plt.title(r'NANOGrav 15-year data and Emir Model')
 plt.title('Massless Energy Densities from the 2 papers')
