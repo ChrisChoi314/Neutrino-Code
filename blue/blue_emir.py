@@ -133,11 +133,11 @@ ax1.fill_between(CMB_f, CMB_f*0+h**2*1e-15, CMB_f *
                  0 + 1e1, alpha=0.5, color='blue')
 ax1.text(5e-16, 1e-13, r"CMB", fontsize=15)
 
-ax1.plot(f, omega_GW_massless(f), color='green')
-ax1.text(f[-1], omega_GW_massless(f)[-1], r"GR", fontsize=15)
+#ax1.plot(f, omega_GW_massless(f), color='green')
+#ax1.text(f[-1], omega_GW_massless(f)[-1], r"GR", fontsize=15)
 
 ax1.set_xlim(3e-19, 1e9)
-#ax1.set_ylim(3e-22, 1e1)
+ax1.set_ylim(3e-22, 1e1)
 
 # ax1.set_xlim(np.log10(2e-19), 9)
 # ax1.set_ylim(np.log10(1e-22), 1)
@@ -151,5 +151,5 @@ ax1.legend(loc='upper right')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 ax1.legend().set_visible(False)
-plt.savefig("blue/blue_emir_figs/fig5.pdf")
+# plt.savefig("blue/blue_emir_figs/fig5.pdf")
 plt.show()

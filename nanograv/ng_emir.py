@@ -5,6 +5,7 @@ import math
 import h5py
 import json
 from nanograv_func import *
+from blue_func import *
 
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 
@@ -77,7 +78,7 @@ thin = 1
 
 
 # Make Figure
-# plt.style.use('dark_background')
+plt.style.use('dark_background')
 plt.figure(figsize=(12, 5))
 
 # Left Hand Side Of Plot
@@ -155,16 +156,17 @@ PL = np.zeros((67, num_freqs))
 for ii in range(67):
     OMG_15[ii] = np.log10(h**2*omega_GW(freqs, A_arr[ii], gamma_arr[ii]))
     PL[ii] = np.log10(powerlaw(freqs, A_arr[ii], gamma_arr[ii]))
-plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
-                 2*OMG_15.std(axis=0), color='orange', label='2$\sigma$ posterior of GWB', alpha=0.5)
+#plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
+ #                2*OMG_15.std(axis=0), color='orange', label='2$\sigma$ posterior of GWB', alpha=0.5)
 
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
-         linestyle='dashed', color='black', label='SMBHB spectrum')
+#plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
+  #       linestyle='dashed', color='black', label='SMBHB spectrum')
+freqs = np.logspace(-19, 9, N)
 
 BBN_f = np.logspace(-10, 9)
-plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+1e-5),
-                 np.log10(BBN_f * 0 + 1e1), alpha=0.5, color='orchid')
-plt.text(-8.5, -5.4, r"BBN", fontsize=15)
+#plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+1e-5),
+ #                np.log10(BBN_f * 0 + 1e1), alpha=0.5, color='orchid')
+#plt.text(-8.5, -5.4, r"BBN", fontsize=15)
 
 
 P_prim_k = 2.43e-10
@@ -209,13 +211,13 @@ linestyle_arr = ['solid', 'dashed', 'solid']
 color_arr = ['red', 'red', 'green']
 text = ['2023 NANOGrav', '2016 LIGO', 'GR']
 idx = 0
-N = 2000
+N = 100
 
 
 for M_GW in M_arr:
     if M_GW == 0:
         omega_0 = np.logspace(-10, -1, N)
-        omega_0 = np.logspace(-20, -1, N)
+        omega_0 = np.logspace(-18, 11, N)
     else:
         omega_0 = np.logspace(math.log(M_GW, 10), math.log(.1*2*np.pi, 10), N)
     k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
@@ -226,7 +228,7 @@ for M_GW in M_arr:
     )
     a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
         2 * a_eq * k_prime**2
-    )
+    )   
 
     gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
     P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
@@ -239,11 +241,12 @@ for M_GW in M_arr:
     f = omega_0/(2*np.pi)
     
     if idx < 2:
-        plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2 / (4*f))/(3*H_0**2)*(f)**(3)),
-                 linestyle=linestyle_arr[idx], color='red', label=r'MG - Emir Gum. - $M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
+        al = 1
+        #plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2 / (4*f))/(3*H_0**2)*(f)**(3)),
+        #         linestyle=linestyle_arr[idx], color='red', label=r'MG - Emir Gum. - $M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
     else:
         plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
-                 * (f)**(3)), color='green', label=r'GR - Emir Gum.')
+                 * (f)**(3)), color='palegreen', label=r'GR - Emir Gum. et al Paper')
     N_extra = math.log(10)
     a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
         2 * a_eq * k_0**2
@@ -263,10 +266,14 @@ for M_GW in M_arr:
         #print(f'amplif factor: {1e-4*(T_obs/H_0)**(-4)*(M_GW/H_0)**(-3) *math.log(np.e**N_extra*M_GW/H_0)}')
     idx += 1
     
+
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
+         color='salmon', label=r'GR - Blue-tilted paper$')
 # Plot Labels
 plt.title(r'NANOGrav 15-year data and Emir Model')
+plt.title('Massless Energy Densities from the 2 papers')
 # plt.xlabel('$\gamma_{cp}$')
-plt.xlabel(r'log$_{10}(f$ Hz)')
+plt.xlabel(r'log$_{10}(f/$Hz)')
 
 # plt.ylabel(r'log$_{10}(A_{GWB})$')
 # plt.ylabel('log$_{10}A_{cp}$')
