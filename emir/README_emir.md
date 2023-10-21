@@ -6,5 +6,12 @@ All of the files (besides emir_func.py, *_copy.py files, *test.py, *_try.py), ha
 
 # Files and what they do
 - emir.py was my first look at the paper and has a lot of attempts at recreating the figures in the paper. Nothing is really well documented in that file so you can safely ignore my incoherent code in that file.
-- emir_P.py includes my efforts to replicate the power spectrums shown in the paper, so this includes Fig. 4, 5, and 6 from the main paper. These correspond to the plots emir/emir_P_figs/fig2.pdf, emir/emir_P_figs/fig3.pdf, and emir/emir_P_figs/fig5.pdf respectively. The file emir/emir_P_figs/fig10.pdf has some other masses plus the senstivity curve for the 15 year NANOGrav dataset.
+- emir_P.py includes my efforts to replicate the power spectrums shown in the paper, so this includes Fig. 4, 5, and 6 from the main paper. These correspond to the plots emir/emir_P_figs/fig2.pdf, emir/emir_P_figs/fig3.pdf, and emir/emir_P_figs/fig5.pdf respectively. The file emir/emir_P_figs/fig10.pdf has the upper bounds from the Claude de rham paper in 2017 https://arxiv.org/abs/1606.08462 and the oct 2023 paper https://arxiv.org/abs/2310.07469 plus the GR power spectrum plus the senstivity curve for the 15 year NANOGrav dataset.
+- emir_S.py generates the transfer function mentioned in Eq. (47) of the original paper.
+- emir_calc.py has my attempts to try to get the inverse Hubble function, and other stuff.
+- emir_func.py has all of my functions and parameters for this directory.
+- emir_func_copy.py is similiar to its sister file, except it has my failed attempts to try to plot the function that solves for scale factor given the wave vector k of the equation w_0^2 = H^2(a) (so basically a_k in Eq. (26)
+- emir_h2omega.py has my various attempts to try to plot the energy density for the model in the paper. I pulled countless literature sources to try to relate the power spectrum with the energy density.
+- emir_hasasia.py generates the sensitivty curve for the 15 year NANOGrav data. it works in conjunction with emir_hasasia_gen_dict.py
+- emir_hasasia_gen_dict.py generates the sensitivities with a manually defined list of pulsars in the analysis.
 - 
