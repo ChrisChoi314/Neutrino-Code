@@ -5,6 +5,7 @@ import math
 import h5py
 import json
 from nanograv_func import *
+from blue_func import *
 
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 
@@ -168,60 +169,14 @@ plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
 
 # This part plots the energy densities of massive gravitons from the Mukohyama Blue tilted paper https://arxiv.org/pdf/1808.02381.pdf
 H_inf = 1e8
-tau_r = 1
-tau_m = 1e10
-H_14 = H_inf/1e14
+tau_r = 5.494456683825391e-7  # calculated from equation (19)
 a_r = 1/(tau_r*H_inf)
 
-
-def omega_GW_approx(f, m):
-    f_8 = f/(2e8)
-    nu = (9/4 - m**2 / H_inf**2)**.5
-    return 1e-15 * tau_m/tau_r * H_14**(nu+1/2)*f_8**(3-2*nu)
-
-
-M_GW = .3*H_inf
+M_GW = .5*H_inf
 tau_m = 1e21*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
 
-tau_m = 1e20*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{20}$')
-tau_m = 1e19*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{19}$')
-tau_m = 1e22*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue', linestyle='dashed',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{22}$')
-         
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)), color='blue', label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
 
-M_GW = H_inf
-
-tau_m = 1e21*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
-
-tau_m = 1e20*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{20}$')
-tau_m = 1e19*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{19}$')
-tau_m = 1e22*tau_r
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
-         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{22}$')
-         
-#plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
-#         color='blue', label=r'MG - Blue-tilted, $m = 0.6H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
-
-
-
-M_GW = 0
-tau_m = 1
-print(h)
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
-         color='green', label=r'GR - Blue-tilted')
 
 BBN_f = np.logspace(np.log10(f_BBN), 9)
 plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+h**2*1e-5),
@@ -239,7 +194,7 @@ plt.xlabel(r'log$_{10}(f$ Hz)')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 
 plt.xlim(-9, -7)
-plt.ylim(-24, -4)
+plt.ylim(-12, -4)
 
 # plt.xscale("log")
 # plt.yscale("log")
@@ -247,5 +202,5 @@ plt.legend(loc='lower left')
 
 
 
-plt.savefig('nanograv/ng_blue_figs/fig0.pdf')
+plt.savefig('nanograv/ng_blue_figs/fig1.pdf')
 plt.show()
