@@ -40,6 +40,8 @@ a_lm = .754
 f_BBN = 1.5e-11 # in Hz according to 22.290 of maggiore vol 2 
 
 
+f_yr = 1/(365*24*3600)
+
 def scale_fac(conf_time):
     if conf_time < 1e10:
         return H_0*np.sqrt(omega_R)*conf_time
@@ -157,3 +159,7 @@ def round_it(x, sig):
     if x == 0:
         return 0
     return round(x, sig-int(floor(log10(abs(x))))-1)
+
+
+def powerlaw(f, log10_A, gamma):
+    return np.sqrt((10**log10_A)**2 / 12.0 / np.pi**2 * f_yr**(gamma-3) * f**(-gamma) * f[0])

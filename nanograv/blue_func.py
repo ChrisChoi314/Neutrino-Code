@@ -65,7 +65,7 @@ def omega_GW_massless(k):
     return 1/12*(k/(a_0*H_0))**2*P_T(k)
 
 
-def omega_GW_full(f, m, hinf, tm, tr):
+def omega_GW_full(f, m, hinf, tr, tm):
     nu = (9/4 - m**2 / hinf**2)**.5
     k = f*2*np.pi
     return tm/tr*(k*tr)**(3-2*nu)*omega_GW_massless(k)
