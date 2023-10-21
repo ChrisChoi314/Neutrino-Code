@@ -282,5 +282,60 @@ ax1.set_yscale("log")
 
 print(H_0)
 
-plt.savefig("emir/emir_calc_figs/fig2.pdf")
+plt.clf()
+
+def odd_root(x, r):
+    '''
+    '''
+    return np.sign(x) * np.abs(x) ** (1 / r)
+    return x ** (1 / r)
+
+
+def inv_of_H(a, b, c, x, c1, c2):
+    '''
+    plus_minus = 1
+    plus_minus_2 = -1
+    print('inv_of_H')
+    print(-4 * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 -
+                                         2 * x**6)**2)
+    print(
+        (2 * x**2)/(3 * c) + (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 -2 * x**6)**2), 3)) + odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c))
+    print(
+        (4 * x**2)/(3 * c) - (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)) - odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c) + plus_minus_2 * (2 * a) /
+        (c * np.sqrt((1 + 0j) * (2 * x**2)/(3 * c) + (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4 + 0j) * (12 * b * c * + x**4)**3 + (27 * a**2 * c + 72 * b * c * x **2 - 2 * x**6)**2), 3)) + odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4 + 0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c))))
+    '''
+    print((4 * x**2)/(3 * c) - (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)) - odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c) - c1 * (2 * a) /
+            (c * np.sqrt((1 + 0j) * (2 * x**2)/(3 * c) + (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4 + 0j) * (12 * b * c * + x**4)**3 + (27 * a**2 * c + 72 * b * c * x **2 - 2 * x**6)**2), 3)) + odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4 + 0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c))))
+    result = (
+        c1 * np.sqrt(
+            (2 * x**2)/(3 * c) + (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 -2 * x**6)**2), 3)) + odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c)
+        )
+        +
+        c2 * np.sqrt(
+            (4 * x**2)/(3 * c) - (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)) - odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4+0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c) - c1 * (2 * a) /
+            (c * np.sqrt((1 + 0j) * (2 * x**2)/(3 * c) + (2**(1/3) * (12 * b * c + x**4))/(3 * c * odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4 + 0j) * (12 * b * c * + x**4)**3 + (27 * a**2 * c + 72 * b * c * x **2 - 2 * x**6)**2), 3)) + odd_root(27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6 + np.sqrt(-(4 + 0j) * (12 * b * c + x**4)**3 + (27 * a**2 * c + 72 * b * c * x**2 - 2 * x**6)**2), 3)/(3 * 2**(1/3) * c)))
+        )
+    )/2
+    print(result)
+    result = result.real
+
+    return result
+
+def reg_N(a, b, c, x):
+    return np.sqrt(a/x + b/x**2 + c*x**2)
+
+
+N = 100
+f = np.linspace(.01,10, N)
+a = H_0**2*omega_M
+b = H_0**2*omega_R
+c = H_0**2*omega_L
+x = np.linspace(.0001,1,100)
+
+def inv_approx(a, b, x, c1):
+    return (a + c1*np.sqrt(a**2 + 4*b*x**2)) / (2*x**2)
+print(give_eta(1.1499e-12))
+
+plt.legend(loc="best")
+plt.savefig("emir/emir_calc_figs/fig3.pdf")
 plt.show()
