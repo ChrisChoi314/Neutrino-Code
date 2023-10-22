@@ -5,7 +5,7 @@ import math
 import h5py
 import json
 from nanograv_func import *
-from blue_func import *
+from nanograv.ng_blue_func import *
 
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 
@@ -122,6 +122,7 @@ for pc in vpt['bodies']:
 '''
 
 N = 1000
+N = 100
 f = np.linspace(-9, math.log(3e-7, 10), N)
 f = np.logspace(-8.6, -7, 30)
 freqs_30 = f
@@ -202,7 +203,10 @@ def enhance_approx(x):
             return 0.
         output = a_c/a_k_0_GR*np.sqrt(k_c/k_0)*(x**2 / M_GW**2 - 1)**(-1/2)
         return output
+    
 
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
+         color='salmon', label=r'GR - Blue-tilted paper')
 
 linestyle_arr = ['solid', 'dashed', 'solid']
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
@@ -211,7 +215,6 @@ linestyle_arr = ['solid', 'dashed', 'solid']
 color_arr = ['red', 'red', 'green']
 text = ['2023 NANOGrav', '2016 LIGO', 'GR']
 idx = 0
-N = 100
 
 
 for M_GW in M_arr:
@@ -247,6 +250,8 @@ for M_GW in M_arr:
     else:
         plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
                  * (f)**(3)), color='palegreen', label=r'GR - Emir Gum. et al Paper')
+        print((h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
+                 * (f)**(3)) / (h**2*omega_GW_massless(freqs*2*np.pi)))
     N_extra = math.log(10)
     a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
         2 * a_eq * k_0**2
@@ -267,8 +272,6 @@ for M_GW in M_arr:
     idx += 1
     
 
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
-         color='salmon', label=r'GR - Blue-tilted paper')
 # Plot Labels
 plt.title(r'NANOGrav 15-year data and Emir Model')
 plt.title('Massless Energy Densities from the 2 papers')
@@ -279,12 +282,14 @@ plt.xlabel(r'log$_{10}(f/$Hz)')
 # plt.ylabel('log$_{10}A_{cp}$')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 
+print()
+
 #plt.xlim(-9, -7)
 #plt.ylim(-24, -4)
-
+plt.xlim(np.log10(2e-9), np.log10(6e-8))
 # plt.xscale("log")
 # plt.yscale("log")
 plt.legend(loc='lower left')
 
-plt.savefig('nanograv/ng_emir_figs/fig0.pdf')
+plt.savefig('nanograv/ng_emir_figs/fig1.pdf')
 plt.show()

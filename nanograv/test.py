@@ -8,6 +8,9 @@ from nanograv_func import *
 
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 
+print(conf_time(1/(1+1e-2)))
+print(conf_time(1/(1+1e-2))/5.5e-7)
+
 f_yr = 1/(365*24*3600)
 gamma_12p5 = 13/3
 gamma_15 = 3.2  # from page 4 of https://iopscience.iop.org/article/10.3847/2041-8213/acdac6/pdf
@@ -59,5 +62,5 @@ plt.legend(loc='lower left')
 
 
 
-plt.savefig('nanograv/test_figs/fig0.pdf')
+# plt.savefig('nanograv/test_figs/fig0.pdf')
 plt.show()

@@ -77,6 +77,7 @@ def T_T_sq(k):
     # func_to_use = scipy.special.spherical_jn
     func_to_use = spherical_bess_approx
     extra_fac = 25
+    #extra_fac *= 5.68e11
     return omega_M**2*(g_star_T_in(k, g_star_0)/g_star_0)*(g_star_s_0/g_star_T_in(k, g_star_s_0))**(4/3)*(3*(func_to_use(1, k*tau_0))/(k*tau_0))**2*T_1_sq(x_eq)*T_2_sq(x_R)*extra_fac
 
 
