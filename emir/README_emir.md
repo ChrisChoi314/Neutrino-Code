@@ -14,4 +14,7 @@ All of the files (besides emir_func.py, *_copy.py files, *test.py, *_try.py), ha
 - emir_h2omega.py has my various attempts to try to plot the energy density for the model in the paper. I pulled countless literature sources to try to relate the power spectrum with the energy density.
 - emir_hasasia.py generates the sensitivty curve for the 15 year NANOGrav data. it works in conjunction with emir_hasasia_gen_dict.py
 - emir_hasasia_gen_dict.py generates the sensitivities with a manually defined list of pulsars in the analysis.
-- 
+- emir_kva.py generates Fig. 1 from the paper
+- emir_mode.py has my analysis on the differential equation in Eq. (9) in the paper, and its solutions for different values of the mass and wave vector k.
+- test.py has my random testing of various things.
+- third_try.py and its copy are by failed attempts to find out why the inverse function for the hubble parameter weren't working. 
