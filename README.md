@@ -1,4 +1,4 @@
-# Neutrino-Code
+# gw_research
 This is code I write for my research with Dr. Kahniashvili at Carnegie Mellon University, related to the study of gravitational waves.
 
 DIRECTORY Layout
