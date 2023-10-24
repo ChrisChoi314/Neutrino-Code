@@ -66,8 +66,8 @@ tau_m = 6.6e21*tau_r
 
 H_inf = 5e2
 f_UV = 2e8*(H_inf/1e14)**.5
-freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
 freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
+freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
 tau_m = 1e10*(H_inf/1e14)**-2*tau_r
 M_arr = np.logspace(-6, np.log10(1.5), 10)*H_inf # this is for generating the plot in fig1 and fig2 in nanograv/ng_blue_figs/
 M_arr_coeff = np.linspace(.35, .75, 20) + .5642
@@ -77,14 +77,14 @@ M_arr = np.array([1.1422])*H_inf
 idx = 0
 for M_GW in M_arr:
     plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='red', label=r"$M_{GW}$ = 1.14$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$ = "+f'{H_inf} GeV')
+         color='red', label=r"$M_{GW}$ = 1.14$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
     #plt.text(np.log10(freqs)[int(num_freqs/2)], np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m))[int(num_freqs/2)], r"$M_{GW}$ = "+f'{M_arr_coeff[idx]}' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$ = "+f'{H_inf} GeV', fontsize=8)
     idx+=1
 
 H_inf = 5e0
 f_UV = 2e8*(H_inf/1e14)**.5
-freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
 freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
+freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
 tau_m = 1e10*(H_inf/1e14)**-2*tau_r
 M_arr = np.logspace(-6, np.log10(1.5), 10)*H_inf # this is for generating the plot in fig1 and fig2 in nanograv/ng_blue_figs/
 M_arr_coeff = np.linspace(.35, .75, 20) + .5642
@@ -94,7 +94,7 @@ M_arr = np.array([1.251042105263158])*H_inf
 idx = 0
 for M_GW in M_arr:
     plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='blue', label=r"$M_{GW}$ = 1.25$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$ = "+f'{H_inf} GeV')
+         color='blue', label=r"$M_{GW}$ = 1.25$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
     #plt.text(np.log10(freqs)[int(num_freqs/2)], np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m))[int(num_freqs/2)], r"$M_{GW}$ = "+f'{M_arr_coeff[idx]}' + r", $H_{inf}$ = "+f'{H_inf} GeV', fontsize=8)
     idx+=1
 #plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, 0, H_inf, tau_r, tau_m)),
@@ -110,8 +110,8 @@ plt.text(-7.5, -5, r"BBN Bound", fontsize=15)
 plt.xlabel(r'log$_{10}(f/$Hz)')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 
-plt.xlim(-9, -7)
-plt.ylim(-11, -4)
+#plt.xlim(-9, -7)
+#plt.ylim(-11, -4)
 
 plt.legend(loc='upper left')
 plt.grid(alpha=.2)
@@ -139,5 +139,5 @@ plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 plt.xscale('log')
 plt.yscale('log')'''
 
-plt.savefig('nanograv/ng_blue_figs/fig3.pdf')
+plt.savefig('nanograv/ng_blue_figs/fig4.pdf')
 plt.show()
