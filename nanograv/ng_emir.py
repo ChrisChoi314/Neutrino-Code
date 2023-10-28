@@ -5,7 +5,7 @@ import math
 import h5py
 import json
 from nanograv_func import *
-from nanograv.ng_blue_func import *
+from ng_blue_func import *
 
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 
@@ -65,21 +65,11 @@ burnin = 0
 extra_thin = 1
 
 with h5py.File(hdf_file, 'r') as f:
-    Ts = f['T-ladder'][...]
     samples_cold = f['samples_cold'][0, burnin::extra_thin, :]
-    # samples = f['samples_cold'][...]
-    log_likelihood = f['log_likelihood'][:, burnin::extra_thin]
-    # log_likelihood = f['log_likelihood'][...]
-    par_names = [x.decode('UTF-8') for x in list(f['par_names'])]
-    acc_fraction = f['acc_fraction'][...]
-    fisher_diag = f['fisher_diag'][...]
-burnin = 0
-thin = 1
-
 
 # Make Figure
-plt.style.use('dark_background')
-plt.figure(figsize=(12, 5))
+# plt.style.use('dark_background')
+plt.figure(figsize=(10, 4))
 
 # Left Hand Side Of Plot
 
@@ -122,7 +112,7 @@ for pc in vpt['bodies']:
 '''
 
 N = 1000
-N = 100
+N = 200
 f = np.linspace(-9, math.log(3e-7, 10), N)
 f = np.logspace(-8.6, -7, 30)
 freqs_30 = f
@@ -157,18 +147,21 @@ PL = np.zeros((67, num_freqs))
 for ii in range(67):
     OMG_15[ii] = np.log10(h**2*omega_GW(freqs, A_arr[ii], gamma_arr[ii]))
     PL[ii] = np.log10(powerlaw(freqs, A_arr[ii], gamma_arr[ii]))
-#plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
- #                2*OMG_15.std(axis=0), color='orange', label='2$\sigma$ posterior of GWB', alpha=0.5)
+plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
+                 2*OMG_15.std(axis=0), color='orange', label='2$\sigma$ posterior of GWB', alpha=0.5,interpolate=True)
+plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 4*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
+                 4*OMG_15.std(axis=0), color='orange', label='4$\sigma$ posterior of GWB', alpha=0.3,interpolate=True)
 
-#plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
-  #       linestyle='dashed', color='black', label='SMBHB spectrum')
+plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
+         linestyle='dashed', color='black', label='SMBHB spectrum')
 freqs = np.logspace(-19, 9, N)
 
 BBN_f = np.logspace(-10, 9)
-#plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+1e-5),
- #                np.log10(BBN_f * 0 + 1e1), alpha=0.5, color='orchid')
-#plt.text(-8.5, -5.4, r"BBN", fontsize=15)
+plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+1e-5),
+                 np.log10(BBN_f * 0 + 1e1), alpha=0.5, color='orchid',interpolate=True)
+plt.text(-8.5, -5.4, r"BBN", fontsize=15)
 
+plt.vlines(x=np.log10(2e-9/(2*np.pi)),ymin=-15, ymax=-4)
 
 P_prim_k = 2.43e-10
 beta = H_eq**2 * a_eq**4 / (2)
@@ -205,15 +198,18 @@ def enhance_approx(x):
         return output
     
 
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
-         color='salmon', label=r'GR - Blue-tilted paper')
+'''plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
+         color='salmon', label=r'GR - Blue-tilted paper')'''
 
 linestyle_arr = ['solid', 'dashed', 'solid']
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
-M_arr = [k / hbar for k in M_arr]
-linestyle_arr = ['solid', 'dashed', 'solid']
-color_arr = ['red', 'red', 'green']
-text = ['2023 NANOGrav', '2016 LIGO', 'GR']
+M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9]
+M_arr = [8.6e-24*1e-9, 8.2e-24*1e-9]
+M_arr = [k / hbar for k in M_arr] + [2e-9*2*np.pi]
+print(M_arr)
+#linestyle_arr = ['solid', 'dashed', 'solid']
+color_arr = ['red', 'blue', 'green']
+text = ['2023 Wang et al.', '2023 Wu et al.', 'NG15 Freq Bound']
 idx = 0
 
 
@@ -223,6 +219,7 @@ for M_GW in M_arr:
         omega_0 = np.logspace(-18, 11, N)
     else:
         omega_0 = np.logspace(math.log(M_GW, 10), math.log(.1*2*np.pi, 10), N)
+        omega_0 = np.logspace(math.log(M_GW, 10), np.log10(6e-8*2*np.pi), N)
     k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
     a_k = ak(k)  # uses multithreading to run faster
     omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
@@ -243,15 +240,17 @@ for M_GW in M_arr:
                  * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
     f = omega_0/(2*np.pi)
     
-    if idx < 2:
+    if idx < 3:
         al = 1
-        #plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2 / (4*f))/(3*H_0**2)*(f)**(3)),
-        #         linestyle=linestyle_arr[idx], color='red', label=r'MG - Emir Gum. - $M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
-    else:
+        plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2 / (4*f))/(3*H_0**2)*(f)**(3)),
+                 color=color_arr[idx], label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
+        
+    #comment this back in and the plot part in the if statement above out if you want figure fig0.pdf
+    '''else:
         plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
                  * (f)**(3)), color='palegreen', label=r'GR - Emir Gum. et al Paper')
         print((h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
-                 * (f)**(3)) / (h**2*omega_GW_massless(freqs*2*np.pi)))
+                 * (f)**(3)) / (h**2*omega_GW_massless(freqs*2*np.pi)))'''
     N_extra = math.log(10)
     a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
         2 * a_eq * k_0**2
@@ -264,17 +263,18 @@ for M_GW in M_arr:
         if s != np.nan and var == False:
             S_peak_num = s
             var = True
-    print(f'M_GW (in Hz): {M_GW}, S_peak_anal: {S_peak_anal}, S_peak_num: {S_peak_num}')
+    #print(f'M_GW (in Hz): {M_GW}, S_peak_anal: {S_peak_anal}, S_peak_num: {S_peak_num}')
     T_obs = 15/f_yr
-    if M_GW == 0:
-        break
+    #if M_GW == 0:
+    #    break
         #print(f'amplif factor: {1e-4*(T_obs/H_0)**(-4)*(M_GW/H_0)**(-3) *math.log(np.e**N_extra*M_GW/H_0)}')
     idx += 1
     
 
+plt.xlim(-9, -7)
+plt.ylim(-16, -4)
+
 # Plot Labels
-plt.title(r'NANOGrav 15-year data and Emir Model')
-plt.title('Massless Energy Densities from the 2 papers')
 # plt.xlabel('$\gamma_{cp}$')
 plt.xlabel(r'log$_{10}(f/$Hz)')
 
@@ -282,14 +282,12 @@ plt.xlabel(r'log$_{10}(f/$Hz)')
 # plt.ylabel('log$_{10}A_{cp}$')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 
-print()
-
 #plt.xlim(-9, -7)
 #plt.ylim(-24, -4)
-plt.xlim(np.log10(2e-9), np.log10(6e-8))
+#plt.xlim(np.log10(2e-9), np.log10(6e-8))
 # plt.xscale("log")
 # plt.yscale("log")
-plt.legend(loc='lower left')
+plt.legend(loc='lower right')
 
 plt.savefig('nanograv/ng_emir_figs/fig1.pdf')
 plt.show()
