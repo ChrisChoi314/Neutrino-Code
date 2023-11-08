@@ -113,7 +113,7 @@ density = np.transpose(density[0]) # I did this because we want the y dimension 
 
 vpt = plt.violinplot(density,
                positions=(freqs),
-                widths=0.1*freqs_30,showextrema=False)
+                widths=.5*freqs_30,showextrema=False)
 for pc in vpt['bodies']:
     pc.set_facecolor('k')
     pc.set_alpha(0.3)
@@ -325,7 +325,7 @@ plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 
 #plt.xlim(-8.75, -7.5)
 #plt.xlim(10**-8.75, 10**-7.5)
-#plt.ylim(-9, -5.5)
+plt.ylim(-9, -5)
 
 plt.xscale("log")
 #plt.yscale("log")

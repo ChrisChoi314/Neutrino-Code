@@ -7,5 +7,13 @@
 
 blue/data/12p5yr_DE438_model2a_cRN30freq_gammaVary_chain/*
 
-__pycache__
+__pycache__blue/data/12p5yr_DE438_model2a_PSDspectrum_chain.gz
 
+# added on 2023-11-08 14:52:22 EST
+blue/data/12p5yr_DE438_model2a_cRN30freq_gammaVary_chain/chain_1
+blue/data/12p5yr_DE438_model2a_cRN30freq_gammaVary_chain.gz
+emir/emir_hasasia/psrs_files/psr55.npz
+emir/emir_hasasia/ePulsars60_75.npz
+emir/emir_hasasia/ePulsars40_59.npz
+emir/emir_hasasia/ePulsars20_39.npz
+emir/emir_hasasia/ePulsars0_19.npz
