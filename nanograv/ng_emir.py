@@ -242,15 +242,18 @@ for M_GW in M_arr:
     
     if idx < 3:
         al = 1
-        plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2 / (4*f))/(3*H_0**2)*(f)**(3)),
+        #plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*((P_GR*S**2)**2 / (4*f))/(3*H_0**2)*(f)**(3)),
+        #         color=color_arr[idx], label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
+        #plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2)/(3*H_0**2)*(f)**(3)),
+        #         color=color_arr[idx], label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
+        plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*((P_GR*S**2) )/(3*H_0**2)*(f)**(2)),
                  color=color_arr[idx], label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
         
     #comment this back in and the plot part in the if statement above out if you want figure fig0.pdf
-    '''else:
-        plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
-                 * (f)**(3)), color='palegreen', label=r'GR - Emir Gum. et al Paper')
-        print((h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
-                 * (f)**(3)) / (h**2*omega_GW_massless(freqs*2*np.pi)))'''
+    #else:
+    #plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
+    #            * (f)**(3)), color='palegreen', label=r'GR - Emir Gum. et al Paper')    
+        
     N_extra = math.log(10)
     a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
         2 * a_eq * k_0**2
@@ -272,7 +275,7 @@ for M_GW in M_arr:
     
 
 plt.xlim(-9, -7)
-plt.ylim(-16, -4)
+#plt.ylim(-16, -4)
 
 # Plot Labels
 # plt.xlabel('$\gamma_{cp}$')
@@ -290,5 +293,7 @@ plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 plt.grid(alpha=.2)
 plt.legend(loc='lower right')
 
-# plt.savefig('nanograv/ng_emir_figs/fig1.pdf')
+#plt.savefig('nanograv/ng_emir_figs/fig1.pdf')
+#plt.savefig('nanograv/ng_emir_figs/fig2.pdf')
+
 plt.show()

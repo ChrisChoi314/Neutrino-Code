@@ -9,12 +9,14 @@ from emir_func import *
 N = 1000
 P_prim_k = 2.43e-10
 fig, (ax1) = plt.subplots(1)  # , figsize=(22, 14))
-
+def A(k):
+    return np.where(k >= 0., np.sqrt(P_prim_k*np.pi**2/(2*k**3)), -1.)
+'''
 omega_0 = np.logspace(-8 + .2, -7)
 omega_0 = np.logspace(math.log(M_GW, 10), -2, N)
 k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
-# a_k = solve(k)  # uses multithreading to run faster
-# omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
+a_k = ak(k)  # uses multithreading to run faster
+omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
 k_prime = a_0 * omega_0
 beta = H_eq**2 * a_eq**4 / (2)
 a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
@@ -22,18 +24,16 @@ a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta))
 )
 
 
-def A(k):
-    return np.where(k >= 0., np.sqrt(P_prim_k*np.pi**2/(2*k**3)), -1.)
 
 
-# gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
-# P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
-#             (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
-# P = omega_0**2/(omega_0**2-M_GW**2)*(2*k**3/np.pi**2)#*y_k_0**2
+gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
+P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
+             (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
+#P = omega_0**2/(omega_0**2-M_GW**2)*(2*k**3/np.pi**2)#*y_k_0**2
 gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
 P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
-# S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
-#             * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
+S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
+            * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
 
 omega_c = np.sqrt((k_c/a_c)**2 + M_GW**2)
 
@@ -70,16 +70,36 @@ S_approx = np.vectorize(enhance_approx)(omega_0)
 '''
 # Figure 4 from Emir Paper
 # use omega_0 = np.logspace(math.log(M_GW, 10)+ 0.00000000001, -7, N)
-ax1.plot(omega_0, np.sqrt(P), label='numerical')
+#M_GW = 2e-7
+M_GW = 2.34e-8
+omega_0 = np.logspace(math.log(M_GW, 10)+ 0.00000000001, -7, N)
+k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
+a_k = ak(k)
+omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
+k_prime = a_0 * omega_0
+beta = H_eq**2 * a_eq**4 / (2)
+a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
+    2 * a_eq * k_prime**2
+)
+gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
+P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
+             (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
+gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
+P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
+S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
+            * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
+
+ax1.plot(omega_0, np.sqrt(omega_0*a_k**3*omega_k/a_0/k**2*P_prim_k), label='alternate',linewidth=7.0)
+ax1.plot(omega_0, np.sqrt(P),'-.', label='numerical')
 ax1.plot(omega_0, np.sqrt(P_GR*S**2), '--', label='fully analytical')
 # ax1.plot(omega_0, np.sqrt(P/P_GR), label='S^2')
 ax1.set_xlabel(r'$\omega_0$ [Hz]')
 ax1.set_ylabel(r'$[P(\omega_0)]^{1/2}$')
 
 ax1.set_xlim(1e-8, 1e-7)
-ax1.set_ylim(1e-18, 1e-2)
+#ax1.set_ylim(1e-18, 1e-2)
 plt.title('Power Spectrum')
-'''
+
 
 '''
 # Figure 5 from Emir Paper
@@ -102,7 +122,9 @@ linestyle_arr = ['dotted', 'dashdot',  'dashed', 'solid']
 M_arr = [2*np.pi*1e-8, 2*np.pi*1e-7, 2*np.pi*1e-6]
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9]
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
+M_arr = [2*np.pi*1e-7]
 M_arr = [k / hbar for k in M_arr]
+
 # M_arr += [2*np.pi*2e-10]
 print(M_arr)
 linestyle_arr = ['dotted', 'dashed', 'solid']
@@ -134,12 +156,12 @@ for M_GW in M_arr:
     S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
                  * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
     f = omega_0/(2*np.pi)
-    # ax1.plot(f, np.sqrt(P_GR*S**2),
-             # linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}/2\pi=$' + f'{round_it(M_GW/(2*np.pi), 1)} Hz')
+    ax1.plot(f, np.sqrt(P_GR*S**2),
+                linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}/2\pi=$' + f'{round_it(M_GW/(2*np.pi), 1)} Hz')
     ax1.plot(f, np.sqrt(P_GR*S**2),
              linestyle=linestyle_arr[idx], color='black', label=r'$M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$'+ ' ('+text[idx] +')')
     idx += 1
-
+'''
 # range from https://arxiv.org/pdf/1201.3621.pdf after eq (5) 3x10^-5 Hz to 1 Hz
 f_elisa = np.logspace(math.log(3e-5, 10), -1, N)
 # eq (2), in Hz m^2 Hz^-1
@@ -187,7 +209,7 @@ ax1.loglog(f_ska_2, ska_sen_2, color='red')
 ax1.text(6e-6, 1e-12, r"SKA", fontsize=15)
 
 # This commented-out portion was written to crudely get the sensitivity curve in the 15 year NANOGrav paper into my figure. It is 4 lines drawn on the log log plot that roughly align with the actual curve
-'''
+
 f_nanoGrav = np.logspace(math.log(2e-10,10), math.log(2e-7,10), N)
 P_R = (f_nanoGrav**(((8.8-6.2)/(8.26-9.3)))*2)
 nanoGrav_sen = np.pi*f_nanoGrav**(3/2)*np.sqrt(12*P_R)
@@ -215,26 +237,32 @@ f_ng_3 = np.linspace(point3[0], point4[0], N)
 ng_sen_3 = 10**((math.log(point4[1],10) - math.log(point3[1],10))/(math.log(point4[0],10)-math.log(point3[0],10))*(-math.log(point3[0],10)) + math.log(point3[1],10))*f_ng_3**((math.log(point4[1],10) - math.log(point3[1],10))/(math.log(point4[0],10)-math.log(point3[0],10)))
 ax1.loglog(f_ng_3, ng_sen_3, color='dodgerblue')
 
-'''
+
+
 outfile = np.load('emir/emir_hasasia/nanograv_sens_full.npz')
 
 f_nanoGrav = outfile['freqs']
 nanoGrav_sens = outfile['sens']
 ax1.plot(f_nanoGrav, nanoGrav_sens, color='dodgerblue')
 
+
 ax1.text(2e-10, 1e-14, "Nano\nGrav", fontsize=15)
+
 ax1.set_xlabel(r'f [Hz]')
 ax1.set_ylabel(r'$[P(f)]^{1/2}$')  # (r'$[P(f)]^{1/2}$')
 
-ax1.set_xlim(1e-10, 1e-1)
+#ax1.set_xlim(1e-10, 1e-1)
+ax1.set_xlim(1e-8, 1e-7)
 ax1.set_ylim(1e-25, 1e-2)
-plt.title('Gravitational Power Spectra and Sensitivities')
-
+ax1.set_ylim(1e-18, 1e-2)
+#plt.title('Gravitational Power Spectra and Sensitivities')
+'''
 ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-ax1.grid(which='both')
+# ax1.grid(which='both')
+plt.grid(alpha=.2)
 
-plt.savefig("emir/emir_P_figs/fig10.pdf")
+# plt.savefig("emir/emir_P_figs/fig10.pdf")
 plt.show()
