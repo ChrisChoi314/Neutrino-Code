@@ -53,7 +53,7 @@ def T_T_sq(k):
     x_eq = k_mpc/k_eq
     x_R = k_mpc/k_R
     func_to_use = spherical_bess_approx
-    extra_fac = 25
+    extra_fac = 25 # this is to make the results identical to Fig 1 in https://arxiv.org/pdf/1808.02381.pdf
     #extra_fac *= 5.68e11
     return omega_M**2*(g_star_T_in(k, g_star_0)/g_star_0)*(g_star_s_0/g_star_T_in(k, g_star_s_0))**(4/3)*(3*(func_to_use(1, k*tau_0))/(k*tau_0))**2*T_1_sq(x_eq)*T_2_sq(x_R)*extra_fac
 

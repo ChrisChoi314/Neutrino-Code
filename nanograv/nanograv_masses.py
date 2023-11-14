@@ -312,7 +312,8 @@ for M_GW in M_arr:
         break
         #print(f'amplif factor: {1e-4*(T_obs/H_0)**(-4)*(M_GW/H_0)**(-3) *math.log(np.e**N_extra*M_GW/H_0)}')
     idx += 1
-    
+
+
 # Plot Labels
 # plt.title(r'NANOGrav 15-year data and Mu')
 # plt.xlabel('$\gamma_{cp}$')

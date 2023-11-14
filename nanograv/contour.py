@@ -34,7 +34,6 @@ X, Y = np.meshgrid(freqs, M_arr)
 Z = f(X, Y)
 
 
-
 plt.figure(figsize=(10,8))
 ax = plt.axes(projection='3d')
 surf = ax.plot_surface( np.log10(X), np.log10(Y/H_inf), np.log10(Z),linestyles="solid", cmap='autumn')
@@ -92,7 +91,7 @@ ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 surf._edgecolors2d = surf._edgecolor3d
 surf._facecolors2d = surf._facecolor3d
 
-#ax.view_init(elev=20, azim=120)
+ax.view_init(elev=20, azim=120)
 ax.annotate(r'$M_{GW} = H_{inf}, H_{inf} = 10^8$ GeV', xy=(0.6,0.9),xycoords='axes fraction',
              fontsize=10)
 

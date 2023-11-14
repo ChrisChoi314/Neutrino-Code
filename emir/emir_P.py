@@ -88,7 +88,7 @@ gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
 P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
 S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
             * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
-
+    
 ax1.plot(omega_0, np.sqrt(omega_0*a_k**3*omega_k/a_0/k**2*P_prim_k), label='alternate',linewidth=7.0)
 ax1.plot(omega_0, np.sqrt(P),'-.', label='numerical')
 ax1.plot(omega_0, np.sqrt(P_GR*S**2), '--', label='fully analytical')
@@ -99,7 +99,6 @@ ax1.set_ylabel(r'$[P(\omega_0)]^{1/2}$')
 ax1.set_xlim(1e-8, 1e-7)
 #ax1.set_ylim(1e-18, 1e-2)
 plt.title('Power Spectrum')
-
 
 '''
 # Figure 5 from Emir Paper
