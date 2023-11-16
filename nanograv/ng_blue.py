@@ -230,6 +230,6 @@ plt.grid(alpha=.2)
 plt.xlim(-20,4)
 plt.ylim(-21,5)
 
-plt.savefig('nanograv/ng_blue_figs/fig6.pdf')
+plt.savefig('nanograv/ng_blue_figs/fig5.pdf')
 
 plt.show()
