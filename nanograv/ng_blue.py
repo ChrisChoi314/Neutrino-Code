@@ -193,7 +193,7 @@ for M_GW in M_arr:
     plt.plot(np.log10(freqs), np.log10(Omega),
          color='red', linestyle='dashed')
 
-    plt.text(-2.5, -7, r"With supression", fontsize=15)
+    plt.text(-3.5, -7, r"With suppression", fontsize=15)
     idx+=1
 
 H_inf = 5e0
@@ -209,7 +209,7 @@ for M_GW in M_arr:
     plt.plot(np.log10(freqs), np.log10(Omega),
          color='blue', linestyle='dashed')
     #plt.text(np.log10(freqs)[int(num_freqs/2)], np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m))[int(num_freqs/2)], r"$M_{GW}$ = "+f'{M_arr_coeff[idx]}' + r", $H_{inf}$ = "+f'{H_inf} GeV', fontsize=8)
-    plt.text(-7, 4, r"Without supression", fontsize=15)
+    plt.text(-7, 4, r"Without suppression", fontsize=15)
     idx+=1
 #plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, 0, H_inf, tau_r, tau_m)),
 #         color='red', label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')

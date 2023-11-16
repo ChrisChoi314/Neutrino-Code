@@ -294,7 +294,7 @@ plt.legend(loc='lower right')'''
 
 #plt.savefig('nanograv/ng_emir_figs/fig1.pdf')
 #plt.savefig('nanograv/ng_emir_figs/fig2.pdf')
-'''
+
 plt.clf()
 plt.figure(figsize=(6,4))
 linestyle_arr = ['solid', 'dashed', 'solid']
@@ -333,7 +333,7 @@ for M_GW in M_arr:
 
     plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
     * (f)**(3)), color='palegreen', label=r'GR - CM Model')    
-'''
+
 #plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
 #         color='salmon', label=r'GR - SFM model')
 
