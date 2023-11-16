@@ -117,7 +117,7 @@ f = np.linspace(-9, math.log(3e-7, 10), N)
 f = np.logspace(-8.6, -7, 30)
 freqs_30 = f
 
-
+'''
 def omega_GW(f, A_cp, gamma):
     return 2*np.pi**2*(10**A_cp)**2*f_yr**2/(3*H_0**2)*(f/f_yr)**(5-gamma)
 
@@ -162,7 +162,7 @@ plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+1e-5),
 plt.text(-8.5, -5.4, r"BBN", fontsize=15)
 
 plt.vlines(x=np.log10(2e-9/(2*np.pi)),ymin=-15, ymax=-4)
-
+'''
 P_prim_k = 2.43e-10
 beta = H_eq**2 * a_eq**4 / (2)
 
@@ -294,9 +294,9 @@ plt.legend(loc='lower right')'''
 
 #plt.savefig('nanograv/ng_emir_figs/fig1.pdf')
 #plt.savefig('nanograv/ng_emir_figs/fig2.pdf')
-
+'''
 plt.clf()
-plt.figure(figsize=(8,6.5))
+plt.figure(figsize=(6,4))
 linestyle_arr = ['solid', 'dashed', 'solid']
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9]
@@ -333,9 +333,9 @@ for M_GW in M_arr:
 
     plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
     * (f)**(3)), color='palegreen', label=r'GR - CM Model')    
-
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
-         color='salmon', label=r'GR - SFM model')
+'''
+#plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_massless(freqs*2*np.pi)),
+#         color='salmon', label=r'GR - SFM model')
 
 plt.xlabel(r'log$_{10}(f/$Hz)')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
@@ -346,7 +346,7 @@ plt.savefig('nanograv/ng_emir_figs/fig0.pdf')
 #for figure 3
 
 plt.clf()
-plt.figure(figsize=(8,6.5))
+plt.figure(figsize=(6,4))
 linestyle_arr = ['solid', 'dashed', 'solid']
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9, 0]
 M_arr = [4.3e-23*1e-9, 1.2e-22*1e-9]
@@ -358,10 +358,14 @@ color_arr = ['red', 'blue', 'green']
 text = ['2023 Wang et al.', '2023 Wu et al.', 'NG15 Freq Bound']
 idx = 0
 M_arr = [8e-24*1e-9]
+M_arr = [1e-8*2*np.pi]
 M_arr = [k / hbar for k in M_arr] 
 
+M_arr = [1e-8*2*np.pi]
+
 for M_GW in M_arr:
-    omega_0 = np.logspace(math.log(M_GW, 10), np.log10(6e-8*2*np.pi), N)
+    #omega_0 = np.logspace(math.log(M_GW, 10), np.log10(6e-8*2*np.pi), N)
+    omega_0 = np.logspace(math.log(M_GW, 10), -5, N)
     k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
     a_k = ak(k)  # uses multithreading to run faster
     omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
@@ -380,26 +384,30 @@ for M_GW in M_arr:
     S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
                  * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
     f = omega_0/(2*np.pi) 
+    
+    Omega = omega_0*a_k**3*omega_k/a_0/k**2*P_prim_k
 
-    plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*((P_GR*S**2) )/(3*H_0**2)*(f)**(2)),
-                 color='palegreen', label=r'$CM - M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')   
-
+    #plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*Omega/(3*H_0**2)*(f)**2), color='black'
+    #              label=r'$M_{GW} = 2\pi10^{8}$ Hz' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')   
+    plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*Omega/(3*H_0**2)*(f)**2), color='black',
+                  label=r'$M_{GW} = 2\pi10^{-8}$ Hz') 
 tau_r = 5.494456683825391e-7 
 H_inf = 1e8
 f_UV = 2e8*(H_inf/1e14)**.5
-freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
+# freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
 tau_m = 1e10*(H_inf/1e14)**-2*tau_r
 M_arr = np.array([1])*H_inf
 idx = 0
 for M_GW in M_arr:
-    plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='salmon', label=r"SFM - $M_{GW}/H_{inf} = 1$"+ r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
+    #plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
+     #    color='salmon', label=r"SFM - $M_{GW}/H_{inf} = 1$"+ r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
     #plt.text(np.log10(freqs)[int(num_freqs/2)], np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m))[int(num_freqs/2)], r"$M_{GW}$ = "+f'{M_arr_coeff[idx]}' + r", $H_{inf}$ = "+f'{H_inf} GeV', fontsize=8)
     idx+=1
 
+plt.xlim(-9,-7)
 plt.xlabel(r'log$_{10}(f/$Hz)')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 plt.legend()
 
-plt.savefig('nanograv/ng_emir_figs/fig3.pdf')
+plt.savefig('nanograv/ng_emir_figs/fig4.pdf')
 plt.show()

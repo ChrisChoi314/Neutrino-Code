@@ -8,6 +8,8 @@ import json
 from nanograv_func import *
 from ng_blue_func import *
 
+fs = 13
+plt.rcParams.update({'font.size': fs})
 
 N=500
 num_freqs = N
@@ -53,8 +55,8 @@ surf._edgecolors2d = surf._edgecolor3d
 surf._facecolors2d = surf._facecolor3d
 
 ax.view_init(elev=20, azim=120)
-ax.annotate(r'$\tau_m = 6.6\times 10^{21}\tau_r, H_{inf} = 10^8$ GeV', xy=(0.6,0.9),xycoords='axes fraction',
-             fontsize=10)
+ax.annotate(r'$\tau_m = 10^{10}*(H_{inf}/10^{14})^{-2}\tau_r, H_{inf} = 10^8$ GeV', xy=(0.4,0.9),xycoords='axes fraction',
+             fontsize=fs)
 
 plt.savefig('nanograv/contour_figs/fig0.pdf')
 
@@ -69,14 +71,14 @@ tau_m_arr = np.logspace(0,np.log10(1e10*(H_inf/1e14)**-2), N)
 M_GW = H_inf
 
 def f(x, y):
-    return omega_GW_full(x, M_GW, H_inf, tau_r, tau_m_arr*tau_r)
+    return omega_GW_full(x, M_GW, H_inf, tau_r, y)
 
-X, Y = np.meshgrid(freqs, tau_m_arr)
+X, Y = np.meshgrid(freqs, tau_m_arr*tau_r)
 Z = f(X, Y)
 
 plt.figure(figsize=(10,8))
 ax = plt.axes(projection='3d')
-surf = ax.plot_surface( np.log10(X),np.log10(Y), np.log10(Z),linestyles="solid", cmap='autumn')
+surf = ax.plot_surface( np.log10(X),np.log10(Y/tau_r), np.log10(Z),linestyles="solid", cmap='autumn')
 ax.set_xlabel('Frequency [Hz]')
 ax.set_ylabel(r'$\tau_m \ [\tau_r]$')
 ax.set_zlabel('$\log(h_0\Omega_{GW})$')
@@ -91,9 +93,9 @@ ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 surf._edgecolors2d = surf._edgecolor3d
 surf._facecolors2d = surf._facecolor3d
 
-ax.view_init(elev=20, azim=120)
-ax.annotate(r'$M_{GW} = H_{inf}, H_{inf} = 10^8$ GeV', xy=(0.6,0.9),xycoords='axes fraction',
-             fontsize=10)
+#ax.view_init(elev=20, azim=120)
+ax.annotate(r'$M_{GW} = H_{inf}, H_{inf} = 10^8$ GeV', xy=(0.4,0.9),xycoords='axes fraction',
+             fontsize=fs)
 
 plt.savefig('nanograv/contour_figs/fig1.pdf')
 
@@ -132,8 +134,8 @@ surf._edgecolors2d = surf._edgecolor3d
 surf._facecolors2d = surf._facecolor3d
 
 #ax.view_init(elev=20, azim=120)
-ax.annotate(r'$M_{GW} = H_{inf}, \tau_m = 6.6\times 10^{21}\tau_r $', xy=(0.6,0.9),xycoords='axes fraction',
-             fontsize=10)
+ax.annotate(r'$M_{GW} = H_{inf}, 10^{10}*(H_{inf}/10^{14})^{-2}\tau_r$', xy=(0.4,0.9),xycoords='axes fraction',
+             fontsize=fs)
 
 plt.savefig('nanograv/contour_figs/fig2.pdf')
 

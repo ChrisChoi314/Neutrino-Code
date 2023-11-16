@@ -261,5 +261,92 @@ ax1.legend(loc='best')
 ax1.set_xscale("log")
 ax1.set_yscale("log")
 
-plt.savefig("emir/emir_h2omega_figs/fig6.pdf")
-plt.show()
+# plt.savefig("emir/emir_h2omega_figs/fig6.pdf")
+# plt.show()
+
+plt.clf()
+
+N = 1000
+P_prim_k = 2.43e-10
+fig, (ax1) = plt.subplots(1)  # , figsize=(22, 14))
+def A(k):
+    return np.where(k >= 0., np.sqrt(P_prim_k*np.pi**2/(2*k**3)), -1.)
+'''
+omega_0 = np.logspace(-8 + .2, -7)
+omega_0 = np.logspace(math.log(M_GW, 10), -2, N)
+k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
+a_k = ak(k)  # uses multithreading to run faster
+omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
+k_prime = a_0 * omega_0
+beta = H_eq**2 * a_eq**4 / (2)
+a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
+    2 * a_eq * k_prime**2
+)
+
+
+
+
+gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
+P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
+             (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
+#P = omega_0**2/(omega_0**2-M_GW**2)*(2*k**3/np.pi**2)#*y_k_0**2
+gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
+P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
+S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
+            * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
+
+omega_c = np.sqrt((k_c/a_c)**2 + M_GW**2)
+
+
+def enhance_approx(x):
+    if x < M_GW:
+        return 0.
+    val = a_0 * np.sqrt(x**2 - M_GW**2)
+    if k_0 < val:
+        return 1.
+    elif val <= k_0 and val >= k_c:
+        if val >= k_eq:
+            output = (x**2 / M_GW**2 - 1)**(-3/4)
+            return output
+        if val < k_eq and k_eq < k_0:
+            output = k_eq/(np.sqrt(2)*k_0)(x**2 / M_GW**2 - 1)**(-5/4)
+            return output
+        if k_eq > k_0:
+            output = (x**2 / M_GW**2 - 1)**(-5/4)
+            return output
+    elif val <= k_c:
+        beta = H_eq**2 * a_eq**4 / (2)
+        a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
+            2. * a_eq * k_0**2
+        )
+        if abs(x**2 / M_GW**2 - 1) < 1e-25:
+            return 0.
+        output = a_c/a_k_0_GR*np.sqrt(k_c/k_0)*(x**2 / M_GW**2 - 1)**(-1/2)
+        return output
+
+
+S_approx = np.vectorize(enhance_approx)(omega_0)
+
+'''
+# Figure 4 from Emir Paper
+# use omega_0 = np.logspace(math.log(M_GW, 10)+ 0.00000000001, -7, N)
+#M_GW = 2e-7
+M_GW = 2.34e-8
+omega_0 = np.logspace(math.log(M_GW, 10)+ 0.00000000001, -7, N)
+k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
+a_k = ak(k)
+omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
+k_prime = a_0 * omega_0
+beta = H_eq**2 * a_eq**4 / (2)
+a_k_prime_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_prime**2 + beta)) / (
+    2 * a_eq * k_prime**2
+)
+gamma_k_t_0 = A(k)*np.sqrt(omega_k * a_k**3 / (omega_0*a_0**3))
+P = np.where(omega_0 <= M_GW, np.nan, omega_0**2 /
+             (omega_0**2-M_GW**2)*(2*k**3/np.pi**2)*gamma_k_t_0**2)
+gamma_k_GR_t_0 = A(k_prime)*a_k_prime_GR/a_0
+P_GR = (2*k_prime**3/np.pi**2)*gamma_k_GR_t_0**2  # *y_k_0**2
+S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
+            * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
+    
+ax1.plot(omega_0, omega_0*a_k**3*omega_k/a_0/k**2*P_prim_k, label='alternate',linewidth=7.0)

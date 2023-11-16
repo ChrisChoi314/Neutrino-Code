@@ -5,10 +5,11 @@ import math
 import h5py
 import json
 from nanograv_func import *
-from nanograv.ng_blue_func import *
+from ng_blue_func import *
 
+fs = 12
+plt.rcParams.update({'font.size': fs})
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
-
 f_yr = 1/(365*24*3600)
 gamma_12p5 = 13/3
 gamma_15 = 3.2  # from page 4 of https://iopscience.iop.org/article/10.3847/2041-8213/acdac6/pdf
@@ -78,7 +79,10 @@ thin = 1
 
 # Make Figure
 # plt.style.use('dark_background')
-plt.figure(figsize=(12, 5))
+
+fig, axs = plt.subplots(2, 1, figsize = (10,7), sharex=True)
+fig.subplots_adjust(hspace=0)
+#plt.figure(figsize=(12, 5))
 
 # Left Hand Side Of Plot
 
@@ -154,43 +158,132 @@ PL = np.zeros((67, num_freqs))
 for ii in range(67):
     OMG_15[ii] = np.log10(h**2*omega_GW(freqs, A_arr[ii], gamma_arr[ii]))
     PL[ii] = np.log10(powerlaw(freqs, A_arr[ii], gamma_arr[ii]))
-plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
-                 2*OMG_15.std(axis=0), color='orange', label='2$\sigma$ posterior of GWB', alpha=0.5)
+axs[0].fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
+                 2*OMG_15.std(axis=0), color='orange', alpha=0.5)
+axs[0].fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 4*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
+                 4*OMG_15.std(axis=0), color='orange', alpha=0.5)
 
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
-         linestyle='dashed', color='black', label='SMBHB spectrum')
+axs[0].plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
+         linestyle='dashed', color='black')
+
+axs[1].fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
+                 2*OMG_15.std(axis=0), color='orange', alpha=0.5)
+axs[1].fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 4*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
+                 4*OMG_15.std(axis=0), color='orange', alpha=0.5)
+
+axs[1].plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
+         linestyle='dashed', color='black')
 
 # This part plots the energy densities of massive gravitons from the Mukohyama Blue tilted paper https://arxiv.org/pdf/1808.02381.pdf
-H_inf = 1e8
-tau_r = 5.494456683825391e-7  # calculated from equation (19)
-a_r = 1/(tau_r*H_inf)
-
-M_GW = 1.6*H_inf
-tau_m = 1e30*tau_r
-
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)), color='blue', label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
-
+tau_r = 5.494456683825391e-7
+H_inf = 5e2
+f_UV = 2e8*(H_inf/1e14)**.5
+freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
+tau_m = 1e10*(H_inf/1e14)**-2*tau_r
+M_arr = np.array([1.1422])*H_inf
+idx = 0
+for M_GW in M_arr:
+    Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
+    axs[1].plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
+         color='red', label=r"$M_{GW}$ = 1.14$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
+    idx+=1
+H_inf = 5e0
+f_UV = 2e8*(H_inf/1e14)**.5
+freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
+tau_m = 1e10*(H_inf/1e14)**-2*tau_r
+M_arr = np.array([1.251042105263158])*H_inf
+idx = 0
+for M_GW in M_arr:
+    Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
+    axs[1].plot(np.log10(freqs), np.log10(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
+         color='blue', label=r"$M_{GW}$ = 1.25$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
+    idx+=1
 
 BBN_f = np.logspace(np.log10(f_BBN), 9)
-plt.fill_between(np.log10(BBN_f), np.log10(BBN_f*0+h**2*1e-5),
+axs[0].fill_between(np.log10(BBN_f), np.log10(BBN_f*0+h**2*1e-5),
                  np.log10(BBN_f * 0 + 1e1), alpha=0.5, color='orchid')
-plt.text(-8.5, -5.4, r"BBN Bound", fontsize=15)
+axs[0].text(-7.5, -6, r"BBN Bound", fontsize=15)
+axs[1].fill_between(np.log10(BBN_f), np.log10(BBN_f*0+h**2*1e-5),
+                 np.log10(BBN_f * 0 + 1e1), alpha=0.5, color='orchid')
+axs[1].text(-7.5, -6, r"BBN Bound", fontsize=15)
 
 
 # Plot Labels
-plt.title(r'NANOGrav 15-year data and Time Dependent model')
+# plt.title(r'NANOGrav 15-year data and Time Dependent model')
 # plt.xlabel('$\gamma_{cp}$')
 plt.xlabel(r'log$_{10}(f$ Hz)')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
 
-plt.xlim(-9, -7)
-#plt.ylim(-12, -4)
+axs[1].set_ylim(-12, -4)
 
-# plt.xscale("log")
-# plt.yscale("log")
-plt.legend(loc='lower left')
+axs[1].legend(loc='lower left')
 
 
+P_prim_k = 2.43e-10
+beta = H_eq**2 * a_eq**4 / (2)
 
-plt.savefig('nanograv/ng_blue_figs/fig1.pdf')
+
+def A(k):
+    return np.where(k >= 0., np.sqrt(P_prim_k*np.pi**2/(2*k**3)), -1.)
+
+
+def enhance_approx(x):
+    if x < M_GW:
+        return 0.
+    val = a_0 * np.sqrt(x**2 - M_GW**2)
+    if k_0 < val:
+        return 1.
+    elif val <= k_0 and val >= k_c:
+        if val >= k_eq:
+            output = (x**2 / M_GW**2 - 1)**(-3/4)
+            return output
+        if val < k_eq and k_eq < k_0:
+            output = k_eq/(np.sqrt(2)*k_0)(x**2 / M_GW**2 - 1)**(-5/4)
+            return output
+        if k_eq > k_0:
+            output = (x**2 / M_GW**2 - 1)**(-5/4)
+            return output
+    elif val <= k_c:
+        beta = H_eq**2 * a_eq**4 / (2)
+        a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
+            2. * a_eq * k_0**2
+        )
+        if abs(x**2 / M_GW**2 - 1) < 1e-25:
+            return 0.
+        output = a_c/a_k_0_GR*np.sqrt(k_c/k_0)*(x**2 / M_GW**2 - 1)**(-1/2)
+        return output
+   
+
+M_arr = [8.6e-24*1e-9, 8.2e-24*1e-9]
+M_arr = [k / hbar for k in M_arr] + [2e-9*2*np.pi]
+color_arr = ['red', 'blue', 'green']
+text = ['2023 Wang et al.', '2023 Wu et al.', 'NG15 Freq Bound']
+idx = 0
+
+for M_GW in M_arr:
+    omega_0 = np.logspace(math.log(M_GW, 10), np.log10(6e-8*2*np.pi), N)
+    k = np.where(omega_0 >= M_GW, a_0 * np.sqrt(omega_0**2 - M_GW**2), -1.)
+    a_k = ak(k)  # uses multithreading to run faster
+    omega_k = np.sqrt((k / a_k) ** 2 + M_GW**2)
+    k_prime = (
+        a_0 * omega_0
+    )
+    f = omega_0/(2*np.pi) 
+    
+    Omega = omega_0*a_k**3*omega_k/a_0/k**2*P_prim_k
+
+    axs[0].plot(np.log10(f), np.log10(h**2*2*np.pi**2*Omega/(3*H_0**2)*(f)**2), color=color_arr[idx],
+                  label=r'$M_{GW} = $' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')   
+    idx+=1
+plt.xlim(-9,-7)
+axs[0].set_ylim(-16,-4)
+plt.xlabel(r'log$_{10}(f/$Hz)')
+axs[0].set_ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
+axs[1].set_ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
+axs[0].set_yticks(np.arange(-15., -4., 2.))
+axs[0].legend(loc='lower right')
+axs[1].legend(loc='upper left')
+axs[0].grid(alpha=.2)
+axs[1].grid(alpha=.2)
+plt.savefig('nanograv/both_fig_figs/fig0.pdf')
 plt.show()
