@@ -9,9 +9,9 @@ c_g = 1  # speed of graviton
 hbar = 6.582119569e-25  # GeV / Hz
 c = 3e8  # m * Hz * (1Gpc / 3.086e25m) = Gpc * Hz
 M_pl = 1.22089e19  # GeV
-omega_M = .3
-omega_R = 8.5e-5
-omega_L = .7
+omega_M = .3111
+omega_R = 9.182e-5
+omega_L = .6889
 
 T = 6.58e-25
 L = 1.97e-16
@@ -23,13 +23,11 @@ def gpc2hz(gpc): return gpc*(1/m2Gpc)*L/T
 
 def gev2hz(gev): return gev/(1.52e24)
 
-
-H_0 = 2.18e-18  # in Hz according to astronomy stack exchange https://astronomy.stackexchange.com/questions/49248/interpretation-of-hubble-constant-in-si-units
-h = H_0/(100 / 3.085678e+19)
+h = .6766 # according to Planck 2018 TT, TE, EE + lowE + lensing + BAO data
+H_0 = 100*h*3.2404407e-20 # in Hz 
 M_GW = H_0*1e10
 k_0 = 1e10*H_0  # in Gpc
 k_c = 1e4*H_0
-eta_rm = .1
 a_c = k_c / M_GW
 a_0 = k_0 / M_GW
 eta_0 = np.sqrt(4/(H_0**2*omega_M))
@@ -40,8 +38,6 @@ K = 0
 a_lm = .754
 
 f_BBN = 1.5e-11 # in Hz according to 22.290 of maggiore vol 2 
-
-
 f_yr = 1/(365*24*3600)
 
 def scale_fac(conf_time):
@@ -59,6 +55,7 @@ def conf_time(a):
 
 def integrand(a):
     return 1 / (a**2*H_0*np.sqrt(omega_M/a**3 + omega_R/a**4 + omega_L))
+
 
 def conf_time_anal(a):
     return scipy.integrate.quad(integrand, 0, a)[0]

@@ -77,10 +77,10 @@ burnin = 0
 thin = 1
 
 
-# Make Figure
-# plt.style.use('dark_background')
 
 fig, axs = plt.subplots(2, 1, figsize = (10,7), sharex=True)
+
+
 fig.subplots_adjust(hspace=0)
 #plt.figure(figsize=(12, 5))
 
