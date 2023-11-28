@@ -197,7 +197,6 @@ plt.plot(f_nanoGrav, nanoGrav_sens, color='darkturquoise')
 
 plt.text(5e-7, 1e-14, "NANOGrav\nSensitivity", fontsize=15)
 
-
 plt.xlabel(r'$f$ [Hz]')
 plt.ylabel(r'$h_0^2\Omega_{GW}$')
 plt.xscale('log')
