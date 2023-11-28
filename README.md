@@ -1,5 +1,5 @@
 # gw_research
-This is code I write for my research with Dr. Kahniashvili at Carnegie Mellon University, related to the study of gravitational waves.
+This is code I write for my research with Dr. Tina Kahniashvili at Carnegie Mellon University, related to the study of gravitational waves.
 
 DIRECTORY Layout
 ----------------------------
@@ -12,3 +12,12 @@ nanograv - Files and folders related to the NANOGrav 15 year data set and genera
 weinberg - Files and folders related to Steven Weinberg's paper 'Damping of Tensor Modes in Cosmology', https://arxiv.org/pdf/astro-ph/0306304.pdf 
 
 Go to each individual directory for more README's tailored to those directories. 
+
+----------------------------
+The files that generate the figures in the paper for constraining graviton mass are located in:
+  - Figure 1: blue/massive.py
+  - Figure 2: nanograv/contour.py
+  - Figure 3: nanograv/SFM_compare.py
+  - Figure 4: nanograv/amp_spec.py
+  - Figure 5: nanograv/ng_blue.py
+
