@@ -9,6 +9,11 @@ from ng_blue_func import *
 
 from scipy.spatial import ConvexHull
 
+fs = 15
+plt.rcParams.update({'font.size': fs})
+
+plt.figure(figsize=(8,6))
+
 def omega_GW(f, A_cp, gamma):
     return 2*np.pi**2*(10**A_cp)**2*f_yr**2/(3*H_0**2)*(f/f_yr)**(5-gamma)
 
@@ -76,20 +81,12 @@ for M_GW in M_arr:
         gamma_gw = 5 - grad
         A_gw = (Omega - grad*(freqs - np.log10(f_yr)) - np.log10(2*np.pi**2*f_yr**2/(3*H_0**2)) )/2
     plt.plot(gamma_gw,A_gw, color = color_arr[idx],label=r"$M_{GW}$ = "+f'{M_arr[idx]}'+r'$H_{inf}$' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    '''plt.plot(freqs, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m),
-         color=color_arr[idx], label=r"$M_{GW}$ = "+f'{M_arr[idx]}'+r'$H_{inf}$' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    plt.plot(freqs, Omega, color=color_arr[idx], linestyle='dashed')'''
     idx+=1
-
-
 
 plt.xlabel(r'$\gamma_{GW}$')
 plt.ylabel(r'log$_{10}$A$_{GW}$')
-#plt.xscale('log')
-#plt.yscale('log')
-plt.legend(loc='lower left')
 plt.grid(alpha=.2)
-#plt.xlim(1.5,5)
-#plt.ylim(-15.0,-13.6)
+plt.xlim(1.5,5)
+plt.ylim(-15.0,-13.6)
 plt.savefig('nanograv/amp_spec_figs/fig0.pdf')
 plt.show()

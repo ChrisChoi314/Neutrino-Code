@@ -78,40 +78,17 @@ plt.plot(freqs, h**2*omega_GW(freqs, -15.6, 4.7),
 # This part plots the energy densities of massive gravitons from the Mukohyama Blue tilted paper https://arxiv.org/pdf/1808.02381.pdf
 tau_r = 5.494456683825391e-7
 
-H_inf = .47
-f_UV = 2e8*(H_inf/1e14)**.5
+H_inf_arr = [.47, 5.2, 5e1]
+M_arr = [1.298, 1.251, 1.201]
+color_arr = ['red', 'blue', 'green']
 freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
-tau_m = 1e10*(H_inf/1e14)**-2*tau_r
-M_arr = np.array([1.298])*H_inf
 idx = 0
 for M_GW in M_arr:
-    Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
-    plt.plot(freqs, (h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='red', label=r"$M_{GW}$ = 1.298$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    idx+=1
-
-H_inf = 5.2
-f_UV = 2e8*(H_inf/1e14)**.5
-freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
-tau_m = 1e10*(H_inf/1e14)**-2*tau_r
-M_arr = np.array([1.251042105263158])*H_inf
-idx = 0
-for M_GW in M_arr:
-    Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
-    plt.plot(freqs, (h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='blue', label=r"$M_{GW}$ = 1.251$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    idx+=1
-
-H_inf = 5e1
-f_UV = 2e8*(H_inf/1e14)**.5
-freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
-tau_m = 1e10*(H_inf/1e14)**-2*tau_r
-M_arr = np.array([1.201])*H_inf
-idx = 0
-for M_GW in M_arr:
-    Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
-    plt.plot(freqs, (h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='green', label=r"$M_{GW}$ = 1.201$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
+    H_inf = H_inf_arr[idx]
+    M_GW *= H_inf
+    tau_m = 1e10*(H_inf/1e14)**-2*tau_r
+    plt.plot(freqs, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m),
+         color=color_arr[idx], label=r"$M_{GW}$ = "+f'{M_arr[idx]}'+r'$H_{inf}$' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
     idx+=1
 
 BBN_f = np.logspace(np.log10(f_BBN), 9)

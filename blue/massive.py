@@ -153,7 +153,7 @@ v_k_reg3 = 2/k*np.sqrt(m*tau_m / (np.pi*H_inf*tau_r**2)) * \
 #)
 
 ax1.set_xlim(-tau_end, tau_end)
-ax1.set_ylabel(r"$\overline{\gamma}_k(\tau)$")
+ax1.set_ylabel(r"$\overline{h}_k(\tau)$")
 
 
 plt.axvline(x=-tau_r, color='red', linestyle='dashed',
