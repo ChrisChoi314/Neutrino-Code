@@ -165,7 +165,7 @@ for M_GW in M_arr:
     f_UV = 2e8*(H_inf/1e14)**.5
     freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
     tau_m = 1e10*(H_inf/1e14)**-2*tau_r
-    Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m), BBN)
+    Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, np.nan, BBN)
     plt.plot(freqs, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m),
          color=color_arr[idx], label=r"$M_{GW}$ = "+f'{M_arr[idx]}'+r'$H_{inf}$' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
     plt.plot(freqs, Omega, color=color_arr[idx], linestyle='dashed')

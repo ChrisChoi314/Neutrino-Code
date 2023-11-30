@@ -10,21 +10,19 @@ from ng_blue_func import *
 
 fs = 13
 plt.rcParams.update({'font.size': fs})
+color = 'autumn'
 
-N=500
+N = 1000
 num_freqs = N
 H_inf = 1e8  # in GeV
 tau_r = 5.494456683825391e-7  # calculated from equation (19)
 
-tau_m = 6.6e21*tau_r
-tau_m = 1e10*(H_inf/1e14)**-2*tau_r
 f_UV = 2e8*(H_inf/1e14)**.5
-
 tau_m = 1e10*(H_inf/1e14)**-2*tau_r
 
 freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
 M_arr = np.linspace(0.00001,1.499999, N)*H_inf
-M_arr = np.logspace(-6,np.log10(1.5), N)*H_inf
+M_arr = np.logspace(-6,np.log10(1.499999), N)*H_inf
 
 def f(x, y):
     return omega_GW_full(x, y, H_inf, tau_r, tau_m)
@@ -35,13 +33,14 @@ def log_tick_formatter(val, pos=None):
 X, Y = np.meshgrid(freqs, M_arr)
 Z = f(X, Y)
 
+print((Y/H_inf))
 
 plt.figure(figsize=(10,8))
 ax = plt.axes(projection='3d')
-surf = ax.plot_surface( np.log10(X), np.log10(Y/H_inf), np.log10(Z),linestyles="solid", cmap='autumn')
+surf = ax.plot_surface( np.log10(X), np.log10(Y/H_inf), np.log10(Z),linestyles="solid", cmap=color)
 ax.set_xlabel('Frequency [Hz]')
-ax.set_ylabel('$M_{GW}$ [$H_{inf}$]')
-ax.set_zlabel('$\log(h_0\Omega_{GW})$')
+ax.set_ylabel('$m$ [$H_{inf}$]')
+ax.set_zlabel('$h_0\Omega_{GW}$')
 
 ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
 ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
@@ -50,16 +49,11 @@ ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
 ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
-
-surf._edgecolors2d = surf._edgecolor3d
-surf._facecolors2d = surf._facecolor3d
-
 ax.view_init(elev=20, azim=120)
-ax.annotate(r'$\tau_m = 10^{10}*(H_{inf}/10^{14})^{-2}\tau_r, H_{inf} = 10^8$ GeV', xy=(0.4,0.9),xycoords='axes fraction',
+ax.annotate(r'$\tau_m = 10^{10}H_{14}^{-2}\tau_r, H_{inf} = 10^8$ GeV', xy=(0.4,0.9),xycoords='axes fraction',
              fontsize=fs)
 
-plt.savefig('nanograv/contour_figs/fig0.pdf')
-
+plt.savefig('nanograv/contour_figs/fig3a.pdf')
 
 # for the second figure 
 
@@ -78,10 +72,10 @@ Z = f(X, Y)
 
 plt.figure(figsize=(10,8))
 ax = plt.axes(projection='3d')
-surf = ax.plot_surface( np.log10(X),np.log10(Y/tau_r), np.log10(Z),linestyles="solid", cmap='autumn')
+surf = ax.plot_surface( np.log10(X),np.log10(Y/tau_r), np.log10(Z),linestyles="solid", cmap=color)
 ax.set_xlabel('Frequency [Hz]')
 ax.set_ylabel(r'$\tau_m \ [\tau_r]$')
-ax.set_zlabel('$\log(h_0\Omega_{GW})$')
+ax.set_zlabel('$h_0\Omega_{GW}$')
 
 ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
 ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
@@ -90,14 +84,12 @@ ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
 ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
-surf._edgecolors2d = surf._edgecolor3d
-surf._facecolors2d = surf._facecolor3d
 
 #ax.view_init(elev=20, azim=120)
-ax.annotate(r'$M_{GW} = H_{inf}, H_{inf} = 10^8$ GeV', xy=(0.4,0.9),xycoords='axes fraction',
+ax.annotate(r'$m = H_{inf}, H_{inf} = 10^8$ GeV', xy=(0.4,0.9),xycoords='axes fraction',
              fontsize=fs)
 
-plt.savefig('nanograv/contour_figs/fig1.pdf')
+plt.savefig('nanograv/contour_figs/fig3b.pdf')
 
 # for the third figure 
 
@@ -118,10 +110,10 @@ Z = f(X, Y)
 
 plt.figure(figsize=(10,8))
 ax = plt.axes(projection='3d')
-surf = ax.plot_surface( np.log10(X),np.log10(Y), np.log10(Z),linestyles="solid", cmap='autumn')
+surf = ax.plot_surface( np.log10(X),np.log10(Y), np.log10(Z),linestyles="solid", cmap=color)
 ax.set_xlabel('Frequency [Hz]')
 ax.set_ylabel(r'$H_{inf}$')
-ax.set_zlabel('$\log(h_0\Omega_{GW})$')
+ax.set_zlabel('$h_0\Omega_{GW}$')
 
 ax.xaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
 ax.xaxis.set_major_locator(mticker.MaxNLocator(integer=True))
@@ -130,13 +122,11 @@ ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
 ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
-surf._edgecolors2d = surf._edgecolor3d
-surf._facecolors2d = surf._facecolor3d
 
 #ax.view_init(elev=20, azim=120)
-ax.annotate(r'$M_{GW} = H_{inf}, 10^{10}*(H_{inf}/10^{14})^{-2}\tau_r$', xy=(0.4,0.9),xycoords='axes fraction',
+ax.annotate(r'$m = H_{inf}, 10^{10}H_{14}^{-2}\tau_r$', xy=(0.4,0.9),xycoords='axes fraction',
              fontsize=fs)
 
-plt.savefig('nanograv/contour_figs/fig2.pdf')
+plt.savefig('nanograv/contour_figs/fig3c.pdf')
 
 plt.show()
