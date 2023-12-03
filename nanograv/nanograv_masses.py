@@ -5,6 +5,8 @@ import math
 import h5py
 import json
 from nanograv_func import *
+import seaborn as sns   
+import pandas as pd
 
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 
@@ -102,27 +104,37 @@ for pc in vpt['bodies']:
 
 dir = '30f_fs{hd+mp+dp+cp}_ceffyl_hd-only'
 dir = '30f_fs{hd+mp+dp}_ceffyl_hd-only'
-dir = '30f_fs{hd}_ceffyl'
 dir = '30f_fs{cp}_ceffyl'
+dir = '30f_fs{hd}_ceffyl'
 freqs = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/freqs.npy')
 rho = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/log10rhogrid.npy')
 density = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/density.npy')
 bandwidth = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/bandwidths.npy')
-print(freqs)
-density = np.transpose(density[0]) # I did this because we want the y dimension to be the same size as the # of frequencies, which is 30
-
-vpt = plt.violinplot(density,
-               positions=(freqs),
-                widths=.5*freqs_30,showextrema=False)
+density = np.transpose(density[0]) 
+print(rho.shape)# I did this because we want the y dimension to be the same size as the # of frequencies, which is 30
+'''vpt = plt.violinplot(10**density,positions=freqs,widths=.05*freqs,showextrema=False)
 for pc in vpt['bodies']:
     pc.set_facecolor('k')
     pc.set_alpha(0.3)
+'''
+rms = []
+bin = []
+data_set = []
+for i in range(len(density)):
+    for j in range(len(density[0])):
+        rms.append(density[i,j])
+        bin.append(freqs[j])
+        data_set.append('15')
 
+df = pd.DataFrame()
+df["RMS"] = rms
+df["Fbin"] = bin
+df["Data Set"] = data_set
+sns.violinplot(x=df["Fbin"], y = df["RMS"])#, log_scale=True)
 N = 1000
 f = np.linspace(-9, math.log(3e-7, 10), N)
 f = np.logspace(-8.6, -7, 30)
 freqs_30 = f
-
 
 def omega_GW(f, A_cp, gamma):
     return 2*np.pi**2*(10**A_cp)**2*f_yr**2/(3*H_0**2)*(f/f_yr)**(5-gamma)
@@ -135,7 +147,8 @@ for ii in range(PL_30freq_num):
 
 num = 67
 num_freqs = 30
-freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
+#freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
+
 with open('blue/data/v1p1_all_dict.json', 'r') as f:
     data = json.load(f)
 # This was a failed attempt to try to get the log10_A and gamma from the blue/data/v1p1_all_dict.json file
@@ -161,21 +174,26 @@ OMG_15 = np.zeros((67, num_freqs))
 # gamma_arr = np.zeros((PL_30freq_num,30))
 # A_arr = np.zeros((PL_30freq_num,30))
 PL = np.zeros((67, num_freqs))
-for ii in range(67):
-    OMG_15[ii] = np.log10(h**2*omega_GW(freqs, A_arr[ii], gamma_arr[ii]))
-    PL[ii] = np.log10(powerlaw(freqs, A_arr[ii], gamma_arr[ii]))
-    PL[ii] = powerlaw(freqs, A_arr[ii], gamma_arr[ii])
 #plt.fill_between(np.log10(freqs), OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0), OMG_15.mean(axis=0) +
 #                 2*OMG_15.std(axis=0), color='orange',label='2$\sigma$ posterior of GWB', alpha=0.5)
 
 #plt.fill_between(np.log10(freqs), PL.mean(axis=0) - 2*PL.std(axis=0), PL.mean(axis=0) +
 #                 2*PL.std(axis=0), color='orange', label='2$\sigma$ posterior of GWB', alpha=0.5)
 
-plt.fill_between((freqs), np.log10(PL.mean(axis=0) - 2*PL.std(axis=0)), np.log10(PL.mean(axis=0) +
-                 2*PL.std(axis=0)), color='skyblue', label='2$\sigma$ posterior of GWB', alpha=0.5)
+#plt.fill_between((freqs), np.log10(PL.mean(axis=0) - 2*PL.std(axis=0)), np.log10(PL.mean(axis=0) +
+#                 2*PL.std(axis=0)), color='skyblue', label='2$\sigma$ posterior of GWB', alpha=0.5)
 
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
+'''
+for ii in range(67):
+    OMG_15[ii] = np.log10(h**2*omega_GW(freqs, A_arr[ii], gamma_arr[ii]))
+plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 1*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 1*OMG_15.std(axis=0)), color='orange', alpha=0.7)
+plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 2*OMG_15.std(axis=0)), color='orange', alpha=0.5)
+plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 3*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 3*OMG_15.std(axis=0)), color='orange', alpha=0.3)
+
+plt.plot(freqs, h**2*omega_GW(freqs, -15.6, 4.7),
          linestyle='dashed', color='black', label='SMBHB spectrum')
+
+'''        
 # plt.fill_between(np.log10(freqs), PL.mean(axis=0) - 2*PL.std(axis=0), PL.mean(axis=0) + 2*PL.std(axis=0), color='orange', alpha=0.5)
 # plt.fill_between(log10_f, omega_15.mean(axis=0) - 2*omega_15.std(axis=0), omega_15.mean(axis=0) + 2*omega_15.std(axis=0), color='orange', alpha=0.75)
 
@@ -202,8 +220,8 @@ M_GW = .3*H_inf
 #plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), color='blue',
 #         label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
 M_GW = .6*H_inf
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW_approx(freqs, M_GW)), linestyle='dashed',
-         color='blue', label=r'MG - Blue-tilted, $m = 0.6H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
+#plt.plot(freqs,h**2*omega_GW_approx(freqs, M_GW), linestyle='dashed',
+#         color='blue', label=r'MG - Blue-tilted, $m = 0.6H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
 
 M_GW = 0
 tau_m = 1
@@ -260,7 +278,7 @@ color_arr = ['red', 'red', 'green']
 text = ['2023 NANOGrav', '2016 LIGO', 'GR']
 idx = 0
 N = 2000
-
+'''
 
 for M_GW in M_arr:
     if M_GW == 0:
@@ -287,13 +305,13 @@ for M_GW in M_arr:
     S = np.where(omega_0 <= M_GW, np.nan, k_prime * a_k / (k * a_k_prime_GR)
                  * np.sqrt(omega_k * a_k / (omega_0 * a_0)))
     f = omega_0/(2*np.pi)
-    '''
+
     if idx < 2:
         plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR*S**2 / (4*f))/(3*H_0**2)*(f)**(3)),
                  linestyle=linestyle_arr[idx], color='red', label=r'MG - Emir Gum. - $M_{GW}=$' + f'{round_it(M_GW*hbar, 2)}'+r' GeV/$c^2$' + ' ('+text[idx] + ')')
     else:
         plt.plot(np.log10(f), np.log10(h**2*2*np.pi**2*(P_GR/(4*f))/(3*H_0**2)  
-                 * (f)**(3)), color='green', label=r'GR - Emir Gum.')'''
+                 * (f)**(3)), color='green', label=r'GR - Emir Gum.')
     N_extra = math.log(10)
     a_k_0_GR = (beta + np.sqrt(beta) * np.sqrt(4 * a_eq**2 * k_0**2 + beta)) / (
         2 * a_eq * k_0**2
@@ -312,25 +330,18 @@ for M_GW in M_arr:
         break
         #print(f'amplif factor: {1e-4*(T_obs/H_0)**(-4)*(M_GW/H_0)**(-3) *math.log(np.e**N_extra*M_GW/H_0)}')
     idx += 1
-
+'''
 
 # Plot Labels
 # plt.title(r'NANOGrav 15-year data and Mu')
 # plt.xlabel('$\gamma_{cp}$')
 plt.xlabel(r'log$_{10}(f$ Hz)')
 plt.xlabel(r'$f$ [Hz]')
-
-# plt.ylabel(r'log$_{10}(A_{GWB})$')
-# plt.ylabel('log$_{10}A_{cp}$')
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
-
-#plt.xlim(-8.75, -7.5)
-#plt.xlim(10**-8.75, 10**-7.5)
-plt.ylim(-9, -5)
-
+#plt.ylim(1e-14, 1e-4)
 plt.xscale("log")
 #plt.yscale("log")
 plt.legend(loc='lower left').set_visible(False)
-
-plt.savefig('nanograv/nanograv_masses_figs/fig3.pdf')
+plt.grid(alpha=.2)
+plt.savefig('nanograv/nanograv_masses_figs/fig8.pdf')
 plt.show()
