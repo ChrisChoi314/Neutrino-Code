@@ -84,7 +84,6 @@ ax.yaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 ax.zaxis.set_major_formatter(mticker.FuncFormatter(log_tick_formatter))
 ax.zaxis.set_major_locator(mticker.MaxNLocator(integer=True))
 
-
 #ax.view_init(elev=20, azim=120)
 ax.annotate(r'$m = H_{\mathrm{inf}}, H_{\mathrm{inf}} = 10^8$ GeV', xy=(0.4,0.9),xycoords='axes fraction',
              fontsize=fs)
