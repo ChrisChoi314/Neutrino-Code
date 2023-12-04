@@ -29,17 +29,20 @@ freqs_30 = f
 def omega_GW(f, A_cp, gamma):
     return 2*np.pi**2*(10**A_cp)**2*f_yr**2/(3*H_0**2)*(f/f_yr)**(5-gamma)
 
-plt.figure(figsize=(10,4))
+#ax = plt.figure(figsize=(8,6))
+
+fig, ax = plt.subplots(1, 1, figsize = (8,6))
 
 BBN = h**2*1e-5
 
 CMB_f = np.logspace(-16.7, -16)
 plt.fill_between(CMB_f,CMB_f*0+h**2*1e-15, CMB_f *
                  0 + 1e15, alpha=0.5, color='blue')
-plt.text(10**-18.5, 1e-13, r"CMB", fontsize=15)
+plt.text(1e-16, 1e-10, "CMB\nBound", fontsize=15)
 
 dir = '30f_fs{hd}_ceffyl'
-freqs = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/freqs.npy')
+freqs_raw = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/freqs.npy')
+freqs = freqs_raw
 num_freqs = 30
 
 A_arr = samples_cold[:, -1]
@@ -93,15 +96,16 @@ for M_GW in M_arr:
     tau_m = tau_m_arr[idx]
     Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, np.nan, BBN)
     plt.plot(freqs, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m),color=color_arr[idx], label=r"$M_{GW}$ = "+f'{M_arr[idx]}'+r'$H_{inf}$' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    plt.plot(freqs, Omega, color=color_arr[idx], linestyle='dashed')
+    #if idx <= 2:
+    #     plt.plot(freqs, Omega, color=color_arr[idx], linestyle='dashed')
     idx+=1
-plt.text(1e-4, 1e-7, r"With suppression", fontsize=15)
-plt.text(1e-9, 1e3, r"Without suppression", fontsize=15)
+#plt.text(1e-1, 1e-6, "With\nsuppression", fontsize=15)
+#plt.text(1e-9, 1e-2, "Without\nsuppression", fontsize=15)
 
 BBN_f = np.logspace(np.log10(f_BBN), 9)
 plt.fill_between((BBN_f), (BBN_f*0+h**2*1e-5),
                  (BBN_f * 0 + 1e15), alpha=0.5, color='orchid')
-plt.text(10**-13.5, 1e0, "BBN\nBound", fontsize=15)
+plt.text(10**-13.5, 1e-3, "BBN\nBound", fontsize=15)
 
 outfile = np.load('emir/emir_hasasia/nanograv_sens_full.npz')
 
@@ -120,17 +124,53 @@ f_nanoGrav = outfile['freqs']
 nanoGrav_sens = outfile['sens']
 plt.plot(f_nanoGrav, nanoGrav_sens, color='darkturquoise')
 
-plt.text(5e-7, 1e-14, "NANOGrav\nSensitivity", fontsize=15)
+plt.text(1e-10, 1e-17, "NANOGrav\nSensitivity", fontsize=15)
+
+axins = ax.inset_axes([0.6, 0.02, 0.38, 0.45])
+idx = 0
+for M_GW in M_arr:
+    H_inf = H_inf_arr[idx]
+    M_GW *= H_inf
+    tau_r = tau_r_arr[idx]
+    #f_UV = 2e8*(H_inf/1e14)**.5
+    f_UV = 1/tau_r / (2*np.pi)
+    freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
+    tau_m = tau_m_arr[idx]
+    Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, np.nan, BBN)
+    axins.plot(freqs, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m),color=color_arr[idx], label=r"$M_{GW}$ = "+f'{M_arr[idx]}'+r'$H_{inf}$' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
+    #if idx <= 2:
+    #     plt.plot(freqs, Omega, color=color_arr[idx], linestyle='dashed')
+    idx+=1
+axins.fill_between((BBN_f), (BBN_f*0+h**2*1e-5),
+                 (BBN_f * 0 + 1e15), alpha=0.5, color='orchid')
+axins.plot(f_nanoGrav, nanoGrav_sens, color='darkturquoise')
+freqs = freqs_raw
+axins.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 1*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 1*OMG_15.std(axis=0)), color='orange', alpha=0.7)
+axins.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 2*OMG_15.std(axis=0)), color='orange', alpha=0.5)
+axins.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 3*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 3*OMG_15.std(axis=0)), color='orange', alpha=0.3)
+axins.plot(freqs,h**2*omega_GW(freqs, -15.6, 4.7),
+         linestyle='dashed', color='black')
+axins.fill_between(freqs, lower, upper, color='black', alpha=0.1)
+axins.set_xscale('log')
+axins.set_yscale('log')
+
+x1, x2, y1, y2 = 1e-9,1e-7,1e-14, 1e-5
+axins.set_xlim(x1, x2)
+axins.set_ylim(y1, y2)
+axins.set_xticklabels('')
+axins.set_yticklabels('')
+ax.indicate_inset_zoom(axins, edgecolor="black")
 
 plt.xlabel(r'$f$ [Hz]')
-plt.ylabel(r'$h_0^2\Omega_{GW}$')
+plt.ylabel(r'$h_0^2\Omega_{\mathrm{GW}}$')
 plt.xscale('log')
 plt.yscale('log')
 # plt.legend(loc='lower right')
 plt.grid(alpha=.2)
-plt.xlim(1e-9,1e-7)
-plt.ylim(1e-13,1e-4)
 plt.xlim(1e-20,1e6)
-plt.ylim(1e-22,1e12)
-plt.savefig('nanograv/no_bbn_figs/fig0.pdf')
+plt.ylim(1e-22,1e1)
+plt.grid(which='major', alpha=.2)
+plt.grid(which='minor', alpha=.2)
+
+plt.savefig('nanograv/zoomed_sigma_figs/fig1.pdf')
 plt.show()
