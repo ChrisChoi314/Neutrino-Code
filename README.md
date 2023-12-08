@@ -17,7 +17,6 @@ Go to each individual directory for more README's tailored to those directories.
 The files that generate the figures in the paper for constraining graviton mass are located in:
   - Figure 1: blue/massive.py
   - Figure 2: nanograv/contour.py
-  - Figure 3: nanograv/SFM_compare.py
-  - Figure 4: nanograv/amp_spec.py
-  - Figure 5: nanograv/ng_blue.py
+  - Figure 3: nanograv/bbn_both.py
+  - Figure 4: nanograv/ng_blue.py
 
