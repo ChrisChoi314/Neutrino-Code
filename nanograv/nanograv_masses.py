@@ -111,26 +111,12 @@ rho = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/log10rh
 density = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/density.npy')
 bandwidth = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/bandwidths.npy')
 density = np.transpose(density[0]) 
-print(rho.shape)# I did this because we want the y dimension to be the same size as the # of frequencies, which is 30
 '''vpt = plt.violinplot(10**density,positions=freqs,widths=.05*freqs,showextrema=False)
 for pc in vpt['bodies']:
     pc.set_facecolor('k')
     pc.set_alpha(0.3)
 '''
-rms = []
-bin = []
-data_set = []
-for i in range(len(density)):
-    for j in range(len(density[0])):
-        rms.append(density[i,j])
-        bin.append(freqs[j])
-        data_set.append('15')
 
-df = pd.DataFrame()
-df["RMS"] = rms
-df["Fbin"] = bin
-df["Data Set"] = data_set
-sns.violinplot(x=df["Fbin"], y = df["RMS"])#, log_scale=True)
 N = 1000
 f = np.linspace(-9, math.log(3e-7, 10), N)
 f = np.logspace(-8.6, -7, 30)
@@ -331,16 +317,78 @@ for M_GW in M_arr:
         #print(f'amplif factor: {1e-4*(T_obs/H_0)**(-4)*(M_GW/H_0)**(-3) *math.log(np.e**N_extra*M_GW/H_0)}')
     idx += 1
 '''
+plt.gca()
+plt.clf()
+
+from scipy.stats import rv_histogram
+
+# load the logpdfs
+
+logpdfs = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/density.npy') 
+logpdfs = logpdfs[0]
+# load frequencies
+
+freqs = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/freqs.npy')
+
+nfreqs = len(freqs)
+
+# create ‘histogram’ bin edges
+
+grid_points = np.load('blue/data/NANOGrav15yr_KDE-FreeSpectra_v1.0.0/' + dir + '/log10rhogrid.npy')
+binedges = 0.5 * (grid_points[1:] + grid_points[:-1])
+
+dx = binedges[1] - binedges[0]
+
+binedges = np.insert(binedges, 0, binedges[0]-dx)
+
+binedges = np.insert(binedges, -1, binedges[-1]+dx)
+
+# create and sample from continuous rv objects
+
+samples = np.zeros((10000, nfreqs))
+
+for ii in range(nfreqs):
+    rv = rv_histogram((np.exp(logpdfs[ii]), binedges), density=True)
+    samples[:,ii] = rv.rvs(size=10000)
+    print(np.exp(logpdfs[ii]))
+
+import seaborn as sns
+
+rms = []
+bin = []
+data_set = []
+for i in range(len(density)):
+    for j in range(len(density[0])):
+        rms.append(density[i,j])
+        bin.append(freqs[j])
+        data_set.append('15')
+
+df = pd.DataFrame()
+df["RMS"] = rms
+df["Fbin"] = bin
+df["Data Set"] = data_set
+sns.violinplot(x=df["Fbin"], y = df["RMS"], log_scale=True)
+
+vpt = plt.violinplot((h**2*(10**samples)**2*8*np.pi**4*freqs**5/H_0**2/freqs[0]), positions=freqs,widths=0.1*freqs, showextrema=False)
+print(samples)
+for pc in vpt['bodies']:
+
+    pc.set_facecolor('k')
+    pc.set_alpha(0.1)
 
 # Plot Labels
 # plt.title(r'NANOGrav 15-year data and Mu')
 # plt.xlabel('$\gamma_{cp}$')
 plt.xlabel(r'log$_{10}(f$ Hz)')
-plt.xlabel(r'$f$ [Hz]')
+plt.xlabel(r'$f$ [Hz]')  
 plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
-#plt.ylim(1e-14, 1e-4)
+plt.ylim(-13,-4)
+plt.ylim(1e-14, 1e-4)
+plt.xlim(1e-9, 1e-7)
+plt.grid(which='major', alpha=.2)
+plt.grid(which='minor', alpha=.2)
 plt.xscale("log")
-#plt.yscale("log")
+plt.yscale("log")
 plt.legend(loc='lower left').set_visible(False)
 plt.grid(alpha=.2)
 plt.savefig('nanograv/nanograv_masses_figs/fig8.pdf')
