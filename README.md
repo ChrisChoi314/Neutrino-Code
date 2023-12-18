@@ -18,5 +18,5 @@ The files that generate the figures in the paper for constraining graviton mass 
   - Figure 1: blue/massive.py
   - Figure 2: nanograv/contour.py
   - Figure 3: nanograv/bbn_both.py
-  - Figure 4: nanograv/ng_blue.py
+  - Figure 4: nanograv/zoomed_sigma.py
 
