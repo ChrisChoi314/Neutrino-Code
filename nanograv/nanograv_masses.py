@@ -8,7 +8,7 @@ from nanograv_func import *
 import seaborn as sns   
 import pandas as pd
 
-# Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
+# Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers. 
 
 f_yr = 1/(365*24*3600)
 gamma_12p5 = 13/3

@@ -116,13 +116,18 @@ with open('blue/data/sensitivity_curves_NG15yr_fullPTA.txt', 'r') as file:
     for line in file:
         if idx != 0:
             elems = line.strip("\r\n").split(",")
+            print(elems)
             freq_NG.append(float(elems[0]))
             omega_GW_NG.append(float(elems[3]))
         idx +=1
 
 f_nanoGrav = outfile['freqs']
 nanoGrav_sens = outfile['sens']
-plt.plot(f_nanoGrav, nanoGrav_sens, color='darkturquoise')
+plt.plot(f_nanoGrav, h**2*nanoGrav_sens, color='darkturquoise')
+
+f_nanoGrav = np.array(freq_NG)
+nanoGrav_sens = np.array(omega_GW_NG)
+plt.plot(f_nanoGrav, h**2*nanoGrav_sens, color='darkturquoise')
 
 plt.text(1e-10, 1e-17, "NANOGrav\nSensitivity", fontsize=15)
 
@@ -133,7 +138,7 @@ for M_GW in M_arr:
     M_GW *= H_inf
     tau_r = tau_r_arr[idx]
     #f_UV = 2e8*(H_inf/1e14)**.5
-    f_UV = 1/tau_r / (2*np.pi)
+    f_UV = 1/tau_r / (2*np.pi)  
     freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
     tau_m = tau_m_arr[idx]
     Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, np.nan, BBN)
@@ -172,5 +177,5 @@ plt.ylim(1e-22,1e1)
 plt.grid(which='major', alpha=.2)
 plt.grid(which='minor', alpha=.2)
 
-plt.savefig('nanograv/zoomed_sigma_figs/fig1.pdf')
+plt.savefig('nanograv/zoomed_sigma_figs/fig2.pdf')
 plt.show()

@@ -4,8 +4,7 @@ import enterprise.constants as const
 import math
 import h5py
 import json
-from nanograv_func import *
-from ng_blue_func import *
+from s8_func import *
 
 fs = 12
 plt.rcParams.update({'font.size': fs})
@@ -205,5 +204,5 @@ plt.yscale('log')
 plt.grid(alpha=.2)
 plt.xlim(1e-20,1e3)
 plt.ylim(1e-22,1e6)
-plt.savefig('nanograv/ng_blue_figs/fig8.pdf')
+plt.savefig('s8/mod_H_figs/fig0.pdf')
 plt.show()
