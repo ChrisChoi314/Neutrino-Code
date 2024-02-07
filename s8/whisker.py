@@ -193,18 +193,29 @@ plt.bar(67.27, 100, width=1.2, facecolor = 'pink', alpha = 0.25)
 ### Plot each data point with attached label
 j=0
 k=nind
+pos = 0
 for i in range(len(paras)):
     if method[i]=='Indirect':
       elp = ErrorLinePloter(all_data[i],position=nr-j+1)
+      print(all_data[i])
+      pos = nr - j + 1
       j += 1
     elif method[i]=='Direct':
       elp = ErrorLinePloter(all_data[i],position=nr-k)
+      pos = nr -k
       k += 1
     labels[elp.position]=paras[i]
     elp.set_props(0.8,'-',black,
           0.7,black,0.8,
           'marker',mpsize=2.0,mpcolor=black,mshape='o')
     elp.plot()
+dat = {'ml': 65, 'e1_sig': [1, -1]}
+
+elp = ErrorLinePloter(dat,position=pos+1)
+elp.set_props(0.8,'-',black,
+          0.7,black,0.8,
+          'marker',mpsize=2.0,mpcolor=black,mshape='o')
+elp.plot()
 
 elp = ErrorLinePloter({'ml':0.0,'e1_sig':[100.,-100.]},position=nr-nind+1)
 labels[elp.position]=''
@@ -215,14 +226,14 @@ elp.plot()
 
 plt.tick_params(axis='x',labelsize=8)
 plt.tick_params(axis='y',labelsize=4.4)
-plt.xticks([i for i in range(60,100,5)])#,fontweight='semibold')
+plt.xticks([i for i in range(60,100,5)],fontweight='semibold')
 
 plt.xlim(61,82.5)
 
 plt.ylim(positions[0],positions[-1])
 
-plt.yticks(positions,labels)#,fontweight='semibold')
+plt.yticks(positions,labels,fontweight='semibold')
 
 plt.tight_layout()
-plt.savefig('s8/whisker_figs/fig0.pdf')
+plt.savefig('s8/whisker_figs/fig1.pdf')
 plt.show()
