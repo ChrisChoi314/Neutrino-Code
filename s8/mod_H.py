@@ -7,8 +7,9 @@ import json
 from scipy.integrate import quad
 from s8_func import *
 
-fs = 12
+fs = 11
 plt.rcParams.update({'font.size': fs})
+N = 5000
 
 r_rec = 144.57 # in Mpc, from Table 2 in Planck 2018 paper
 theta_rec = 1.04119/100 # same as above, in radians presumably
@@ -37,7 +38,6 @@ with h5py.File(hdf_file, 'r') as f:
 #plt.figure(figsize=(13.7, 4.2))
 plt.figure(figsize=(10, 4))
 
-N = 1000
 f = np.linspace(-9, math.log(3e-7, 10), N)
 f = np.logspace(-8.6, -7, 30)
 freqs_30 = f
@@ -59,11 +59,11 @@ OMG_15 = np.zeros((67, num_freqs))
 
 for ii in range(67):
     OMG_15[ii] = np.log10(h**2*omega_GW(freqs, A_arr[ii], gamma_arr[ii]))
-plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 1*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 1*OMG_15.std(axis=0)), color='orange', alpha=0.7)
-plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 2*OMG_15.std(axis=0)), color='orange', alpha=0.5)
-plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 3*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 3*OMG_15.std(axis=0)), color='orange', alpha=0.3)
-plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
-         linestyle='dashed', color='black', label='SMBHB spectrum')
+#plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 1*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 1*OMG_15.std(axis=0)), color='orange', alpha=0.7)
+#plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 2*OMG_15.std(axis=0)), color='orange', alpha=0.5)
+#plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 3*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 3*OMG_15.std(axis=0)), color='orange', alpha=0.3)
+#plt.plot(np.log10(freqs), np.log10(h**2*omega_GW(freqs, -15.6, 4.7)),
+#         linestyle='dashed', color='black', label='SMBHB spectrum')
 
 # This part plots the energy densities of massive gravitons from the Mukohyama Blue tilted paper https://arxiv.org/pdf/1808.02381.pdf
 num_freqs = 1000
@@ -81,8 +81,8 @@ M_arr = np.array([1.298])*H_inf
 idx = 0
 for M_GW in M_arr:
     Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
-    plt.plot(freqs, (h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='red', label=r"$M_{GW}$ = 1.298$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
+    #plt.plot(freqs, (h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
+    #     color='red', label=r"$M_{GW}$ = 1.298$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
     idx+=1
 
 M_GW = 1.298*H_inf
@@ -92,6 +92,7 @@ print(f'omega_GW_0 = {omega_GW_0_tot}, err = {err} ')
 H_inf = 1e8
 f_UV = 2e8*(H_inf/1e14)**.5
 tau_m = 1e10*(H_inf/1e14)**-2*tau_r
+tau_m = 1e23*tau_r
 M_GW = 0.8*H_inf
 omega_GW0, err = quad(omega_GW_full, 1e-19, f_UV , args=(M_GW, H_inf, tau_r, tau_m))
 print(f'omega_GW_0 = {omega_GW_0_tot}, err = {err} ')
@@ -104,6 +105,56 @@ def D_M1(a):
     return 1/np.sqrt((omega_R+omega_GW0)+omega_M*a+omega_L*a**4)
 def D_M2(a):
     return 1/np.sqrt(omega_R+(omega_M + omega_GW0)*a+omega_L*a**4)
+
+k_eq = 0.010339
+k_eq_sig = 0.000063
+
+
+print(f'a_eq = {a_eq}, a_rec = {a_rec}, a_m = {a_m}')
+
+z_eq = 3387 
+z_eq_sig = 21
+a_sig = z_eq_sig*(1/(1+z_eq)**2)
+
+def Hub_fun(a, omegaR, omegaM,omegaL, omegaGW):
+    if (a < a_m):
+        return H_0*np.sqrt(omegaR/a**4+(omegaM+omegaGW)/a**3+omegaL)
+    else: 
+        return H_0*np.sqrt((omegaR + omegaGW)/a**4+omegaM/a**3+omegaL)
+
+
+plt.vlines(x=a_eq, ymin=1e-19, ymax=1e-12, color="black", linestyle="dashed",
+            linewidth=1)
+plt.text(a_eq,1e-17, r"$a_{eq}$", fontsize=15, weight="bold")
+
+plt.vlines(x=a_rec, ymin=1e-19, ymax=1e-12, color="blue", linestyle="dashed",
+            linewidth=1)
+plt.text(a_rec,1e-17, r"$a_{CMB}$", fontsize=15, weight="bold")
+
+plt.vlines(x=a_m, ymin=1e-19, ymax=1e-12, color="red", linestyle="dashed",
+            linewidth=1)
+plt.text(a_m,1e-17, r"$a_{m}$", fontsize=15, weight="bold")
+a = np.logspace(-7,0,N)
+H = Hubble_a(a)
+plt.xscale('log')
+plt.yscale('log')
+plt.plot(a, a*H, label='$\Lambda CDM$')
+print(f'omega_GW from paper = {omega_GW0}')
+quad_a = 1
+quad_b = (omega_R + omega_M) - (a_sig*omega_R)
+quad_c = 2*omega_M*omega_R - a_sig*omega_R**2
+omega_GW0 = (-quad_b + np.sqrt(quad_b**2 - 4*quad_a*quad_c))/(2*quad_a)
+omega_GW0 = 21*omega_R
+print(f'calc omegagw = {omega_GW0}')
+Hmass = np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, omega_GW0)
+
+plt.plot(a, a*Hmass, label='Massive Gravity')
+
+plt.ylim(1e-18,4e-13)
+plt.legend()
+plt.show()
+plt.savefig('s8/mod_H/fig0.pdf')
+
 
 
 val1, err1 = quad(D_M1, a_rec, a_m, args=())
