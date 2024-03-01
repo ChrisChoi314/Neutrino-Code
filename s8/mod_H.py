@@ -4,11 +4,25 @@ import enterprise.constants as const
 import math
 import h5py
 import json
+from scipy.integrate import quad
 from s8_func import *
 
 fs = 12
 plt.rcParams.update({'font.size': fs})
 
+r_rec = 144.57 # in Mpc, from Table 2 in Planck 2018 paper
+theta_rec = 1.04119/100 # same as above, in radians presumably
+a_rec = 1/(1 + 1089.80) # same as above
+c_km = 299792458/1000 # in km/s
+
+def integrand(a):
+    return 1/np.sqrt(omega_R+omega_M*a+omega_L*a**4)
+
+val, err = quad(integrand, a_rec, 1, args=())
+
+calc_H0 = theta_rec/r_rec*val*c_km
+print(f'val = {val}, err = {err}')
+print(f"H_0 = {calc_H0}")
 # Much of this code is taken from the NANOGrav collaboration's github page, where they have code that generates certain plots from their set of 4 (or 5?) papers.
 hdf_file = "blue/data/15yr_quickCW_detection.h5"
 
@@ -27,6 +41,7 @@ N = 1000
 f = np.linspace(-9, math.log(3e-7, 10), N)
 f = np.logspace(-8.6, -7, 30)
 freqs_30 = f
+
 
 
 def omega_GW(f, A_cp, gamma):
@@ -70,139 +85,29 @@ for M_GW in M_arr:
          color='red', label=r"$M_{GW}$ = 1.298$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
     idx+=1
 
-H_inf = 5.2
+M_GW = 1.298*H_inf
+omega_GW_0_tot, err = quad(omega_GW_full, 1e-19, f_UV , args=(M_GW, H_inf, tau_r, tau_m))
+print(f'omega_GW_0 = {omega_GW_0_tot}, err = {err} ')
+
+H_inf = 1e8
 f_UV = 2e8*(H_inf/1e14)**.5
-freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
 tau_m = 1e10*(H_inf/1e14)**-2*tau_r
-M_arr = np.array([1.251042105263158])*H_inf
-idx = 0
-for M_GW in M_arr:
-    Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
-    plt.plot(freqs, (h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='blue', label=r"$M_{GW}$ = 1.251$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    idx+=1
+M_GW = 0.8*H_inf
+omega_GW0, err = quad(omega_GW_full, 1e-19, f_UV , args=(M_GW, H_inf, tau_r, tau_m))
+print(f'omega_GW_0 = {omega_GW_0_tot}, err = {err} ')
 
-H_inf = 5e1
-f_UV = 2e8*(H_inf/1e14)**.5
-freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
-tau_m = 1e10*(H_inf/1e14)**-2*tau_r
-M_arr = np.array([1.201])*H_inf
-idx = 0
-for M_GW in M_arr:
-    Omega = h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)
-    plt.plot(freqs, (h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)),
-         color='green', label=r"$M_{GW}$ = 1.201$H_{inf}$" + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    idx+=1
+omega_GW0 = 3.8e-6 # from https://physics.stackexchange.com/questions/661039/which-is-the-total-energy-density-constraint-for-the-gravitational-wave-backgrou
 
-BBN_f = np.logspace(np.log10(f_BBN), 9)
-plt.fill_between(BBN_f, BBN_f*0+h**2*1e-5, BBN_f*0 + 1e1,alpha=0.5, color='orchid')
-plt.text(10**-7.5, 1e-5, r"BBN Bound", fontsize=15)
+a_m = scale_fac(tau_m)
 
-plt.xlabel(r'$f$ [Hz]')
-plt.ylabel(r'$h_0^2\Omega_{GW}$')
-
-plt.xlim(1e-9, 1e-7)
-plt.ylim(1e-11, 1e-4)
-
-plt.legend(loc='upper left')
-plt.grid(alpha=.2)
+def D_M1(a):
+    return 1/np.sqrt((omega_R+omega_GW0)+omega_M*a+omega_L*a**4)
+def D_M2(a):
+    return 1/np.sqrt(omega_R+(omega_M + omega_GW0)*a+omega_L*a**4)
 
 
-'''plt.clf()
-idx_BBN = 0
-for f in freqs:
-    if f < f_BBN:
-        idx_BBN +=1 
+val1, err1 = quad(D_M1, a_rec, a_m, args=())
+val2, err2 = quad(D_M2, a_m, 1, args=())
 
-
-for M_GW in M_arr:
-    plt.plot(freqs[idx_BBN:], np.trapz(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)[idx_BBN:] / freqs[idx_BBN:]),
-         color='blue', label=r'MG - Blue-tilted, $m = 0.3H_{inf}$, $\frac{\tau_m}{\tau_r} = 10^{21}$')
-    
-BBN_f = np.logspace(np.log10(f_BBN), 9)
-plt.fill_between(BBN_f, BBN_f*0+1e-6,BBN_f * 0 + 1e1, alpha=0.5, color='orchid')
-
-plt.title(r'BBN Bound on $\int_{f_{BBN}}^f df \frac{1}{f} h^2\Omega_{GW,0}(f)$')
-plt.xlabel(r'log$_{10}(f$ Hz)')
-plt.ylabel(r'log$_{10}(h_0^2\Omega_{GW})$')
-
-plt.xscale('log')
-plt.yscale('log')'''
-
-#plt.savefig('nanograv/ng_blue_figs/fig3.pdf')
-
-plt.clf()
-
-plt.figure(figsize=(8,6))
-
-BBN = h**2*1e-5
-
-CMB_f = np.logspace(-16.7, -16)
-plt.fill_between(CMB_f,CMB_f*0+h**2*1e-15, CMB_f *
-                 0 + 1e6, alpha=0.5, color='blue')
-plt.text(10**-18.5, 1e-13, r"CMB", fontsize=15)
-
-num_freqs = 30
-freqs = np.logspace(np.log10(2e-9), np.log10(6e-8), num_freqs)
-
-for ii in range(67):
-    OMG_15[ii] = np.log10(h**2*omega_GW(freqs, A_arr[ii], gamma_arr[ii]))
-plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 1*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 1*OMG_15.std(axis=0)), color='orange', alpha=0.7)
-plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 2*OMG_15.std(axis=0)), color='orange', alpha=0.5)
-plt.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 3*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 3*OMG_15.std(axis=0)), color='orange', alpha=0.3)
-
-num_freqs = 1000
-tau_r = 5.494456683825391e-7  # calculated from equation (19)
-
-H_inf_arr = [.47, 5.2, 5e1]
-M_arr = [1.298, 1.251, 1.201]
-color_arr = ['red', 'blue', 'green']
-idx = 0
-for M_GW in M_arr:
-    H_inf = H_inf_arr[idx]
-    M_GW *= H_inf
-    f_UV = 2e8*(H_inf/1e14)**.5
-    freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
-    tau_m = 1e10*(H_inf/1e14)**-2*tau_r
-    Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, np.nan, BBN)
-    plt.plot(freqs, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m),
-         color=color_arr[idx], label=r"$M_{GW}$ = "+f'{M_arr[idx]}'+r'$H_{inf}$' + r", $H_{inf}$ = "+f'{H_inf} GeV' + r", $\frac{\tau_m}{\tau_r} = 10^{10}H_{14}^{-2}$")
-    plt.plot(freqs, Omega, color=color_arr[idx], linestyle='dashed')
-    idx+=1
-plt.text(1e-4, 1e-7, r"With suppression", fontsize=15)
-plt.text(1e-9, 1e3, r"Without suppression", fontsize=15)
-
-BBN_f = np.logspace(np.log10(f_BBN), 9)
-plt.fill_between((BBN_f), (BBN_f*0+h**2*1e-5),
-                 (BBN_f * 0 + 1e10), alpha=0.5, color='orchid')
-plt.text(10**-13.5, 1e0, "BBN\nBound", fontsize=15)
-
-outfile = np.load('emir/emir_hasasia/nanograv_sens_full.npz')
-
-freq_NG = []
-omega_GW_NG = []
-idx = 0
-with open('blue/data/sensitivity_curves_NG15yr_fullPTA.txt', 'r') as file:
-    for line in file:
-        if idx != 0:
-            elems = line.strip("\r\n").split(",")
-            freq_NG.append(float(elems[0]))
-            omega_GW_NG.append(float(elems[3]))
-        idx +=1
-
-f_nanoGrav = outfile['freqs']
-nanoGrav_sens = outfile['sens']
-plt.plot(f_nanoGrav, h**2*nanoGrav_sens, color='darkturquoise')
-
-plt.text(5e-7, 1e-14, "NANOGrav\nSensitivity", fontsize=15)
-
-plt.xlabel(r'$f$ [Hz]')
-plt.ylabel(r'$h_0^2\Omega_{GW}$')
-plt.xscale('log')
-plt.yscale('log')
-# plt.legend(loc='lower right')
-plt.grid(alpha=.2)
-plt.xlim(1e-20,1e3)
-plt.ylim(1e-22,1e6)
-plt.savefig('s8/mod_H_figs/fig0.pdf')
-plt.show()
+calc_H0 = theta_rec/r_rec*(val1 + val2)*c_km
+print(f"H_0 = {calc_H0}")
