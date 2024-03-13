@@ -117,17 +117,28 @@ z_eq = 3387
 z_eq_sig = 21
 a_sig = z_eq_sig*(1/(1+z_eq)**2)
 
+const = 2000
+
+def Hub_fun0(a, omegaR, omegaM, omegaL, omegaGW):
+    if (a < a_m):
+        return H_0*np.sqrt((omegaR)/a**4+(omegaM+omegaGW)/a**3+omegaL )
+    else: 
+        return H_0*np.sqrt((omegaR + omegaGW)/a**4+omegaM/a**3+omegaL )
+
 def Hub_fun1(a, omegaR, omegaM, omegaL, omegaGW):
     if (a < a_m):
         return H_0*np.sqrt((omegaR)/a**4+(omegaM+omegaGW)/a**3+omegaL - (omegaR + omegaM + omegaL + omegaGW - 1)/a**2)
     else: 
         return H_0*np.sqrt((omegaR + omegaGW)/a**4+omegaM/a**3+omegaL - (omegaR + omegaM + omegaL + omegaGW - 1)/a**2)
     
-def Hub_fun(a, omegaR, omegaM, omegaL, omegaGW):
+def Hub_fun2(a, omegaR, omegaM, omegaL, omegaGW, H0new):
     if (a < a_m):
         return H_0*np.sqrt((omegaR)/a**4+(omegaM+omegaGW)/a**3+omegaL )
     else: 
-        return H_0*np.sqrt((omegaR+omegaGW)/a**4+(omegaM)/a**3+omegaL )
+        return H0new*np.sqrt((omegaR+omegaGW)/a**4+(omegaM)/a**3+omegaL )
+
+def Hub_fun(a, omegaR, omegaM, omegaL, omegaGW, H_new):
+    return H_new*np.sqrt((omegaR+omegaGW - omegaGW/(1+np.exp(const*(a - a_m))) )/a**4+(omegaM+omegaGW/(1+np.exp(const*(a - a_m))))/a**3+omegaL- (omegaR + omegaM + omegaL + omegaGW - 1)/a**2 )
 
 y_upper = 1e8
 y_lower = 1e0
@@ -148,12 +159,11 @@ a_l = (omega_M/omega_L)**(1/3)
 plt.vlines(x=a_l, ymin=y_lower, ymax=y_upper, color="green", linestyle="dashed",
             linewidth=1)
 plt.text(a_l,y_lower*100, r"$a_{M,\Lambda}$", fontsize=15, weight="bold")
-
 a = np.logspace(-5,0,N)
 H = Hubble_a(a)
 plt.xscale('log')
 plt.yscale('log')
-plt.plot(a, a*np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, 0), label='$\Lambda CDM$')
+plt.plot(a, a*np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, 0, H_0), label='$\Lambda CDM$')
 print(f'omega_GW from paper = {omega_GW0}')
 quad_a = 1
 quad_b = (omega_R + omega_M) - (a_sig*omega_R)
@@ -162,20 +172,25 @@ quad_c = 2*omega_M*omega_R - a_sig*omega_R**2
 #omega_GW0 = z_eq_sig*omega_R
 a_eq = 1/(z_eq + z_eq_sig)
 omega_GW0 = omega_R*(1 + z_eq + z_eq_sig) - omega_M
-print(f'aH(a_m) on left = {(a_m-.000000000000001)*Hub_fun((a_m-.000000000000001),omega_R, omega_M, omega_L, omega_GW0)}')
-print(f'aH(a_m) in middle = {a_m*Hub_fun(a_m,omega_R, omega_M, omega_L, omega_GW0)}')
-print(f'aH(a_m) on right = {(a_m+.000000000000001)*Hub_fun((a_m+.000000000000001),omega_R, omega_M, omega_L, omega_GW0)}')
-Hmass = np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, omega_GW0)
+print(f'omega_GW from paper = {omega_GW0}')
+#plt.plot(a, omega_GW0/(1+np.exp(1000000*(a - a_m) ) ) )
+#plt.plot(a, np.where(a<a_m,omega_GW0,1e-42 ))
+print(omega_GW0/(1+np.exp(100*(a - a_m))))
+print(a_m)
+H_new = H_0*np.sqrt((omega_R)/a_m**4+(omega_M+omega_GW0)/a_m**3+omega_L )/np.sqrt((omega_R+omega_GW0)/a_m**4+(omega_M)/a_m**3+omega_L )
 
-print(f'{(omega_R+omega_GW0)/a_m**4}')
-print(f'{(omega_R)/a_m**4}')
+H_new = H_0*np.sqrt((omega_R )/a_rec**4+(omega_M)/a_rec**3+omega_L )/np.sqrt((omega_R+omega_GW0 - omega_GW0/(1+np.exp(const*(a_rec - a_m))) )/a_rec**4+(omega_M+omega_GW0/(1+np.exp(const*(a_rec - a_m))))/a_rec**3+omega_L -(omega_R + omega_M + omega_L + omega_GW0 - 1)/a_rec**2)
+print(H_new)
+print(H_0)
+Hmass = np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, omega_GW0,H_new)
+
 plt.plot(a, a*Hmass, label='Massive Gravity')
 
-plt.ylim(4e1,1e5)
+plt.ylim(2e1,1e5)
 plt.legend()
+plt.grid(which='major', alpha=.2)
 plt.show()
-plt.savefig('s8/mod_H/fig0.pdf')
-
+plt.savefig('s8/mod_H/fig2.pdf')
 
 val1, err1 = quad(D_M1, a_rec, a_m, args=())
 val2, err2 = quad(D_M2, a_m, 1, args=())
