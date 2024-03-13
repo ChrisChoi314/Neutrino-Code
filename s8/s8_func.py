@@ -24,7 +24,8 @@ def gpc2hz(gpc): return gpc*(1/m2Gpc)*L/T
 def gev2hz(gev): return gev/(1.52e24)
 
 h = .6766 # according to Planck 2018 TT, TE, EE + lowE + lensing + BAO data
-H_0 = 100*h*3.2404407e-20 # in Hz 
+#H_0 = 100*h*3.2404407e-20 # in Hz
+H_0 = 67.66 
 M_GW = H_0*1e10
 k_0 = 1e10*H_0  # in Gpc
 k_c = 1e4*H_0
@@ -36,15 +37,17 @@ eta_rm = 1.353824443067972e+16
 eta_ml = 12.5
 K = 0
 a_lm = .754
+G = 6.67e-11
 
 f_BBN = 1.5e-11 # in Hz according to 22.290 of maggiore vol 2 
 f_yr = 1/(365*24*3600)
 
 def scale_fac(conf_time):
+    H0 = 100*h*3.2404407e-20
     if conf_time < 1e10:
-        return H_0*np.sqrt(omega_R)*conf_time
+        return H0*np.sqrt(omega_R)*conf_time
     else:
-        return (((H_0*omega_M)/2 * (conf_time + 2*np.sqrt(omega_R)/(H_0*omega_M)))**2 - omega_R) / omega_M
+        return (((H0*omega_M)/2 * (conf_time + 2*np.sqrt(omega_R)/(H0*omega_M)))**2 - omega_R) / omega_M
 
 def conf_time(a):
     if a < 1e-8:
