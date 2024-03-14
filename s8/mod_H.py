@@ -182,15 +182,15 @@ H_new = H_0*np.sqrt((omega_R)/a_m**4+(omega_M+omega_GW0)/a_m**3+omega_L )/np.sqr
 H_new = H_0*np.sqrt((omega_R )/a_rec**4+(omega_M)/a_rec**3+omega_L )/np.sqrt((omega_R+omega_GW0 - omega_GW0/(1+np.exp(const*(a_rec - a_m))) )/a_rec**4+(omega_M+omega_GW0/(1+np.exp(const*(a_rec - a_m))))/a_rec**3+omega_L -(omega_R + omega_M + omega_L + omega_GW0 - 1)/a_rec**2)
 print(H_new)
 print(H_0)
-Hmass = np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, omega_GW0,H_new)
+Hmass = np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, omega_GW0,H_0)
 
 plt.plot(a, a*Hmass, label='Massive Gravity')
 
 plt.ylim(2e1,1e5)
 plt.legend()
 plt.grid(which='major', alpha=.2)
+plt.savefig('s8/mod_H_figs/fig0.pdf')
 plt.show()
-plt.savefig('s8/mod_H/fig2.pdf')
 
 val1, err1 = quad(D_M1, a_rec, a_m, args=())
 val2, err2 = quad(D_M2, a_m, 1, args=())
