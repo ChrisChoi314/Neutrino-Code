@@ -2,22 +2,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 from scipy.integrate import odeint
+from blue_func import *
 
 # Define the parameters
 H_inf = 1  # 1e14  # in gev, according to https://cds.cern.ch/record/1420368/files/207.pdf
 a_r = 1  # 1e-32 # preliminary value, will change later
-tau_r = 1/(a_r*H_inf)
 k = 1
-tau_m = 6*tau_r  # tau_m will be before matter-rad equality, but after inflation ends https://arxiv.org/pdf/1808.02381.pdf
-# 1e-30 # from Claude de Rham paper https://arxiv.org/pdf/1401.4173.pdf
-# m = 1*np.sqrt(2) - .1
-# m = 1*np.sqrt(2) + .00001
+
+
+H_inf = 1.7
+k = 2*np.pi*1e-9
+#tau_m = 6*tau_r
+tau_r = 5.494456683825391e-7
+a_r = 1/(tau_r*1e8)
+tau_m = 1e27*tau_r
+
+print(eta_0)
+print(tau_m)
 tau_end = 3*tau_m
 m = 1*np.sqrt(2) - .1
 m = 1*np.sqrt(2) + .00001
 m = .8
+m = 1.298*H_inf
+
+
+
 nu = np.sqrt(9/4 - m**2 / H_inf**2)
-N = 5000
+N = 500000
 tau_init = -200*tau_r
 # tau = np.linspace(tau_init, tau_m + tau_r, N)
 # tau = np.linspace(tau_init, -tau_r, N)
@@ -87,9 +98,9 @@ else:
 v, v_prime = odeint(M_derivs_homo, [v_0, v_prime_0], tau[0:N_neg_r]).T
 
 
-ax1.plot(
-    tau[0:N_neg_r], v, label=r"Numerical solution", color="black"
-)
+#ax1.plot(
+#    tau[0:N_neg_r], v, label=r"Numerical solution", color="black"
+#)
 
 '''if isReal:
     ax1.plot(
@@ -146,13 +157,14 @@ D_2 = np.cos(k*tau_m)*(C_2*np.cos(lamb+np.pi/8) - C_1*np.sin(lamb-np.pi/8))
 v_k_reg3 = 2/k*np.sqrt(m*tau_m / (np.pi*H_inf*tau_r**2)) * \
     (D_1*np.cos(k*tau[N_m:] + k*(22.903 - 22.8915)) +
      D_2*np.sin(k*tau[N_m:]+k*(22.903 - 22.8915))) * .998
-#ax1.plot(
-#    tau[N_m:], -1j*v_k_reg3, "--",
-#    color="magenta",
-#    label=r"Analyt Solution: $\frac{2}{k}\sqrt{\frac{m\tau_m}{\pi H_{inf} \tau_r^2}}[D_1 \cos(k\tau) + D_2 \sin(k\tau)]$"
-#)
+ax1.plot(
+    tau[N_m:], -1j*v_k_reg3, "--",
+    color="magenta",
+    label=r"Analyt Solution: $\frac{2}{k}\sqrt{\frac{m\tau_m}{\pi H_{inf} \tau_r^2}}[D_1 \cos(k\tau) + D_2 \sin(k\tau)]$"
+)
 
-ax1.set_xlim(-tau_end, tau_end)
+#ax1.set_xlim(tau_m, tau_end)
+ax1.set_xlim(tau_m, tau_end)
 ax1.set_ylabel(r"$\overline{h}_k(\tau)$")
 
 
@@ -205,10 +217,10 @@ plt.title(r"Comparison betw. Analytical soln. and expected lim, complex")
 #    tau[N_pos_r:], np.vectorize(d_scale_fac_dz)(tau[N_pos_r:]) / np.vectorize(scale_fac)(tau[N_pos_r:]),
 #        color="aquamarine"
 # )
-
+plt.xscale('log')
 plt.xticks([])
 plt.yticks([])
 
 plt.legend().set_visible(False)
-plt.savefig("blue/massive_figs/fig1.pdf")
+plt.savefig("blue/massless_era_figs/fig1.pdf")
 plt.show()

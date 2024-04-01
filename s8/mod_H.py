@@ -159,7 +159,8 @@ a_l = (omega_M/omega_L)**(1/3)
 plt.vlines(x=a_l, ymin=y_lower, ymax=y_upper, color="green", linestyle="dashed",
             linewidth=1)
 plt.text(a_l,y_lower*100, r"$a_{M,\Lambda}$", fontsize=15, weight="bold")
-a = np.logspace(-5,0,N)
+
+a = np.logspace(-25,0,N)
 H = Hubble_a(a)
 plt.xscale('log')
 plt.yscale('log')
@@ -186,10 +187,10 @@ Hmass = np.vectorize(Hub_fun)(a, omega_R, omega_M, omega_L, omega_GW0,H_0)
 
 plt.plot(a, a*Hmass, label='Massive Gravity')
 
-plt.ylim(2e1,1e5)
+#plt.ylim(2e1,1e5)
 plt.legend()
 plt.grid(which='major', alpha=.2)
-plt.savefig('s8/mod_H_figs/fig0.pdf')
+#plt.savefig('s8/mod_H_figs/fig1.pdf')
 plt.show()
 
 val1, err1 = quad(D_M1, a_rec, a_m, args=())
