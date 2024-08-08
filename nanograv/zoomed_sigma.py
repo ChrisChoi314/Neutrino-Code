@@ -31,7 +31,7 @@ def omega_GW(f, A_cp, gamma):
 
 #ax = plt.figure(figsize=(8,6))
 
-fig, ax = plt.subplots(1, 1, figsize = (8,6))
+fig, ax = plt.subplots(1, 1, figsize = (8,6),constrained_layout = True)
 
 BBN = h**2*1e-5
 
@@ -74,10 +74,12 @@ num_freqs = 1000
 tau_r = 5.494456683825391e-7  # calculated from equation (19)
 
 a_r = 1/(tau_r*1e8)
-print(a_r)
+print(f'a_r: {a_r}')
+#print(a_r)
 
 color_arr = ['red', 'blue', 'green', 'm', 'y', 'cyan', 'magenta','yellow', 'orange']
 
+H_inf_arr = [1e8, 1e8, 1e8, 1e8, 1e8] # added the 1e8 for everything
 H_inf_arr = [1.7, 8, 5e1, 1e8,1e8]
 
 M_arr = [1.298, 1.251, 1.201, .3, .8]
@@ -86,12 +88,15 @@ tau_r_arr = 1/(a_r*H_inf_arr)
 tau_m_arr = [1e10*(H_inf_arr[0]/1e14)**-2,1e10*(H_inf_arr[1]/1e14)**-2,1e10*(H_inf_arr[2]/1e14)**-2,1e21, 1e23] *tau_r_arr
 tau_m_arr = np.array([1e27,1e27,1e27,2e21,1e21])*tau_r_arr
 idx = 0
+print(f'a_r* H_inf / 2pi: {a_r * 1e8 / (2*np.pi)}')
 for M_GW in M_arr:
     H_inf = H_inf_arr[idx]
     M_GW *= H_inf
     tau_r = tau_r_arr[idx]
+    
     #f_UV = 2e8*(H_inf/1e14)**.5
-    f_UV = 1/tau_r / (2*np.pi)
+    f_UV = 1/tau_r / (2*np.pi)  # f_UV = a_r H_inf = 1e-2 * 1e8 = 1e6 GeV -> 1e8 Gev `1 hz  1 GeV = 1e-8 Hz, 1e6 GeV -> 1e-3 Hz 
+    print(f'f_UV: {f_UV}')
     freqs = np.logspace(-19,np.log10(f_UV),num_freqs)
     tau_m = tau_m_arr[idx]
     Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, np.nan, BBN)
@@ -101,6 +106,7 @@ for M_GW in M_arr:
     idx+=1
 #plt.text(1e-1, 1e-6, "With\nsuppression", fontsize=15)
 #plt.text(1e-9, 1e-2, "Without\nsuppression", fontsize=15)
+
 
 BBN_f = np.logspace(np.log10(f_BBN), 9)
 plt.fill_between((BBN_f), (BBN_f*0+h**2*1e-5),
@@ -116,20 +122,20 @@ with open('blue/data/sensitivity_curves_NG15yr_fullPTA.txt', 'r') as file:
     for line in file:
         if idx != 0:
             elems = line.strip("\r\n").split(",")
-            print(elems)
+            #print(elems)
             freq_NG.append(float(elems[0]))
             omega_GW_NG.append(float(elems[3]))
         idx +=1
 
 f_nanoGrav = outfile['freqs']
 nanoGrav_sens = outfile['sens']
-plt.plot(f_nanoGrav, h**2*nanoGrav_sens, color='darkturquoise')
+#plt.plot(f_nanoGrav, h**2*nanoGrav_sens, color='darkturquoise')
 
 f_nanoGrav = np.array(freq_NG)
 nanoGrav_sens = np.array(omega_GW_NG)
-plt.plot(f_nanoGrav, h**2*nanoGrav_sens, color='darkturquoise')
+#plt.plot(f_nanoGrav, h**2*nanoGrav_sens, color='darkturquoise')
 
-plt.text(1e-10, 1e-17, "NANOGrav\nSensitivity", fontsize=15)
+#plt.text(1e-10, 1e-17, "NANOGrav\nSensitivity", fontsize=15)
 
 axins = ax.inset_axes([0.6, 0.02, 0.38, 0.45])
 idx = 0
@@ -148,7 +154,7 @@ for M_GW in M_arr:
     idx+=1
 axins.fill_between((BBN_f), (BBN_f*0+h**2*1e-5),
                  (BBN_f * 0 + 1e15), alpha=0.5, color='orchid')
-axins.plot(f_nanoGrav, nanoGrav_sens, color='darkturquoise')
+#axins.plot(f_nanoGrav, nanoGrav_sens, color='darkturquoise')
 freqs = freqs_raw
 axins.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 1*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 1*OMG_15.std(axis=0)), color='orange', alpha=0.7)
 axins.fill_between(freqs, 10**(OMG_15.mean(axis=0) - 2*OMG_15.std(axis=0)), 10**(OMG_15.mean(axis=0) + 2*OMG_15.std(axis=0)), color='orange', alpha=0.5)
@@ -177,5 +183,5 @@ plt.ylim(1e-22,1e1)
 plt.grid(which='major', alpha=.2)
 plt.grid(which='minor', alpha=.2)
 
-plt.savefig('nanograv/zoomed_sigma_figs/fig2.pdf')
+plt.savefig('nanograv/zoomed_sigma_figs/fig5.pdf')
 plt.show()

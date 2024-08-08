@@ -88,6 +88,10 @@ for M_GW in M_arr:
     tau_r = tau_r_arr[idx]
     freqs = np.logspace(np.log10(freqs[0]),np.log10(freqs[-1]),num_freqs)
     tau_m = tau_m_arr[idx]
+    print(f'a_r*H_inf: {a_r*H_inf}')
+    print(f'a_r: {a_r}')
+    print(f'H_inf: {H_inf}')
+
     Omega = np.where(h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m)< BBN, np.nan, BBN)
     if idx <= 2:
         axs[0].plot(freqs, h**2*omega_GW_full(freqs, M_GW, H_inf, tau_r, tau_m),color=color_arr[idx], label=r"$M_{\mathrm{GW}}$ = "+f'{M_arr[idx]}'+r'$H_{\mathrm{inf}}$' + r", $H_{\mathrm{inf}}$ = "+f'{H_inf} GeV' + r", $\tau_m = 10^{27}\tau_r$")
@@ -136,5 +140,5 @@ axs[1].set_yticks(np.array([1e-12,1e-10,1e-8,1e-6,1e-4]))
 
 plt.xlabel(r'$f$ [Hz]')
 plt.xlim(1e-9,1e-7)
-plt.savefig('nanograv/bbn_both_figs/fig0.pdf')
+#plt.savefig('nanograv/bbn_both_figs/fig0.pdf')
 plt.show()

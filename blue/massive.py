@@ -62,7 +62,7 @@ def M_derivs_homo(M, u):
     return [M[1], -(k**2 + (scale_fac(u)*mu(u))**2 - d_scale_fac_dz(u) / scale_fac(u)) * M[0]]
 
 
-fig, (ax1) = plt.subplots(1, figsize=(5, 4))
+fig, (ax1) = plt.subplots(1, figsize=(4, 3.3),constrained_layout = True)
 
 
 # horrors beyond my comprehension for the central difference method
@@ -70,7 +70,6 @@ xxx = np.array([tau[0] - 0.0000001, tau[0] + 0.0000001])
 xx = (np.sqrt(-np.pi*xxx) / 2 * scipy.special.hankel1(nu, -k*xxx))[:2]
 xx = xx[1] - xx[0]
 xx /= xxx[1] - xxx[0]
-print(xx)
 
 
 # Get the homogeneous solution using scipy.integrate.odeint
@@ -120,9 +119,10 @@ print(xxxx)
 v_rest, v_prime_rest = odeint(
     M_derivs_homo, [v_0_rest, v_prime_0_rest], tau[N_pos_r:]).T
 
+gap_len = tau[N_pos_r] - tau[N_neg_r]
 
 ax1.plot(
-    tau[N_pos_r:], v_rest, color="black"
+    tau[N_pos_r:] - gap_len, v_rest, color="black"
 )
 
 ax1.set_xlabel(r"$\tau$")
@@ -152,19 +152,21 @@ v_k_reg3 = 2/k*np.sqrt(m*tau_m / (np.pi*H_inf*tau_r**2)) * \
 #    label=r"Analyt Solution: $\frac{2}{k}\sqrt{\frac{m\tau_m}{\pi H_{inf} \tau_r^2}}[D_1 \cos(k\tau) + D_2 \sin(k\tau)]$"
 #)
 
-ax1.set_xlim(-tau_end, tau_end)
+ax1.set_xlim(-tau_end, tau_end - gap_len)
 ax1.set_ylabel(r"$\overline{h}_k(\tau)$")
 
+epsilon = .0001
 
 plt.axvline(x=-tau_r, color='red', linestyle='dashed',
             linewidth=1)
-plt.axvline(x=tau_r, color='red', linestyle='dashed',
-            linewidth=1, label=r'$\pm \tau_r$')
-plt.axvline(x=tau_m, color='blue', linestyle='dashed',
+#plt.axvline(x=-tau_r, color='red', linestyle='dashed',
+ #           linewidth=1, label=r'$\pm \tau_r$')
+plt.axvline(x=tau_m - gap_len, color='blue', linestyle='dashed',
             linewidth=1, label=r'$\tau_m$')
 plt.text(-tau_r-3, -2, r'$-\tau_r$',size=12)
-plt.text(tau_r+.5, -2, r'$\tau_r$', size=12)
-plt.text(tau_m+.5, -2, r'$\tau_m$',size=12)
+#plt.text(tau_r+.5, -2, r'$\tau_r$', size=12)
+plt.text(-tau_r+.2, -2, r'$\tau_r$', size=12)
+plt.text(tau_m+.2- gap_len, -2, r'$\tau_m$',size=12)
 # plt.title(r"Solns. to the Diff eq of $v_k(\tau)$")
 
 '''
